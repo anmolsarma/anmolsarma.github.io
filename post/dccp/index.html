@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>DCCP: The socket type you probably never heard of</title>
+    
+    
+    <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+    
+    <meta name="generator" content="Hugo 0.18.1" />
+</head>
+<body>
+<header>
+    <b>
+        <a href="https://www.anmolsarma.in/">Anmol Sarma</a>
+    </b>
+    
+    <a href="/">About</a> |
+    
+    <a href="/">Blog</a> |
+    
+    <a href="/tags/talks/">Talks</a> |
+    
+    <hr/>
+</header>
+<main>
+    <article>
+        <h1>DCCP: The socket type you probably never heard of</h1>
+        Tuesday, December 13, 2016
+        
+        <a href="/tags/tech">tech</a>
+        
+        <a href="/tags/linux">linux</a>
+        
+        
+
+<p><em>TL;DR: DCCP is a relatively newer transport layer protocol which draws from both TCP and UDP. Jump straight to the <a href="#example-in-c">example C code</a>.</em></p>
+
+<h2 id="background">Background</h2>
+
+<p>Historically, the majority of the traffic on the Internet has been over <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> which provides a reliable connection-oriented stream between two hosts. <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a> has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&rsquo;s connection establishment overhead or those for which timeliness is more important than reliability. However, the increasing use of UDP for applications such as internet telephony and streaming media which transfer a large amount of data can lead to significant <a href="https://en.wikipedia.org/wiki/Network_congestion">network congestion</a>. Since unlike TCP, UDP provides no inherent congestion control mechanism, an application can send UDP datagrams at a much higher rate than the available path capacity and cause congestion along the path. Increased congestion may lead to delays, packet loss and the degradation of the network&rsquo;s quality of service.</p>
+
+<p>Applications and protocols that choose to use UDP as their transport must, therefore, employ mechanisms to prevent congestion and to establish some degree of fairness with concurrent traffic so that the network remains usable. A prominent example of such a congestion control scheme is <a href="https://en.wikipedia.org/wiki/LEDBAT">LEDBAT</a> employed by <a href="https://en.wikipedia.org/wiki/BitTorrent">BitTorrent</a>. However, implementing a congestion control scheme is difficult, time-consuming and error-prone. Multiple non-standard implementations also make it difficult to reason about how applications would respond to network congestion. <a href="https://en.wikipedia.org/wiki/Datagram_Congestion_Control_Protocol">DCCP</a> - Datagram Congestion Control Protocol is intended to mitigate this problem as a transport for unreliable datagrams with built-in congestion control.</p>
+
+<p>From an application programmer&rsquo;s perspective, DCCP differs from UDP by providing four additional features:</p>
+
+<ul>
+<li>Explicit connection establishment between hosts</li>
+<li>Selectable congestion control schemes</li>
+<li>Path MTU discovery to avoid fragmentation</li>
+<li>Service Codes for identifying applications</li>
+</ul>
+
+<p>DCCP makes use of Explicit Congestion Notification but it is transparent the  application. DCCP is designed to leave additional functionality such as reliability or Forward Error Correction (FEC) to be layered on top, as and when required rather than at the protocol level itself.</p>
+
+<h2 id="explicit-connection-establishment">Explicit connection establishment</h2>
+
+<p>The connection establishment semantics of DCCP mirror those of TCP with a client that actively connects to a server that is passively listening on a port. DCCP connections are bidirectional. Logically, however, a DCCP connection consists of two separate unidirectional connections, called half-connections. Each half-connection is a one-way, unreliable datagram pipe. The rationale for this explained in the next section.</p>
+
+<h2 id="selectable-congestion-control-schemes">Selectable congestion control schemes</h2>
+
+<p>TCP implements congestion control entirely transparently to the application. While it is possible to configure the host to use a specific variant, there is no way for the application to discover which congestion control scheme is in force, let alone negotiate one. DCCP, however, can cater to the different needs of applications by allowing applications to negotiate the congestion control schemes. In fact, each of the half-connections can use a different scheme, allowing for greater control.</p>
+
+<p>Congesting the network by sending data at a rate that is faster than the slowest link between the endpoints will overwhelm it. This may lead to packet loss leading to retransmissions which may, in turn, lead to further congestion. The solution to this problem is to start transmitting data at a slow rate on a new connection and to then ramp up the speed until packet loss is detected. The transmission rate may then be scaled back until no further packet loss occurs. The optimum speed at which to transfer data  will change with network conditions over the life of the connection. Congestion control schemes differ in how packet loss is estimated and the rate at which is the transmission speed is ramped up or scaled back. DCCP congestion control schemes are denoted by Congestion Control Identifiers - CCIDs. Currently, three CCIDs have been formally specified:</p>
+
+<ul>
+<li><p><strong><a href="https://tools.ietf.org/html/rfc4341">CCID 2</a> -  TCP-like Congestion Control:</strong> A quick reacting scheme modelled after TCP which will rapidly ramp up speed to take advantage of available bandwidth and also rapidly scale back when congestion is detected. Suitable for applications that can handle large swings in transmission rates.</p></li>
+
+<li><p><strong><a href="https://tools.ietf.org/html/rfc5348">CCID 3</a> - TCP-Friendly Rate Control (TFRC):</strong> A slower reacting scheme intended to be friendly to concurrent TCP flows in the network. Provides a relatively smoother sending rate at the expense of possibly not utilising all available bandwidth. Suitable for media streaming applications that prefer to minimise abrupt changes in the sending rate.</p></li>
+
+<li><p><strong><a href="https://tools.ietf.org/html/rfc4828">CCID 4</a> - TCP-Friendly Rate Control for Small Packets (TFRC-SP):</strong> An experimental scheme for applications that use a small datagram size and those that change their sending rate by varying the datagram size.</p></li>
+</ul>
+
+<p>In addition, the Linux kernel&rsquo;s <a href="https://github.com/uoaerg/linux-dccp">DCCP Test Tree</a> contains an experimental implementation of a scheme modelled after <a href="https://en.wikipedia.org/wiki/CUBIC_TCP">TCP CUBIC</a>. There is also a mode that disables congestion control altogether for <em>UDP-like</em> behaviour.</p>
+
+<h2 id="pmtu-discovery">PMTU discovery</h2>
+
+<p>Data between two internet hosts is transferred transmitted as a series of IP packets that pass through intermediate links. Each of these links has a maximum packet size or maximum transmission unit (MTU) that it can transmit without having to break it up into smaller fragments. The largest packet size that does not require fragmentation anywhere along a path is referred to as the path maximum transmission unit or PMTU. Applications can usually get better error tolerance by producing packets smaller than the PMTU. DCCP defines a maximum packet size (MPS) based on the PMTU and the congestion control scheme used for each connection. DCCP implementations will not send any packet bigger than the MPS and instead return an appropriate error to the application. The application can query the DCCP stack for the current MPS and restrict itself from sending datagrams larger than this value and thereby avoid <a href="https://en.wikipedia.org/wiki/IP_fragmentation">fragmentation</a>.</p>
+
+<h2 id="service-codes">Service Codes</h2>
+
+<p>DCCP defines a 32 bit Service Code to disambiguate between multiple applications associated with a single a server port. The client specifies the Service Code it wants to connect to and this is used to identify the intended service or application to process a DCCP connection request. Essentially, Service Codes provide an additional level of indirection for connection multiplexing. A server listening on a port may be associated with multiple Service Codes but a client may have only one Service Code, indicating the application it wishes to connect to.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>The mainline Linux kernel has included DCCP support since <a href="https://lwn.net/Articles/149756/">2.6.14</a> and mainstream distributions like Ubuntu enable it by default. However, to get the newer experimental features, you will have to build the kernel from the DCCP Test Tree. Or you can also grab the latest stable kernel release merged with the experimental DCCP changes from <a href="https://github.com/unmole/linux-dccp/releases/latest">here</a>. Be sure to enable all the CCIDs in the kernel configuration in <em>Networking Support</em> &ndash;&gt; <em>Networking Options</em> &ndash;&gt; <em>The DCCP Protocol</em> &ndash;&gt; <em>DCCP CCIDs Configuration</em>. Like the Debian Installation Guide Says, &ldquo;<em>Don&rsquo;t be afraid to try compiling the kernel. It&rsquo;s fun and profitable.</em>&rdquo; For now, Linux is the only operating system supporting native DCCP, unless you count the patch for an ancient version of FreeBSD.</p>
+
+<h2 id="example-in-c">Example in C</h2>
+
+<p>The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses <em>getsockopt()</em> to read the current maximum packet size. Reading the available CCIDs on the host is shown in <strong>probe.c</strong>. As libc doesn&rsquo;t still have a <strong>netinet/dccp.h</strong> header, you will have to get the required constants from the kernel sources or directly use the <strong>dccp.h</strong> header below. <a href="/dl/dccp_socket_example.tar.gz">Download Code</a></p>
+
+<p><strong>server.c</strong></p>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdio.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdlib.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;unistd.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;sys/socket.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;netinet/in.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;arpa/inet.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;errno.h&gt;</span><span style="color: #008800"></span>
+
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&quot;dccp.h&quot;</span><span style="color: #008800"></span>
+
+<span style="color: #008800">#define PORT 1337</span>
+<span style="color: #008800">#define SERVICE_CODE 42</span>
+
+<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">error_exit</span>(<span style="color: #AA22FF; font-weight: bold">const</span> <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">*</span>str)
+{
+	perror(str);
+	exit(errno);
+}
+
+<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">main</span>(<span style="color: #00BB00; font-weight: bold">int</span> argc, <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">**</span>argv)
+{
+	<span style="color: #00BB00; font-weight: bold">int</span> listen_sock <span style="color: #666666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
+	<span style="color: #AA22FF; font-weight: bold">if</span> (listen_sock <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		error_exit(<span style="color: #BB4444">&quot;socket&quot;</span>);
+
+	<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr_in servaddr <span style="color: #666666">=</span> {
+		.sin_family <span style="color: #666666">=</span> AF_INET,
+		.sin_addr.s_addr <span style="color: #666666">=</span> htonl(INADDR_ANY),
+		.sin_port <span style="color: #666666">=</span> htons(PORT),
+	};
+
+	<span style="color: #AA22FF; font-weight: bold">if</span> (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, <span style="color: #666666">&amp;</span>(<span style="color: #00BB00; font-weight: bold">int</span>) {
+		       <span style="color: #666666">1</span>}, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(<span style="color: #00BB00; font-weight: bold">int</span>)))
+		error_exit(<span style="color: #BB4444">&quot;setsockopt(SO_REUSEADDR)&quot;</span>);
+
+	<span style="color: #AA22FF; font-weight: bold">if</span> (bind(listen_sock, (<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr <span style="color: #666666">*</span>)<span style="color: #666666">&amp;</span>servaddr, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(servaddr)))
+		error_exit(<span style="color: #BB4444">&quot;bind&quot;</span>);
+
+	<span style="color: #008800; font-style: italic">// DCCP mandates the use of a &#39;Service Code&#39; in addition the port</span>
+	<span style="color: #AA22FF; font-weight: bold">if</span> (setsockopt(listen_sock, SOL_DCCP, DCCP_SOCKOPT_SERVICE, <span style="color: #666666">&amp;</span>(<span style="color: #00BB00; font-weight: bold">int</span>) {
+		       htonl(SERVICE_CODE)}, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(<span style="color: #00BB00; font-weight: bold">int</span>)))
+		error_exit(<span style="color: #BB4444">&quot;setsockopt(DCCP_SOCKOPT_SERVICE)&quot;</span>);
+
+	<span style="color: #AA22FF; font-weight: bold">if</span> (listen(listen_sock, <span style="color: #666666">1</span>))
+		error_exit(<span style="color: #BB4444">&quot;listen&quot;</span>);
+
+	<span style="color: #AA22FF; font-weight: bold">for</span> (;;) {
+
+		printf(<span style="color: #BB4444">&quot;Waiting for connection...</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>);
+
+		<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr_in client_addr;
+		<span style="color: #00BB00; font-weight: bold">socklen_t</span> addr_len <span style="color: #666666">=</span> <span style="color: #AA22FF; font-weight: bold">sizeof</span>(client_addr);
+
+		<span style="color: #00BB00; font-weight: bold">int</span> conn_sock <span style="color: #666666">=</span> accept(listen_sock, (<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr <span style="color: #666666">*</span>)<span style="color: #666666">&amp;</span>client_addr, <span style="color: #666666">&amp;</span>addr_len);
+		<span style="color: #AA22FF; font-weight: bold">if</span> (conn_sock <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>) {
+			perror(<span style="color: #BB4444">&quot;accept&quot;</span>);
+			<span style="color: #AA22FF; font-weight: bold">continue</span>;
+		}
+
+		printf(<span style="color: #BB4444">&quot;Connection received from %s:%d</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>,
+		       inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+
+		<span style="color: #AA22FF; font-weight: bold">for</span> (;;) {
+			<span style="color: #00BB00; font-weight: bold">char</span> buffer[<span style="color: #666666">1024</span>];
+			<span style="color: #008800; font-style: italic">// Each recv() will read only one individual message.</span>
+			<span style="color: #008800; font-style: italic">// Datagrams, not a stream!</span>
+			<span style="color: #00BB00; font-weight: bold">int</span> ret <span style="color: #666666">=</span> recv(conn_sock, buffer, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(buffer), <span style="color: #666666">0</span>);
+			<span style="color: #AA22FF; font-weight: bold">if</span> (ret <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span>)
+				printf(<span style="color: #BB4444">&quot;Received: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>, buffer);
+			<span style="color: #AA22FF; font-weight: bold">else</span>
+				<span style="color: #AA22FF; font-weight: bold">break</span>;
+
+		}
+
+		close(conn_sock);
+	}
+}
+</pre></div>
+
+<p><strong>client.c</strong></p>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdio.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdlib.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;string.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;unistd.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;sys/socket.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;netinet/in.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;arpa/inet.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;errno.h&gt;</span><span style="color: #008800"></span>
+
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&quot;dccp.h&quot;</span><span style="color: #008800"></span>
+
+<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">error_exit</span>(<span style="color: #AA22FF; font-weight: bold">const</span> <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">*</span>str)
+{
+	perror(str);
+	exit(errno);
+}
+
+<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">main</span>(<span style="color: #00BB00; font-weight: bold">int</span> argc, <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">*</span>argv[])
+{
+	<span style="color: #AA22FF; font-weight: bold">if</span> (argc <span style="color: #666666">&lt;</span> <span style="color: #666666">5</span>) {
+		printf(<span style="color: #BB4444">&quot;Usage: ./client &lt;server address&gt; &lt;port&gt; &lt;service code&gt; &lt;message 1&gt; [message 2] ... </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>);
+		exit(<span style="color: #666666">-1</span>);
+	}
+	<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr_in server_addr <span style="color: #666666">=</span> {
+		.sin_family <span style="color: #666666">=</span> AF_INET,
+		.sin_port <span style="color: #666666">=</span> htons(atoi(argv[<span style="color: #666666">2</span>])),
+	};
+
+	<span style="color: #AA22FF; font-weight: bold">if</span> (<span style="color: #666666">!</span>inet_pton(AF_INET, argv[<span style="color: #666666">1</span>], <span style="color: #666666">&amp;</span>server_addr.sin_addr.s_addr)) {
+		printf(<span style="color: #BB4444">&quot;Invalid address %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>, argv[<span style="color: #666666">1</span>]);
+		exit(<span style="color: #666666">-1</span>);
+	}
+
+	<span style="color: #00BB00; font-weight: bold">int</span> socket_fd <span style="color: #666666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
+	<span style="color: #AA22FF; font-weight: bold">if</span> (socket_fd <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		error_exit(<span style="color: #BB4444">&quot;socket&quot;</span>);
+
+	<span style="color: #AA22FF; font-weight: bold">if</span> (setsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_SERVICE, <span style="color: #666666">&amp;</span>(<span style="color: #00BB00; font-weight: bold">int</span>) {htonl(atoi(argv[<span style="color: #666666">3</span>]))}, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(<span style="color: #00BB00; font-weight: bold">int</span>)))
+		error_exit(<span style="color: #BB4444">&quot;setsockopt(DCCP_SOCKOPT_SERVICE)&quot;</span>);
+
+	<span style="color: #AA22FF; font-weight: bold">if</span> (connect(socket_fd, (<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr <span style="color: #666666">*</span>) <span style="color: #666666">&amp;</span>server_addr, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(server_addr)))
+		error_exit(<span style="color: #BB4444">&quot;connect&quot;</span>);
+
+	<span style="color: #008800; font-style: italic">// Get the maximum packet size</span>
+	<span style="color: #00BB00; font-weight: bold">uint32_t</span> mps;
+	<span style="color: #00BB00; font-weight: bold">socklen_t</span> res_len <span style="color: #666666">=</span> <span style="color: #AA22FF; font-weight: bold">sizeof</span>(mps);
+	<span style="color: #AA22FF; font-weight: bold">if</span> (getsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_GET_CUR_MPS, <span style="color: #666666">&amp;</span>mps, <span style="color: #666666">&amp;</span>res_len))
+		error_exit(<span style="color: #BB4444">&quot;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&quot;</span>);
+	printf(<span style="color: #BB4444">&quot;Maximum Packet Size: %d</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>, mps);
+
+	<span style="color: #AA22FF; font-weight: bold">for</span> (<span style="color: #00BB00; font-weight: bold">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">4</span>; i <span style="color: #666666">&lt;</span> argc; i<span style="color: #666666">++</span>) {
+		<span style="color: #AA22FF; font-weight: bold">if</span> (send(socket_fd, argv[i], strlen(argv[i]) <span style="color: #666666">+</span> <span style="color: #666666">1</span>, <span style="color: #666666">0</span>) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+			error_exit(<span style="color: #BB4444">&quot;send&quot;</span>);
+	}
+
+	<span style="color: #008800; font-style: italic">// Wait for a while to allow all the messages to be transmitted</span>
+	usleep(<span style="color: #666666">5</span> <span style="color: #666666">*</span> <span style="color: #666666">1000</span>);
+
+	close(socket_fd);
+	<span style="color: #AA22FF; font-weight: bold">return</span> <span style="color: #666666">0</span>;
+}
+</pre></div>
+
+<p><strong>probe.c</strong></p>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdio.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;sys/socket.h&gt;</span><span style="color: #008800"></span>
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;netinet/in.h&gt;</span><span style="color: #008800"></span>
+
+<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&quot;dccp.h&quot;</span><span style="color: #008800"></span>
+
+<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">main</span>()
+{
+	<span style="color: #00BB00; font-weight: bold">int</span> sock_fd <span style="color: #666666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
+
+	<span style="color: #008800; font-style: italic">// Check the congestion control schemes available</span>
+	<span style="color: #00BB00; font-weight: bold">socklen_t</span> res_len <span style="color: #666666">=</span> <span style="color: #666666">6</span>;
+	<span style="color: #00BB00; font-weight: bold">uint8_t</span> ccids[<span style="color: #666666">6</span>];
+	<span style="color: #AA22FF; font-weight: bold">if</span> (getsockopt(sock_fd, SOL_DCCP, DCCP_SOCKOPT_AVAILABLE_CCIDS, ccids, <span style="color: #666666">&amp;</span>res_len)) {
+		perror(<span style="color: #BB4444">&quot;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&quot;</span>);
+		<span style="color: #AA22FF; font-weight: bold">return</span> <span style="color: #666666">-1</span>;
+	}
+
+	printf(<span style="color: #BB4444">&quot;%d CCIDs available:&quot;</span>, res_len);
+	<span style="color: #AA22FF; font-weight: bold">for</span> (<span style="color: #00BB00; font-weight: bold">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> res_len; i<span style="color: #666666">++</span>)
+		printf(<span style="color: #BB4444">&quot; %d&quot;</span>, ccids[i]);
+
+	<span style="color: #AA22FF; font-weight: bold">return</span> res_len;
+}
+</pre></div>
+
+<p><strong>dccp.h</strong></p>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800; font-style: italic">/* This file only contains constants necessary for user space to call</span>
+<span style="color: #008800; font-style: italic"> * into the kernel and thus, contains no copyrightable information. */</span>
+
+<span style="color: #008800">#ifndef DCCP_DCCP_H</span>
+<span style="color: #008800">#define DCCP_DCCP_H</span>
+
+<span style="color: #008800; font-style: italic">// From the kernel&#39;s include/linux/socket.h</span>
+<span style="color: #008800">#define SOL_DCCP                        269</span>
+
+<span style="color: #008800; font-style: italic">// From kernel&#39;s include/uapi/linux/dccp.h</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_SERVICE            2</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_CHANGE_L           3</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_CHANGE_R           4</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_GET_CUR_MPS        5</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_SERVER_TIMEWAIT    6</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_SEND_CSCOV         10</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_RECV_CSCOV         11</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_AVAILABLE_CCIDS    12</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_CCID               13</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_TX_CCID            14</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_RX_CCID            15</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_QPOLICY_ID         16</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_QPOLICY_TXQLEN     17</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_CCID_RX_INFO       128</span>
+<span style="color: #008800">#define DCCP_SOCKOPT_CCID_TX_INFO       192</span>
+
+<span style="color: #008800">#endif </span><span style="color: #008800; font-style: italic">//DCCP_DCCP_H</span>
+</pre></div>
+
+<h2 id="caveats-and-conclusion">Caveats and Conclusion</h2>
+
+<p>DCCP is not mainstream. It is not widely deployed or even supported. Documentation is sparse. Although Linux DCCP NAT is functional, many intermediate boxes will probably just drop DCCP traffic. DCCP is the Fixed-gear bicycle of Layer 4, it is the ultimate hipster transport.</p>
+
+        <div>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'anmolsarma';
+    var disqus_identifier = 'https:\/\/www.anmolsarma.in\/post\/dccp\/';
+    var disqus_title = 'DCCP: The socket type you probably never heard of';
+    var disqus_url = 'https:\/\/www.anmolsarma.in\/post\/dccp\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+        </div>
+    </article>
+</main>
+<footer>
+    <p>&copy; 2017 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where otherwise noted, content on this website is licensed under a <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>.</p>
+</footer>
+
