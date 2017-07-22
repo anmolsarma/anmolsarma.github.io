@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Embedded on Anmol Sarma</title>
+    <link>https://www.anmolsarma.in/tags/embedded/</link>
+    <description>Recent content in Embedded on Anmol Sarma</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-in</language>
+    <copyright>Except where noted otherwise, content licensed under a &lt;a href=&#39;https://creativecommons.org/licenses/by/4.0/&#39;&gt;Creative Commons Attribution 4.0 International License&lt;/a&gt;.</copyright>
+    <lastBuildDate>Sat, 12 Jan 2013 19:06:05 +0000</lastBuildDate>
+    
+	<atom:link href="https://www.anmolsarma.in/tags/embedded/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Das Blinkenlights on the MSP430 Launchpad with Linux</title>
+      <link>https://www.anmolsarma.in/post/msp430-launchpad-linux/</link>
+      <pubDate>Sat, 12 Jan 2013 19:06:05 +0000</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/msp430-launchpad-linux/</guid>
+      <description>TI’s MSP430 LaunchPad development kit offers some serious bang for the buck. You get two modern 16-bit microcontrollers, a programmer-cum-debugger with pins broken out and a USB cable for less than 5 USD inclusive of shipping. TI even provides two free (as in beer) IDE’s for Windows. Linux support though was a bit sketchy when the board was first released.
+Things of course have greatly improved and getting the Launchpad to work with Linux is now a breeze.</description>
+    </item>
+    
+  </channel>
+</rss>

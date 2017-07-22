@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Protocols on Anmol Sarma</title>
+    <link>https://www.anmolsarma.in/tags/protocols/</link>
+    <description>Recent content in Protocols on Anmol Sarma</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-in</language>
+    <copyright>Except where noted otherwise, content licensed under a &lt;a href=&#39;https://creativecommons.org/licenses/by/4.0/&#39;&gt;Creative Commons Attribution 4.0 International License&lt;/a&gt;.</copyright>
+    <lastBuildDate>Tue, 13 Dec 2016 23:10:50 +0530</lastBuildDate>
+    
+	<atom:link href="https://www.anmolsarma.in/tags/protocols/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>DCCP: The socket type you probably never heard of</title>
+      <link>https://www.anmolsarma.in/post/dccp/</link>
+      <pubDate>Tue, 13 Dec 2016 23:10:50 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/dccp/</guid>
+      <description>TL;DR: DCCP is a relatively newer transport layer protocol which draws from both TCP and UDP. Jump straight to the example C code.
+Background Historically, the majority of the traffic on the Internet has been over TCP which provides a reliable connection-oriented stream between two hosts. UDP has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&amp;rsquo;s connection establishment overhead or those for which timeliness is more important than reliability.</description>
+    </item>
+    
+  </channel>
+</rss>
