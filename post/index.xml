@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-in</language>
     <copyright>Except where noted otherwise, content licensed under a &lt;a href=&#39;https://creativecommons.org/licenses/by/4.0/&#39;&gt;Creative Commons Attribution 4.0 International License&lt;/a&gt;.</copyright>
-    <lastBuildDate>Tue, 13 Dec 2016 23:10:50 +0530</lastBuildDate>
+    <lastBuildDate>Sat, 14 Oct 2017 11:56:27 +0530</lastBuildDate>
     
 	<atom:link href="https://www.anmolsarma.in/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Talk @ RFC&#39;s We Love</title>
+      <link>https://www.anmolsarma.in/post/coap-talk/</link>
+      <pubDate>Sat, 14 Oct 2017 11:56:27 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/coap-talk/</guid>
+      <description>Gave an introductory talk on CoAP at the 5th RFC&amp;rsquo;s We Love meetup. Turnout was low, probably owing to the rains and the festive season. It was still fun and had great discussions.
+ </description>
+    </item>
     
     <item>
       <title>DCCP: The socket type you probably never heard of</title>
