@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-in</language>
     <copyright>Except where noted otherwise, content licensed under a &lt;a href=&#39;https://creativecommons.org/licenses/by/4.0/&#39;&gt;Creative Commons Attribution 4.0 International License&lt;/a&gt;.</copyright>
-    <lastBuildDate>Sat, 14 Oct 2017 11:56:27 +0530</lastBuildDate>
+    <lastBuildDate>Wed, 09 May 2018 20:28:40 +0530</lastBuildDate>
     
 	<atom:link href="https://www.anmolsarma.in/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Books I Read in 2017</title>
+      <link>https://www.anmolsarma.in/post/books-2017/</link>
+      <pubDate>Wed, 09 May 2018 20:28:40 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/books-2017/</guid>
+      <description>The God of Small Things by Arundhati Roy A beautifully heart-rending exploration of the human condition. The prose is almost lyrical and the narrative is dreamlike and completely immersing. All the little details add up to symbolise something bigger. The book is part political satire, part social commentary part psychological drama and part fairy tale. In the midst of all this, it manages to capture the thought process of children like no other book.</description>
+    </item>
     
     <item>
       <title>Talk @ RFC&#39;s We Love: CoAPing with the Internet of Things</title>

@@ -9,7 +9,7 @@
     
     <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
     
-    <meta name="generator" content="Hugo 0.25.1" />
+    <meta name="generator" content="Hugo 0.40.3" />
 </head>
 <body>
 <header>
@@ -101,206 +101,198 @@
 <p>The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses <em>getsockopt()</em> to read the current maximum packet size. Reading the available CCIDs on the host is shown in <strong>probe.c</strong>. As libc doesn&rsquo;t still have a <strong>netinet/dccp.h</strong> header, you will have to get the required constants from the kernel sources or directly use the <strong>dccp.h</strong> header below. <a href="/dl/dccp_socket_example.tar.gz">Download Code</a></p>
 
 <p><strong>server.c</strong></p>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdio.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdlib.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;unistd.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;sys/socket.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;netinet/in.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;arpa/inet.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;errno.h&gt;</span><span style="color: #008800"></span>
-
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&quot;dccp.h&quot;</span><span style="color: #008800"></span>
-
-<span style="color: #008800">#define PORT 1337</span>
-<span style="color: #008800">#define SERVICE_CODE 42</span>
-
-<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">error_exit</span>(<span style="color: #AA22FF; font-weight: bold">const</span> <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">*</span>str)
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#080">#include</span> <span style="color:#080">&lt;stdio.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;stdlib.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;unistd.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;sys/socket.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;netinet/in.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;arpa/inet.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;errno.h&gt;</span><span style="color:#080">
+</span><span style="color:#080"></span>
+<span style="color:#080">#include</span> <span style="color:#080">&#34;dccp.h&#34;</span><span style="color:#080">
+</span><span style="color:#080"></span>
+<span style="color:#080">#define PORT 1337
+</span><span style="color:#080">#define SERVICE_CODE 42
+</span><span style="color:#080"></span>
+<span style="color:#0b0;font-weight:bold">int</span> <span style="color:#00a000">error_exit</span>(<span style="color:#a2f;font-weight:bold">const</span> <span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">*</span>str)
 {
 	perror(str);
 	exit(errno);
 }
 
-<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">main</span>(<span style="color: #00BB00; font-weight: bold">int</span> argc, <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">**</span>argv)
+<span style="color:#0b0;font-weight:bold">int</span> <span style="color:#00a000">main</span>(<span style="color:#0b0;font-weight:bold">int</span> argc, <span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">**</span>argv)
 {
-	<span style="color: #00BB00; font-weight: bold">int</span> listen_sock <span style="color: #666666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
-	<span style="color: #AA22FF; font-weight: bold">if</span> (listen_sock <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
-		error_exit(<span style="color: #BB4444">&quot;socket&quot;</span>);
+	<span style="color:#0b0;font-weight:bold">int</span> listen_sock <span style="color:#666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
+	<span style="color:#a2f;font-weight:bold">if</span> (listen_sock <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+		error_exit(<span style="color:#b44">&#34;socket&#34;</span>);
 
-	<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr_in servaddr <span style="color: #666666">=</span> {
-		.sin_family <span style="color: #666666">=</span> AF_INET,
-		.sin_addr.s_addr <span style="color: #666666">=</span> htonl(INADDR_ANY),
-		.sin_port <span style="color: #666666">=</span> htons(PORT),
+	<span style="color:#a2f;font-weight:bold">struct</span> sockaddr_in servaddr <span style="color:#666">=</span> {
+		.sin_family <span style="color:#666">=</span> AF_INET,
+		.sin_addr.s_addr <span style="color:#666">=</span> htonl(INADDR_ANY),
+		.sin_port <span style="color:#666">=</span> htons(PORT),
 	};
 
-	<span style="color: #AA22FF; font-weight: bold">if</span> (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, <span style="color: #666666">&amp;</span>(<span style="color: #00BB00; font-weight: bold">int</span>) {
-		       <span style="color: #666666">1</span>}, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(<span style="color: #00BB00; font-weight: bold">int</span>)))
-		error_exit(<span style="color: #BB4444">&quot;setsockopt(SO_REUSEADDR)&quot;</span>);
+	<span style="color:#a2f;font-weight:bold">if</span> (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, <span style="color:#666">&amp;</span>(<span style="color:#0b0;font-weight:bold">int</span>) {
+		       <span style="color:#666">1</span>}, <span style="color:#a2f;font-weight:bold">sizeof</span>(<span style="color:#0b0;font-weight:bold">int</span>)))
+		error_exit(<span style="color:#b44">&#34;setsockopt(SO_REUSEADDR)&#34;</span>);
 
-	<span style="color: #AA22FF; font-weight: bold">if</span> (bind(listen_sock, (<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr <span style="color: #666666">*</span>)<span style="color: #666666">&amp;</span>servaddr, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(servaddr)))
-		error_exit(<span style="color: #BB4444">&quot;bind&quot;</span>);
+	<span style="color:#a2f;font-weight:bold">if</span> (bind(listen_sock, (<span style="color:#a2f;font-weight:bold">struct</span> sockaddr <span style="color:#666">*</span>)<span style="color:#666">&amp;</span>servaddr, <span style="color:#a2f;font-weight:bold">sizeof</span>(servaddr)))
+		error_exit(<span style="color:#b44">&#34;bind&#34;</span>);
 
-	<span style="color: #008800; font-style: italic">// DCCP mandates the use of a &#39;Service Code&#39; in addition the port</span>
-	<span style="color: #AA22FF; font-weight: bold">if</span> (setsockopt(listen_sock, SOL_DCCP, DCCP_SOCKOPT_SERVICE, <span style="color: #666666">&amp;</span>(<span style="color: #00BB00; font-weight: bold">int</span>) {
-		       htonl(SERVICE_CODE)}, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(<span style="color: #00BB00; font-weight: bold">int</span>)))
-		error_exit(<span style="color: #BB4444">&quot;setsockopt(DCCP_SOCKOPT_SERVICE)&quot;</span>);
+	<span style="color:#080;font-style:italic">// DCCP mandates the use of a &#39;Service Code&#39; in addition the port
+</span><span style="color:#080;font-style:italic"></span>	<span style="color:#a2f;font-weight:bold">if</span> (setsockopt(listen_sock, SOL_DCCP, DCCP_SOCKOPT_SERVICE, <span style="color:#666">&amp;</span>(<span style="color:#0b0;font-weight:bold">int</span>) {
+		       htonl(SERVICE_CODE)}, <span style="color:#a2f;font-weight:bold">sizeof</span>(<span style="color:#0b0;font-weight:bold">int</span>)))
+		error_exit(<span style="color:#b44">&#34;setsockopt(DCCP_SOCKOPT_SERVICE)&#34;</span>);
 
-	<span style="color: #AA22FF; font-weight: bold">if</span> (listen(listen_sock, <span style="color: #666666">1</span>))
-		error_exit(<span style="color: #BB4444">&quot;listen&quot;</span>);
+	<span style="color:#a2f;font-weight:bold">if</span> (listen(listen_sock, <span style="color:#666">1</span>))
+		error_exit(<span style="color:#b44">&#34;listen&#34;</span>);
 
-	<span style="color: #AA22FF; font-weight: bold">for</span> (;;) {
+	<span style="color:#a2f;font-weight:bold">for</span> (;;) {
 
-		printf(<span style="color: #BB4444">&quot;Waiting for connection...</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>);
+		printf(<span style="color:#b44">&#34;Waiting for connection...</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>);
 
-		<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr_in client_addr;
-		<span style="color: #00BB00; font-weight: bold">socklen_t</span> addr_len <span style="color: #666666">=</span> <span style="color: #AA22FF; font-weight: bold">sizeof</span>(client_addr);
+		<span style="color:#a2f;font-weight:bold">struct</span> sockaddr_in client_addr;
+		socklen_t addr_len <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">sizeof</span>(client_addr);
 
-		<span style="color: #00BB00; font-weight: bold">int</span> conn_sock <span style="color: #666666">=</span> accept(listen_sock, (<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr <span style="color: #666666">*</span>)<span style="color: #666666">&amp;</span>client_addr, <span style="color: #666666">&amp;</span>addr_len);
-		<span style="color: #AA22FF; font-weight: bold">if</span> (conn_sock <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>) {
-			perror(<span style="color: #BB4444">&quot;accept&quot;</span>);
-			<span style="color: #AA22FF; font-weight: bold">continue</span>;
+		<span style="color:#0b0;font-weight:bold">int</span> conn_sock <span style="color:#666">=</span> accept(listen_sock, (<span style="color:#a2f;font-weight:bold">struct</span> sockaddr <span style="color:#666">*</span>)<span style="color:#666">&amp;</span>client_addr, <span style="color:#666">&amp;</span>addr_len);
+		<span style="color:#a2f;font-weight:bold">if</span> (conn_sock <span style="color:#666">&lt;</span> <span style="color:#666">0</span>) {
+			perror(<span style="color:#b44">&#34;accept&#34;</span>);
+			<span style="color:#a2f;font-weight:bold">continue</span>;
 		}
 
-		printf(<span style="color: #BB4444">&quot;Connection received from %s:%d</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>,
+		printf(<span style="color:#b44">&#34;Connection received from %s:%d</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>,
 		       inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
-		<span style="color: #AA22FF; font-weight: bold">for</span> (;;) {
-			<span style="color: #00BB00; font-weight: bold">char</span> buffer[<span style="color: #666666">1024</span>];
-			<span style="color: #008800; font-style: italic">// Each recv() will read only one individual message.</span>
-			<span style="color: #008800; font-style: italic">// Datagrams, not a stream!</span>
-			<span style="color: #00BB00; font-weight: bold">int</span> ret <span style="color: #666666">=</span> recv(conn_sock, buffer, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(buffer), <span style="color: #666666">0</span>);
-			<span style="color: #AA22FF; font-weight: bold">if</span> (ret <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span>)
-				printf(<span style="color: #BB4444">&quot;Received: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>, buffer);
-			<span style="color: #AA22FF; font-weight: bold">else</span>
-				<span style="color: #AA22FF; font-weight: bold">break</span>;
+		<span style="color:#a2f;font-weight:bold">for</span> (;;) {
+			<span style="color:#0b0;font-weight:bold">char</span> buffer[<span style="color:#666">1024</span>];
+			<span style="color:#080;font-style:italic">// Each recv() will read only one individual message.
+</span><span style="color:#080;font-style:italic"></span>			<span style="color:#080;font-style:italic">// Datagrams, not a stream!
+</span><span style="color:#080;font-style:italic"></span>			<span style="color:#0b0;font-weight:bold">int</span> ret <span style="color:#666">=</span> recv(conn_sock, buffer, <span style="color:#a2f;font-weight:bold">sizeof</span>(buffer), <span style="color:#666">0</span>);
+			<span style="color:#a2f;font-weight:bold">if</span> (ret <span style="color:#666">&gt;</span> <span style="color:#666">0</span>)
+				printf(<span style="color:#b44">&#34;Received: %s</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>, buffer);
+			<span style="color:#a2f;font-weight:bold">else</span>
+				<span style="color:#a2f;font-weight:bold">break</span>;
 
 		}
 
 		close(conn_sock);
 	}
-}
-</pre></div>
-
+}</code></pre></div>
 <p><strong>client.c</strong></p>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdio.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdlib.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;string.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;unistd.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;sys/socket.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;netinet/in.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;arpa/inet.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;errno.h&gt;</span><span style="color: #008800"></span>
-
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&quot;dccp.h&quot;</span><span style="color: #008800"></span>
-
-<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">error_exit</span>(<span style="color: #AA22FF; font-weight: bold">const</span> <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">*</span>str)
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#080">#include</span> <span style="color:#080">&lt;stdio.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;stdlib.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;string.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;unistd.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;sys/socket.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;netinet/in.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;arpa/inet.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;errno.h&gt;</span><span style="color:#080">
+</span><span style="color:#080"></span>
+<span style="color:#080">#include</span> <span style="color:#080">&#34;dccp.h&#34;</span><span style="color:#080">
+</span><span style="color:#080"></span>
+<span style="color:#0b0;font-weight:bold">int</span> <span style="color:#00a000">error_exit</span>(<span style="color:#a2f;font-weight:bold">const</span> <span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">*</span>str)
 {
 	perror(str);
 	exit(errno);
 }
 
-<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">main</span>(<span style="color: #00BB00; font-weight: bold">int</span> argc, <span style="color: #00BB00; font-weight: bold">char</span> <span style="color: #666666">*</span>argv[])
+<span style="color:#0b0;font-weight:bold">int</span> <span style="color:#00a000">main</span>(<span style="color:#0b0;font-weight:bold">int</span> argc, <span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">*</span>argv[])
 {
-	<span style="color: #AA22FF; font-weight: bold">if</span> (argc <span style="color: #666666">&lt;</span> <span style="color: #666666">5</span>) {
-		printf(<span style="color: #BB4444">&quot;Usage: ./client &lt;server address&gt; &lt;port&gt; &lt;service code&gt; &lt;message 1&gt; [message 2] ... </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>);
-		exit(<span style="color: #666666">-1</span>);
+	<span style="color:#a2f;font-weight:bold">if</span> (argc <span style="color:#666">&lt;</span> <span style="color:#666">5</span>) {
+		printf(<span style="color:#b44">&#34;Usage: ./client &lt;server address&gt; &lt;port&gt; &lt;service code&gt; &lt;message 1&gt; [message 2] ... </span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>);
+		exit(<span style="color:#666">-</span><span style="color:#666">1</span>);
 	}
-	<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr_in server_addr <span style="color: #666666">=</span> {
-		.sin_family <span style="color: #666666">=</span> AF_INET,
-		.sin_port <span style="color: #666666">=</span> htons(atoi(argv[<span style="color: #666666">2</span>])),
+	<span style="color:#a2f;font-weight:bold">struct</span> sockaddr_in server_addr <span style="color:#666">=</span> {
+		.sin_family <span style="color:#666">=</span> AF_INET,
+		.sin_port <span style="color:#666">=</span> htons(atoi(argv[<span style="color:#666">2</span>])),
 	};
 
-	<span style="color: #AA22FF; font-weight: bold">if</span> (<span style="color: #666666">!</span>inet_pton(AF_INET, argv[<span style="color: #666666">1</span>], <span style="color: #666666">&amp;</span>server_addr.sin_addr.s_addr)) {
-		printf(<span style="color: #BB4444">&quot;Invalid address %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>, argv[<span style="color: #666666">1</span>]);
-		exit(<span style="color: #666666">-1</span>);
+	<span style="color:#a2f;font-weight:bold">if</span> (<span style="color:#666">!</span>inet_pton(AF_INET, argv[<span style="color:#666">1</span>], <span style="color:#666">&amp;</span>server_addr.sin_addr.s_addr)) {
+		printf(<span style="color:#b44">&#34;Invalid address %s</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>, argv[<span style="color:#666">1</span>]);
+		exit(<span style="color:#666">-</span><span style="color:#666">1</span>);
 	}
 
-	<span style="color: #00BB00; font-weight: bold">int</span> socket_fd <span style="color: #666666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
-	<span style="color: #AA22FF; font-weight: bold">if</span> (socket_fd <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
-		error_exit(<span style="color: #BB4444">&quot;socket&quot;</span>);
+	<span style="color:#0b0;font-weight:bold">int</span> socket_fd <span style="color:#666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
+	<span style="color:#a2f;font-weight:bold">if</span> (socket_fd <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+		error_exit(<span style="color:#b44">&#34;socket&#34;</span>);
 
-	<span style="color: #AA22FF; font-weight: bold">if</span> (setsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_SERVICE, <span style="color: #666666">&amp;</span>(<span style="color: #00BB00; font-weight: bold">int</span>) {htonl(atoi(argv[<span style="color: #666666">3</span>]))}, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(<span style="color: #00BB00; font-weight: bold">int</span>)))
-		error_exit(<span style="color: #BB4444">&quot;setsockopt(DCCP_SOCKOPT_SERVICE)&quot;</span>);
+	<span style="color:#a2f;font-weight:bold">if</span> (setsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_SERVICE, <span style="color:#666">&amp;</span>(<span style="color:#0b0;font-weight:bold">int</span>) {htonl(atoi(argv[<span style="color:#666">3</span>]))}, <span style="color:#a2f;font-weight:bold">sizeof</span>(<span style="color:#0b0;font-weight:bold">int</span>)))
+		error_exit(<span style="color:#b44">&#34;setsockopt(DCCP_SOCKOPT_SERVICE)&#34;</span>);
 
-	<span style="color: #AA22FF; font-weight: bold">if</span> (connect(socket_fd, (<span style="color: #AA22FF; font-weight: bold">struct</span> sockaddr <span style="color: #666666">*</span>) <span style="color: #666666">&amp;</span>server_addr, <span style="color: #AA22FF; font-weight: bold">sizeof</span>(server_addr)))
-		error_exit(<span style="color: #BB4444">&quot;connect&quot;</span>);
+	<span style="color:#a2f;font-weight:bold">if</span> (connect(socket_fd, (<span style="color:#a2f;font-weight:bold">struct</span> sockaddr <span style="color:#666">*</span>) <span style="color:#666">&amp;</span>server_addr, <span style="color:#a2f;font-weight:bold">sizeof</span>(server_addr)))
+		error_exit(<span style="color:#b44">&#34;connect&#34;</span>);
 
-	<span style="color: #008800; font-style: italic">// Get the maximum packet size</span>
-	<span style="color: #00BB00; font-weight: bold">uint32_t</span> mps;
-	<span style="color: #00BB00; font-weight: bold">socklen_t</span> res_len <span style="color: #666666">=</span> <span style="color: #AA22FF; font-weight: bold">sizeof</span>(mps);
-	<span style="color: #AA22FF; font-weight: bold">if</span> (getsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_GET_CUR_MPS, <span style="color: #666666">&amp;</span>mps, <span style="color: #666666">&amp;</span>res_len))
-		error_exit(<span style="color: #BB4444">&quot;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&quot;</span>);
-	printf(<span style="color: #BB4444">&quot;Maximum Packet Size: %d</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&quot;</span>, mps);
+	<span style="color:#080;font-style:italic">// Get the maximum packet size
+</span><span style="color:#080;font-style:italic"></span>	uint32_t mps;
+	socklen_t res_len <span style="color:#666">=</span> <span style="color:#a2f;font-weight:bold">sizeof</span>(mps);
+	<span style="color:#a2f;font-weight:bold">if</span> (getsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_GET_CUR_MPS, <span style="color:#666">&amp;</span>mps, <span style="color:#666">&amp;</span>res_len))
+		error_exit(<span style="color:#b44">&#34;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&#34;</span>);
+	printf(<span style="color:#b44">&#34;Maximum Packet Size: %d</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>, mps);
 
-	<span style="color: #AA22FF; font-weight: bold">for</span> (<span style="color: #00BB00; font-weight: bold">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">4</span>; i <span style="color: #666666">&lt;</span> argc; i<span style="color: #666666">++</span>) {
-		<span style="color: #AA22FF; font-weight: bold">if</span> (send(socket_fd, argv[i], strlen(argv[i]) <span style="color: #666666">+</span> <span style="color: #666666">1</span>, <span style="color: #666666">0</span>) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
-			error_exit(<span style="color: #BB4444">&quot;send&quot;</span>);
+	<span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> i <span style="color:#666">=</span> <span style="color:#666">4</span>; i <span style="color:#666">&lt;</span> argc; i<span style="color:#666">++</span>) {
+		<span style="color:#a2f;font-weight:bold">if</span> (send(socket_fd, argv[i], strlen(argv[i]) <span style="color:#666">+</span> <span style="color:#666">1</span>, <span style="color:#666">0</span>) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+			error_exit(<span style="color:#b44">&#34;send&#34;</span>);
 	}
 
-	<span style="color: #008800; font-style: italic">// Wait for a while to allow all the messages to be transmitted</span>
-	usleep(<span style="color: #666666">5</span> <span style="color: #666666">*</span> <span style="color: #666666">1000</span>);
+	<span style="color:#080;font-style:italic">// Wait for a while to allow all the messages to be transmitted
+</span><span style="color:#080;font-style:italic"></span>	usleep(<span style="color:#666">5</span> <span style="color:#666">*</span> <span style="color:#666">1000</span>);
 
 	close(socket_fd);
-	<span style="color: #AA22FF; font-weight: bold">return</span> <span style="color: #666666">0</span>;
-}
-</pre></div>
-
+	<span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">0</span>;
+}</code></pre></div>
 <p><strong>probe.c</strong></p>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;stdio.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;sys/socket.h&gt;</span><span style="color: #008800"></span>
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&lt;netinet/in.h&gt;</span><span style="color: #008800"></span>
-
-<span style="color: #008800">#include</span> <span style="color: #008800; font-style: italic">&quot;dccp.h&quot;</span><span style="color: #008800"></span>
-
-<span style="color: #00BB00; font-weight: bold">int</span> <span style="color: #00A000">main</span>()
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#080">#include</span> <span style="color:#080">&lt;stdio.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;sys/socket.h&gt;</span><span style="color:#080">
+</span><span style="color:#080">#include</span> <span style="color:#080">&lt;netinet/in.h&gt;</span><span style="color:#080">
+</span><span style="color:#080"></span>
+<span style="color:#080">#include</span> <span style="color:#080">&#34;dccp.h&#34;</span><span style="color:#080">
+</span><span style="color:#080"></span>
+<span style="color:#0b0;font-weight:bold">int</span> <span style="color:#00a000">main</span>()
 {
-	<span style="color: #00BB00; font-weight: bold">int</span> sock_fd <span style="color: #666666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
+	<span style="color:#0b0;font-weight:bold">int</span> sock_fd <span style="color:#666">=</span> socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
 
-	<span style="color: #008800; font-style: italic">// Check the congestion control schemes available</span>
-	<span style="color: #00BB00; font-weight: bold">socklen_t</span> res_len <span style="color: #666666">=</span> <span style="color: #666666">6</span>;
-	<span style="color: #00BB00; font-weight: bold">uint8_t</span> ccids[<span style="color: #666666">6</span>];
-	<span style="color: #AA22FF; font-weight: bold">if</span> (getsockopt(sock_fd, SOL_DCCP, DCCP_SOCKOPT_AVAILABLE_CCIDS, ccids, <span style="color: #666666">&amp;</span>res_len)) {
-		perror(<span style="color: #BB4444">&quot;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&quot;</span>);
-		<span style="color: #AA22FF; font-weight: bold">return</span> <span style="color: #666666">-1</span>;
+	<span style="color:#080;font-style:italic">// Check the congestion control schemes available
+</span><span style="color:#080;font-style:italic"></span>	socklen_t res_len <span style="color:#666">=</span> <span style="color:#666">6</span>;
+	uint8_t ccids[<span style="color:#666">6</span>];
+	<span style="color:#a2f;font-weight:bold">if</span> (getsockopt(sock_fd, SOL_DCCP, DCCP_SOCKOPT_AVAILABLE_CCIDS, ccids, <span style="color:#666">&amp;</span>res_len)) {
+		perror(<span style="color:#b44">&#34;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&#34;</span>);
+		<span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#666">1</span>;
 	}
 
-	printf(<span style="color: #BB4444">&quot;%d CCIDs available:&quot;</span>, res_len);
-	<span style="color: #AA22FF; font-weight: bold">for</span> (<span style="color: #00BB00; font-weight: bold">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> res_len; i<span style="color: #666666">++</span>)
-		printf(<span style="color: #BB4444">&quot; %d&quot;</span>, ccids[i]);
+	printf(<span style="color:#b44">&#34;%d CCIDs available:&#34;</span>, res_len);
+	<span style="color:#a2f;font-weight:bold">for</span> (<span style="color:#0b0;font-weight:bold">int</span> i <span style="color:#666">=</span> <span style="color:#666">0</span>; i <span style="color:#666">&lt;</span> res_len; i<span style="color:#666">++</span>)
+		printf(<span style="color:#b44">&#34; %d&#34;</span>, ccids[i]);
 
-	<span style="color: #AA22FF; font-weight: bold">return</span> res_len;
-}
-</pre></div>
-
+	<span style="color:#a2f;font-weight:bold">return</span> res_len;
+}</code></pre></div>
 <p><strong>dccp.h</strong></p>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span></span><span style="color: #008800; font-style: italic">/* This file only contains constants necessary for user space to call</span>
-<span style="color: #008800; font-style: italic"> * into the kernel and thus, contains no copyrightable information. */</span>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#080;font-style:italic">/* This file only contains constants necessary for user space to call
+</span><span style="color:#080;font-style:italic"> * into the kernel and thus, contains no copyrightable information. */</span>
 
-<span style="color: #008800">#ifndef DCCP_DCCP_H</span>
-<span style="color: #008800">#define DCCP_DCCP_H</span>
-
-<span style="color: #008800; font-style: italic">// From the kernel&#39;s include/linux/socket.h</span>
-<span style="color: #008800">#define SOL_DCCP                        269</span>
-
-<span style="color: #008800; font-style: italic">// From kernel&#39;s include/uapi/linux/dccp.h</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_SERVICE            2</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_CHANGE_L           3</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_CHANGE_R           4</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_GET_CUR_MPS        5</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_SERVER_TIMEWAIT    6</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_SEND_CSCOV         10</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_RECV_CSCOV         11</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_AVAILABLE_CCIDS    12</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_CCID               13</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_TX_CCID            14</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_RX_CCID            15</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_QPOLICY_ID         16</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_QPOLICY_TXQLEN     17</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_CCID_RX_INFO       128</span>
-<span style="color: #008800">#define DCCP_SOCKOPT_CCID_TX_INFO       192</span>
-
-<span style="color: #008800">#endif </span><span style="color: #008800; font-style: italic">//DCCP_DCCP_H</span>
-</pre></div>
-
+<span style="color:#080">#ifndef DCCP_DCCP_H
+</span><span style="color:#080">#define DCCP_DCCP_H
+</span><span style="color:#080"></span>
+<span style="color:#080;font-style:italic">// From the kernel&#39;s include/linux/socket.h
+</span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define SOL_DCCP                        269
+</span><span style="color:#080"></span>
+<span style="color:#080;font-style:italic">// From kernel&#39;s include/uapi/linux/dccp.h
+</span><span style="color:#080;font-style:italic"></span><span style="color:#080">#define DCCP_SOCKOPT_SERVICE            2
+</span><span style="color:#080">#define DCCP_SOCKOPT_CHANGE_L           3
+</span><span style="color:#080">#define DCCP_SOCKOPT_CHANGE_R           4
+</span><span style="color:#080">#define DCCP_SOCKOPT_GET_CUR_MPS        5
+</span><span style="color:#080">#define DCCP_SOCKOPT_SERVER_TIMEWAIT    6
+</span><span style="color:#080">#define DCCP_SOCKOPT_SEND_CSCOV         10
+</span><span style="color:#080">#define DCCP_SOCKOPT_RECV_CSCOV         11
+</span><span style="color:#080">#define DCCP_SOCKOPT_AVAILABLE_CCIDS    12
+</span><span style="color:#080">#define DCCP_SOCKOPT_CCID               13
+</span><span style="color:#080">#define DCCP_SOCKOPT_TX_CCID            14
+</span><span style="color:#080">#define DCCP_SOCKOPT_RX_CCID            15
+</span><span style="color:#080">#define DCCP_SOCKOPT_QPOLICY_ID         16
+</span><span style="color:#080">#define DCCP_SOCKOPT_QPOLICY_TXQLEN     17
+</span><span style="color:#080">#define DCCP_SOCKOPT_CCID_RX_INFO       128
+</span><span style="color:#080">#define DCCP_SOCKOPT_CCID_TX_INFO       192
+</span><span style="color:#080"></span>
+<span style="color:#080">#endif //DCCP_DCCP_H</span></code></pre></div>
 <h2 id="caveats-and-conclusion">Caveats and Conclusion</h2>
 
 <p>DCCP is not mainstream. It is not widely deployed or even supported. Documentation is sparse. Although Linux DCCP NAT is functional, many intermediate boxes will probably just drop DCCP traffic. DCCP is the Fixed-gear bicycle of Layer 4, it is the ultimate hipster transport.</p>
