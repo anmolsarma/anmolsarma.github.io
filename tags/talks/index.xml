@@ -3,14 +3,11 @@
   <channel>
     <title>Talks on Anmol Sarma</title>
     <link>https://www.anmolsarma.in/tags/talks/</link>
-    <description>Recent content in Talks on Anmol Sarma</description>
-    <generator>Hugo -- gohugo.io</generator>
+    
     <language>en-in</language>
-    <copyright>Except where noted otherwise, content licensed under a &lt;a href=&#39;https://creativecommons.org/licenses/by/4.0/&#39;&gt;Creative Commons Attribution 4.0 International License&lt;/a&gt;.</copyright>
-    <lastBuildDate>Sat, 14 Oct 2017 11:56:27 +0530</lastBuildDate>
     
-	<atom:link href="https://www.anmolsarma.in/tags/talks/index.xml" rel="self" type="application/rss+xml" />
     
+    <atom:link href="https://www.anmolsarma.in/tags/talks/" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Talk @ RFC&#39;s We Love: CoAPing with the Internet of Things</title>
@@ -18,8 +15,10 @@
       <pubDate>Sat, 14 Oct 2017 11:56:27 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/coap-talk/</guid>
-      <description>Gave an introductory talk on CoAP at the 5th RFC&amp;rsquo;s We Love meetup. Turnout was low, probably owing to the rains and the festive season. It was still fun and had great discussions.
- </description>
+      <description>&lt;p&gt;Gave an introductory talk on CoAP at the 5th RFC&amp;rsquo;s We Love meetup. Turnout was low, probably owing to the rains and the festive season. It was still fun and had great discussions.&lt;/p&gt;
+
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;652da89359ea40bab194a5607f4bed2b&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+</description>
     </item>
     
     <item>
@@ -28,8 +27,10 @@
       <pubDate>Mon, 27 May 2013 06:30:00 +0000</pubDate>
       
       <guid>https://www.anmolsarma.in/post/talk-emware/</guid>
-      <description>Gave an introductory talk on Linux, basically a rehash of the talk I gave at KLU a couple of years ago.
- </description>
+      <description>&lt;p&gt;Gave an introductory talk on Linux, basically a rehash of the &lt;a href=&#34;http://www.anmolsarma.in/talk-klu/&#34;&gt;talk I gave at KLU&lt;/a&gt; a couple of years ago.&lt;/p&gt;
+
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;cfa24e0065b4491d8c06a71a514df295&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+</description>
     </item>
     
     <item>
@@ -38,9 +39,12 @@
       <pubDate>Fri, 17 May 2013 06:30:00 +0000</pubDate>
       
       <guid>https://www.anmolsarma.in/post/talk-emware-getting-started-with-git/</guid>
-      <description>Gave an introductory interactive tutorial on using Git. I couldn&amp;rsquo;t finish the slides on time but managed cover everything on the agenda.
-Now that the talk is done, I&amp;rsquo;m don&amp;rsquo;t feel especially inclined to complete the slides.
- </description>
+      <description>&lt;p&gt;Gave an introductory interactive tutorial on using Git. I couldn&amp;rsquo;t finish the slides on time but managed cover everything on the agenda.&lt;/p&gt;
+
+&lt;p&gt;Now that the talk is done, I&amp;rsquo;m don&amp;rsquo;t feel especially inclined to complete the slides.&lt;/p&gt;
+
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;0ed1c9358c2e4f42b4380758771770fc&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+</description>
     </item>
     
     <item>
@@ -49,9 +53,16 @@ Now that the talk is done, I&amp;rsquo;m don&amp;rsquo;t feel especially incline
       <pubDate>Mon, 17 Oct 2011 21:20:38 +0000</pubDate>
       
       <guid>https://www.anmolsarma.in/post/talk-klu/</guid>
-      <description>Gave an introductory talk on Linux at Koneru Lakshmiah University, with Vamsifollowing up with a talk on Bugs and Hacks as a part of the ‘workshop’ organised by the KLU Linux Users Group. With about 150 newbish students in attendance, it was fun albeit in a masochistic kind of a way.
-Here’s a shitty picture from the talk, courtesy of Vamsi:
-And here are the sildes: Edit: I lost the slides.</description>
+      <description>&lt;p&gt;Gave an introductory talk on Linux at &lt;a href=&#34;http://www.kluniversity.in/&#34;&gt;Koneru Lakshmiah University&lt;/a&gt;, with &lt;a href=&#34;http://www.elitenewb.wordpress.com/&#34;&gt;Vamsi&lt;/a&gt;following up with a talk on Bugs and Hacks as a part of the ‘workshop’ organised by the KLU Linux Users Group. With about 150 newbish students in attendance, it was fun albeit in a masochistic kind of a way.&lt;/p&gt;
+
+&lt;p&gt;Here’s a shitty picture from the talk, courtesy of Vamsi:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/KLU-Linux-1.jpg&#34; alt=&#34;KLU Linux&#34; /&gt;
+And here are the sildes:
+&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/Linux-Say-whaat--2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Edit: I lost the slides. Only this sad screenshot remains :(&lt;/p&gt;
+</description>
     </item>
     
   </channel>

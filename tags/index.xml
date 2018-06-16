@@ -3,14 +3,11 @@
   <channel>
     <title>Tags on Anmol Sarma</title>
     <link>https://www.anmolsarma.in/tags/</link>
-    <description>Recent content in Tags on Anmol Sarma</description>
-    <generator>Hugo -- gohugo.io</generator>
+    
     <language>en-in</language>
-    <copyright>Except where noted otherwise, content licensed under a &lt;a href=&#39;https://creativecommons.org/licenses/by/4.0/&#39;&gt;Creative Commons Attribution 4.0 International License&lt;/a&gt;.</copyright>
-    <lastBuildDate>Sun, 03 Jan 2016 21:36:15 +0530</lastBuildDate>
     
-	<atom:link href="https://www.anmolsarma.in/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    <atom:link href="https://www.anmolsarma.in/tags/" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Books</title>
