@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Single-stepping through the Kernel</title>
+    
+    
+    <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+    
+    <meta name="generator" content="Hugo 0.40.3" />
+</head>
+<body>
+<header>
+    <b>
+        <a href="https://www.anmolsarma.in/">Anmol Sarma</a>
+    </b>
+<nav>
+    
+    <a href="/about">About</a> |
+    
+    <a href="/">Blog</a> |
+    
+    <a href="/renders">Renders</a> |
+    
+    <a href="/tags/talks/">Talks</a> |
+    
+    <a href="/index.xml">RSS</a>
+    </nav>
+</header>
+<hr/>
+
+<main>
+	<article>
+		<h1>Single-stepping through the Kernel</h1>
+		
+			<span id="pubdate"> Feb 3, 2019</span>
+			
+			<a href="/tags/tech">tech</a>
+			
+			<a href="/tags/linux">linux</a>
+			
+			<a href="/tags/kernel">kernel</a>
+			
+		
+        
+
+<p>There may come a time in a system programmer&rsquo;s life when she needs to leave the civilized safety of the userland and confront the unspeakable horrors that dwell in the depths of the Kernel space. While <a href="https://lkml.org/lkml/2000/9/6/65">higher beings might pour scorn</a> on the very idea of a Kernel debugger, us lesser mortals may have no other recourse but to single-step through Kernel code when the rivers begin to run dry. This guide will help you do just that. We hope you never actually have to.</p>
+
+<p>Ominous sounding intro-bait notwithstanding, setting up a virtual machine for Kernel debugging isn&rsquo;t really that difficult.  It only needs a bit of preparation. If you just want a copypasta, <a href="#copypasta">skip to the end</a>. If you&rsquo;re interested in the predicaments involved and how to deal with them, read on.</p>
+
+<p><strong>N.B.:</strong> &ldquo;But which kernel are you talking about?&rdquo;, some heathens may invariably ask when it is obvious that Kernel with a capital K refers to the <a href="https://www.kernel.org/">One True Kernel</a>.</p>
+
+<h3 id="building-the-kernel">Building the Kernel</h3>
+
+<p>Using a minimal Kernel configuration instead of the kitchen-sink one that distributions usually ship will make life a lot easier. You will first need to grab the source code for the Kernel you are interested in. We will use the latest Kernel release tarball from <a href="https://www.kernel.org/">kernel.org</a>, which at the time of writing is <a href="https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.6.tar.xz">4.20.6</a>. Inside the extracted source directory, invoke the following:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make defconfig
+make kvmconfig
+make -j4  </code></pre></div>
+<p>This will build a minimal Kernel image that can be booted in QEMU like so:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -kernel linux-4.20.6/arch/x86/boot/bzImage</code></pre></div>
+<p>This should bring up an ancient-looking window with a cryptic error message:</p>
+
+<p><img src="/images/kernel_panic.png" alt="" /></p>
+
+<p>You could try pasting the error message into <del>Google</del> a search engine: Except for the fact that you can&rsquo;t select the text in the window. And frankly, the window just looks annoying! So, ignoring the actual error for a moment, let&rsquo;s try to get QEMU to print to the console instead of a spawning a new graphical window:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -kernel -nographic linux-4.20.6/arch/x86/boot/bzImage</code></pre></div>
+<p>QEMU spits out a single line:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64: warning: TCG doesn<span style="">&#39;</span>t support requested feature: CPUID.01H:ECX.vmx <span style="color:#666">[</span>bit <span style="color:#666">5</span><span style="color:#666">]</span></code></pre></div>
+<p><a href="https://hisham.hm/htop/">Htop</a> tells me QEMU is using 100% of a CPU and my laptop fan agrees. But there is no output whatsoever and <code>Ctrl-c</code> doesn&rsquo;t work! What <a href="https://superuser.com/a/1211516">does work</a>, however, is pressing <code>Ctrl-a</code> and then hitting <code>x</code>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">QEMU: Terminated</code></pre></div>
+<p>Turns out that by passing <code>-nographic</code>, we have plugged out QEMU&rsquo;s <em>virtual</em> monitor. Now, to actually see any output, we need to tell the Kernel to write to a <a href="https://www.kernel.org/doc/html/v4.20/admin-guide/serial-console.html">serial port</a>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -append <span style="color:#b44">&#34;console=ttyS0&#34;</span></code></pre></div>
+<p>It worked! Now we can read error message in all its glory:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#666">[</span>    <span style="color:#666">1</span>.333008<span style="color:#666">]</span> VFS: Cannot open root device <span style="color:#b44">&#34;(null)&#34;</span> or unknown-block<span style="color:#666">(</span><span style="color:#666">0</span>,0<span style="color:#666">)</span>: error -6
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.334024<span style="color:#666">]</span> Please append a correct <span style="color:#b44">&#34;root=&#34;</span> boot option; here are the available partitions:
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.335152<span style="color:#666">]</span> 0b00         <span style="color:#666">1048575</span> sr0 
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.335153<span style="color:#666">]</span>  driver: sr
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.335996<span style="color:#666">]</span> Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block<span style="color:#666">(</span><span style="color:#666">0</span>,0<span style="color:#666">)</span>
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.337104<span style="color:#666">]</span> CPU: <span style="color:#666">0</span> PID: <span style="color:#666">1</span> Comm: swapper/0 Not tainted <span style="color:#666">4</span>.20.6 <span style="color:#080;font-style:italic">#1
+</span><span style="color:#080;font-style:italic"></span><span style="color:#666">[</span>    <span style="color:#666">1</span>.337901<span style="color:#666">]</span> Hardware name: QEMU Standard PC <span style="color:#666">(</span>i440FX + PIIX, <span style="color:#666">1996</span><span style="color:#666">)</span>, BIOS <span style="color:#666">1</span>.10.2-1ubuntu1 <span style="color:#666">04</span>/01/2014
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.339091<span style="color:#666">]</span> Call Trace:
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.339437<span style="color:#666">]</span>  dump_stack+0x46/0x5b
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.339888<span style="color:#666">]</span>  panic+0xf3/0x248
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.340295<span style="color:#666">]</span>  mount_block_root+0x184/0x248
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.340838<span style="color:#666">]</span>  ? set_debug_rodata+0xc/0xc
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.341357<span style="color:#666">]</span>  mount_root+0x121/0x13f
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.341837<span style="color:#666">]</span>  prepare_namespace+0x130/0x166
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.342378<span style="color:#666">]</span>  kernel_init_freeable+0x1ed/0x1ff
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.342965<span style="color:#666">]</span>  ? rest_init+0xb0/0xb0
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.343427<span style="color:#666">]</span>  kernel_init+0x5/0x100
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.343888<span style="color:#666">]</span>  ret_from_fork+0x35/0x40
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.344526<span style="color:#666">]</span> Kernel Offset: 0x1200000 from 0xffffffff81000000 <span style="color:#666">(</span>relocation range: 0xffffffff80000000-0xffffffffbfffffff<span style="color:#666">)</span>
+<span style="color:#666">[</span>    <span style="color:#666">1</span>.345956<span style="color:#666">]</span> ---<span style="color:#666">[</span> end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block<span style="color:#666">(</span><span style="color:#666">0</span>,0<span style="color:#666">)</span> <span style="color:#666">]</span>---</code></pre></div>
+<p>So, the Kernel didn&rsquo;t find a root filesystem to kick off the user mode and panicked. Lets fix that by creating a root filesystem image.</p>
+
+<h3 id="creating-a-root-filesystem">Creating a Root Filesystem</h3>
+
+<p>Start by creating an empty image:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-img create rootfs.img 1G</code></pre></div>
+<p>And then format it as <a href="https://en.wikipedia.org/wiki/Ext4"><code>ext4</code></a> and mount it:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkfs.ext4 rootfs.img
+mkdir mnt
+sudo mount -o loop rootfs.img mnt/</code></pre></div>
+<p>Now we can populate it using <a href="https://wiki.debian.org/Debootstrap"><code>debootstrap</code></a>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo debootstrap bionic mnt/</code></pre></div>
+<p>This will create a root filesystem based on Ubuntu 18.04 Bionic Beaver. Of course, feel free to replace <code>bionic</code> with any release that you prefer.</p>
+
+<p>And unmount the filesystem once we&rsquo;re done. <strong>This is important if you want to avoid corrupted images!</strong></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo umount mnt</code></pre></div>
+<p>Now boot the Kernel with our filesystem. We need to tell QEMU to use our image as a virtual hard drive and we also need to tell the Kernel to use the hard drive as the root filesystem:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append <span style="color:#b44">&#34;root=/dev/sda console=ttyS0&#34;</span> </code></pre></div>
+<p>This time the Kernel shouldn&rsquo;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&rsquo;s annoying to have to login each time we boot up the VM. Let&rsquo;s enable auto login as root instead.</p>
+
+<p>Terminate QEMU (<code>Ctrl-c</code>, <code>x</code>), mount the filesystem image again and then create the configuration folder structure:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mount -o loop rootfs.img mnt/
+sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d</code></pre></div>
+<p>Add the following lines to <code>mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf</code>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#666">[</span>Service<span style="color:#666">]</span>
+<span style="color:#b8860b">ExecStart</span><span style="color:#666">=</span>
+<span style="color:#b8860b">ExecStart</span><span style="color:#666">=</span>-/sbin/agetty --noissue --autologin root %I <span style="color:#b8860b">$TERM</span>
+<span style="color:#b8860b">Type</span><span style="color:#666">=</span>idle</code></pre></div>
+<p>Make sure to unmount the filesystem and then boot the Kernel again. This time you should be automatically logged in.</p>
+
+<p>Gracefully shutdown the VM:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">halt -p</code></pre></div>
+<h3 id="attaching-a-debugger">Attaching a debugger</h3>
+
+<p>Let&rsquo;s rebuild the Kernel with debugging symbols enabled:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./scripts/config -e CONFIG_DEBUG_INFO
+make -j4</code></pre></div>
+<p>Now, boot the Kernel again, this time passing the <code>-s</code> flag which will make QEMU listen on TCP port 1234:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append <span style="color:#b44">&#34;root=/dev/sda console=ttyS0&#34;</span> -s</code></pre></div>
+<p>Now, in another terminal start gdb and attach to QEMU:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gdb ./linux-4.20.6/vmlinux 
+...
+Reading symbols from ./linux-4.20.6/vmlinux...done.
+<span style="color:#666">(</span>gdb<span style="color:#666">)</span> target remote :1234
+Remote debugging using :1234
+0xffffffff95a2f8f4 in ?? <span style="color:#666">()</span>
+<span style="color:#666">(</span>gdb<span style="color:#666">)</span></code></pre></div>
+<p>You can set a breakpoint on Kernel function, for instance <code>do_sys_open()</code>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#666">(</span>gdb<span style="color:#666">)</span> b do_sys_open 
+Breakpoint <span style="color:#666">1</span> at 0xffffffff811b2720: file fs/open.c, line <span style="color:#666">1049</span>.
+<span style="color:#666">(</span>gdb<span style="color:#666">)</span> c
+Continuing.</code></pre></div>
+<p>Now try opening a file in VM which should result in <code>do_sys_open()</code> getting invoked&hellip; And nothing happens?! The breakpoint in gdb is not hit. This due to a Kernel security feature called <a href="https://lwn.net/Articles/569635/">KASLR</a>. KASLR can be disabled at boot time by adding <code>nokaslr</code> to the Kernel command line arguments. But, let&rsquo;s actually rebuild the Kernel without KASLR. While we are at it, let&rsquo;s also disable loadable module support as well which will save us the trouble of copying the modules to the filesystem.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./scripts/config -e CONFIG_DEBUG_INFO -d CONFIG_RANDOMIZE_BASE -d CONFIG_MODULES
+make olddefconfig <span style="color:#080;font-style:italic"># Resolve dependencies
+</span><span style="color:#080;font-style:italic"></span>make -j4</code></pre></div>
+<p>Reboot the Kernel again, attach gdb, set a breakpoint on <code>do_sys_open()</code> and run <code>cat /etc/issue</code> in the guest. This time the breakpoint should be hit. But probably not where you expected:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Breakpoint <span style="color:#666">1</span>, do_sys_open <span style="color:#666">(</span><span style="color:#b8860b">dfd</span><span style="color:#666">=</span>-100, <span style="color:#b8860b">filename</span><span style="color:#666">=</span>0x7f96074ad428 <span style="color:#b44">&#34;/etc/ld.so.cache&#34;</span>, <span style="color:#b8860b">flags</span><span style="color:#666">=</span><span style="color:#666">557056</span>, <span style="color:#b8860b">mode</span><span style="color:#666">=</span><span style="color:#666">0</span><span style="color:#666">)</span> at fs/open.c:1049
+<span style="color:#666">1049</span>    <span style="color:#666">{</span>
+<span style="color:#666">(</span>gdb<span style="color:#666">)</span> c
+Continuing.
+
+Breakpoint <span style="color:#666">1</span>, do_sys_open <span style="color:#666">(</span><span style="color:#b8860b">dfd</span><span style="color:#666">=</span>-100, <span style="color:#b8860b">filename</span><span style="color:#666">=</span>0x7f96076b5dd0 <span style="color:#b44">&#34;/lib/x86_64-linux-gnu/libc.so.6&#34;</span>, <span style="color:#b8860b">flags</span><span style="color:#666">=</span><span style="color:#666">557056</span>, <span style="color:#b8860b">mode</span><span style="color:#666">=</span><span style="color:#666">0</span><span style="color:#666">)</span> at fs/open.c:1049
+<span style="color:#666">1049</span>    <span style="color:#666">{</span>
+<span style="color:#666">(</span>gdb<span style="color:#666">)</span> c
+Continuing.
+
+Breakpoint <span style="color:#666">1</span>, do_sys_open <span style="color:#666">(</span><span style="color:#b8860b">dfd</span><span style="color:#666">=</span>-100, <span style="color:#b8860b">filename</span><span style="color:#666">=</span>0x7ffe9e630e8e <span style="color:#b44">&#34;/etc/issue&#34;</span>, <span style="color:#b8860b">flags</span><span style="color:#666">=</span><span style="color:#666">32768</span>, <span style="color:#b8860b">mode</span><span style="color:#666">=</span><span style="color:#666">0</span><span style="color:#666">)</span> at fs/open.c:1049
+<span style="color:#666">1049</span>    <span style="color:#666">{</span>
+<span style="color:#666">(</span>gdb<span style="color:#666">)</span></code></pre></div>
+<p>Congratulations! From this point, you can single-step away to your heart&rsquo;s content.</p>
+
+<p>By default, the root filesystem is mounted read only. If you want to be able to write to it, add <code>rw</code> after <code>root=/dev/sda</code> in the Kernel parameters:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append <span style="color:#b44">&#34;root=/dev/sda rw console=ttyS0&#34;</span> -s</code></pre></div>
+<h3 id="bonus-networking">Bonus: Networking</h3>
+
+<p>You can create a point to point link between the QEMU VM and the host using a <a href="https://en.wikipedia.org/wiki/TUN/TAP">TAP interface</a>.</p>
+
+<p>First install <code>tunctl</code> and create a persistent TAP interface to avoid running QEMU as root:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt install uml-utilities
+sudo sudo tunctl -u <span style="color:#a2f;font-weight:bold">$(</span>id -u<span style="color:#a2f;font-weight:bold">)</span>
+Set <span style="color:#b44">&#39;tap0&#39;</span> persistent and owned by uid <span style="color:#666">1000</span>
+sudo ip link <span style="color:#a2f">set</span> tap0 up</code></pre></div>
+<p>Now launch QEMU with a virtual <code>e1000</code> virtual interface connected the host&rsquo;s tap0 interface:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -nographic -device e1000,netdev<span style="color:#666">=</span>net0 -netdev tap,id<span style="color:#666">=</span>net0,ifname<span style="color:#666">=</span>tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append <span style="color:#b44">&#34;root=/dev/sda rw console=ttyS0&#34;</span> -s</code></pre></div>
+<p>Once the guest boots up, bring the network interface up:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip link <span style="color:#a2f">set</span> enp0s3 up
+ip a
+<span style="color:#666">1</span>: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#666">65536</span> qdisc noqueue state UNKNOWN group default qlen <span style="color:#666">1000</span>
+    link/loopback <span style="color:#666">00</span>:00:00:00:00:00 brd <span style="color:#666">00</span>:00:00:00:00:00
+    inet <span style="color:#666">127</span>.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+<span style="color:#666">2</span>: enp0s3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#666">1500</span> qdisc pfifo_fast state UP group default qlen <span style="color:#666">1000</span>
+    link/ether <span style="color:#666">52</span>:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::5054:ff:fe12:3456/64 scope link 
+       valid_lft forever preferred_lft forever</code></pre></div>
+<p>QEMU and the host can now communicate using their IPv6 Link-local addresses. After all, it is 2019.</p>
+
+<h3 id="copypasta">Copypasta</h3>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#080;font-style:italic"># Building a minimal debuggable Kernel
+</span><span style="color:#080;font-style:italic"></span>make defconfig
+make kvmconfig
+./scripts/config -e CONFIG_DEBUG_INFO -d CONFIG_RANDOMIZE_BASE -d CONFIG_MODULES
+make olddefconfig
+make -j4
+
+
+<span style="color:#080;font-style:italic"># Create root filesystem
+</span><span style="color:#080;font-style:italic"></span>qemu-img create rootfs.img 1G
+mkfs.ext4 rootfs.img
+mkdir mnt
+sudo mount -o loop rootfs.img mnt/
+sudo debootstrap bionic mnt/
+
+<span style="color:#080;font-style:italic"># Add following lines to mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf
+</span><span style="color:#080;font-style:italic"># START
+</span><span style="color:#080;font-style:italic"></span><span style="color:#666">[</span>Service<span style="color:#666">]</span>
+<span style="color:#b8860b">ExecStart</span><span style="color:#666">=</span>
+<span style="color:#b8860b">ExecStart</span><span style="color:#666">=</span>-/sbin/agetty --noissue --autologin root %I <span style="color:#b8860b">$TERM</span>
+<span style="color:#b8860b">Type</span><span style="color:#666">=</span>idle
+<span style="color:#080;font-style:italic"># END
+</span><span style="color:#080;font-style:italic"></span>
+<span style="color:#080;font-style:italic"># Unmount the filesystem
+</span><span style="color:#080;font-style:italic"></span>sudo umount mnt
+
+<span style="color:#080;font-style:italic"># Boot Kernel with root file system in QEMU
+</span><span style="color:#080;font-style:italic"></span>qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append <span style="color:#b44">&#34;root=/dev/sda rw console=ttyS0&#34;</span> -s
+
+<span style="color:#080;font-style:italic"># Attach gdb
+</span><span style="color:#080;font-style:italic"></span>gdb ./linux-4.20.6/vmlinux 
+<span style="color:#666">(</span>gdb<span style="color:#666">)</span> target remote :1234</code></pre></div>
+		
+			<div>
+				<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+function load_disqus() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'anmolsarma';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}
+</script>
+
+<a href="#" onclick="load_disqus();return false;">Show Comments</a>
+
+<noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
+
+			</div>
+		
+    </article>
+</main>
+<hr/>
+<footer>
+    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content licensed under a <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>.</p>
+</footer>
+
+

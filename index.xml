@@ -10,6 +10,196 @@
     <atom:link href="https://www.anmolsarma.in/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Single-stepping through the Kernel</title>
+      <link>https://www.anmolsarma.in/post/single-step-kernel/</link>
+      <pubDate>Sun, 03 Feb 2019 18:57:45 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/single-step-kernel/</guid>
+      <description>
+
+&lt;p&gt;There may come a time in a system programmer&amp;rsquo;s life when she needs to leave the civilized safety of the userland and confront the unspeakable horrors that dwell in the depths of the Kernel space. While &lt;a href=&#34;https://lkml.org/lkml/2000/9/6/65&#34;&gt;higher beings might pour scorn&lt;/a&gt; on the very idea of a Kernel debugger, us lesser mortals may have no other recourse but to single-step through Kernel code when the rivers begin to run dry. This guide will help you do just that. We hope you never actually have to.&lt;/p&gt;
+
+&lt;p&gt;Ominous sounding intro-bait notwithstanding, setting up a virtual machine for Kernel debugging isn&amp;rsquo;t really that difficult.  It only needs a bit of preparation. If you just want a copypasta, &lt;a href=&#34;#copypasta&#34;&gt;skip to the end&lt;/a&gt;. If you&amp;rsquo;re interested in the predicaments involved and how to deal with them, read on.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;N.B.:&lt;/strong&gt; &amp;ldquo;But which kernel are you talking about?&amp;rdquo;, some heathens may invariably ask when it is obvious that Kernel with a capital K refers to the &lt;a href=&#34;https://www.kernel.org/&#34;&gt;One True Kernel&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;building-the-kernel&#34;&gt;Building the Kernel&lt;/h3&gt;
+
+&lt;p&gt;Using a minimal Kernel configuration instead of the kitchen-sink one that distributions usually ship will make life a lot easier. You will first need to grab the source code for the Kernel you are interested in. We will use the latest Kernel release tarball from &lt;a href=&#34;https://www.kernel.org/&#34;&gt;kernel.org&lt;/a&gt;, which at the time of writing is &lt;a href=&#34;https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.6.tar.xz&#34;&gt;4.20.6&lt;/a&gt;. Inside the extracted source directory, invoke the following:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;make defconfig
+make kvmconfig
+make -j4  &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This will build a minimal Kernel image that can be booted in QEMU like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel linux-4.20.6/arch/x86/boot/bzImage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This should bring up an ancient-looking window with a cryptic error message:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/kernel_panic.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You could try pasting the error message into &lt;del&gt;Google&lt;/del&gt; a search engine: Except for the fact that you can&amp;rsquo;t select the text in the window. And frankly, the window just looks annoying! So, ignoring the actual error for a moment, let&amp;rsquo;s try to get QEMU to print to the console instead of a spawning a new graphical window:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel -nographic linux-4.20.6/arch/x86/boot/bzImage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;QEMU spits out a single line:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64: warning: TCG doesn&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;t support requested feature: CPUID.01H:ECX.vmx &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;bit &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;a href=&#34;https://hisham.hm/htop/&#34;&gt;Htop&lt;/a&gt; tells me QEMU is using 100% of a CPU and my laptop fan agrees. But there is no output whatsoever and &lt;code&gt;Ctrl-c&lt;/code&gt; doesn&amp;rsquo;t work! What &lt;a href=&#34;https://superuser.com/a/1211516&#34;&gt;does work&lt;/a&gt;, however, is pressing &lt;code&gt;Ctrl-a&lt;/code&gt; and then hitting &lt;code&gt;x&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;QEMU: Terminated&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Turns out that by passing &lt;code&gt;-nographic&lt;/code&gt;, we have plugged out QEMU&amp;rsquo;s &lt;em&gt;virtual&lt;/em&gt; monitor. Now, to actually see any output, we need to tell the Kernel to write to a &lt;a href=&#34;https://www.kernel.org/doc/html/v4.20/admin-guide/serial-console.html&#34;&gt;serial port&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;console=ttyS0&amp;#34;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It worked! Now we can read error message in all its glory:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.333008&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; VFS: Cannot open root device &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;(null)&amp;#34;&lt;/span&gt; or unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;: error -6
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.334024&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Please append a correct &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=&amp;#34;&lt;/span&gt; boot option; here are the available partitions:
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.335152&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; 0b00         &lt;span style=&#34;color:#666&#34;&gt;1048575&lt;/span&gt; sr0 
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.335153&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  driver: sr
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.335996&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.337104&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; CPU: &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt; PID: &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; Comm: swapper/0 Not tainted &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;.20.6 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#1
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.337901&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Hardware name: QEMU Standard PC &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;i440FX + PIIX, &lt;span style=&#34;color:#666&#34;&gt;1996&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;, BIOS &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.10.2-1ubuntu1 &lt;span style=&#34;color:#666&#34;&gt;04&lt;/span&gt;/01/2014
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.339091&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Call Trace:
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.339437&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  dump_stack+0x46/0x5b
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.339888&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  panic+0xf3/0x248
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.340295&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  mount_block_root+0x184/0x248
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.340838&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ? set_debug_rodata+0xc/0xc
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.341357&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  mount_root+0x121/0x13f
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.341837&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  prepare_namespace+0x130/0x166
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.342378&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  kernel_init_freeable+0x1ed/0x1ff
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.342965&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ? rest_init+0xb0/0xb0
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.343427&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  kernel_init+0x5/0x100
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.343888&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ret_from_fork+0x35/0x40
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.344526&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Kernel Offset: 0x1200000 from 0xffffffff81000000 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;relocation range: 0xffffffff80000000-0xffffffffbfffffff&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.345956&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; ---&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt; end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;---&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So, the Kernel didn&amp;rsquo;t find a root filesystem to kick off the user mode and panicked. Lets fix that by creating a root filesystem image.&lt;/p&gt;
+
+&lt;h3 id=&#34;creating-a-root-filesystem&#34;&gt;Creating a Root Filesystem&lt;/h3&gt;
+
+&lt;p&gt;Start by creating an empty image:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-img create rootfs.img 1G&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And then format it as &lt;a href=&#34;https://en.wikipedia.org/wiki/Ext4&#34;&gt;&lt;code&gt;ext4&lt;/code&gt;&lt;/a&gt; and mount it:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;mkfs.ext4 rootfs.img
+mkdir mnt
+sudo mount -o loop rootfs.img mnt/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now we can populate it using &lt;a href=&#34;https://wiki.debian.org/Debootstrap&#34;&gt;&lt;code&gt;debootstrap&lt;/code&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo debootstrap bionic mnt/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This will create a root filesystem based on Ubuntu 18.04 Bionic Beaver. Of course, feel free to replace &lt;code&gt;bionic&lt;/code&gt; with any release that you prefer.&lt;/p&gt;
+
+&lt;p&gt;And unmount the filesystem once we&amp;rsquo;re done. &lt;strong&gt;This is important if you want to avoid corrupted images!&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo umount mnt&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now boot the Kernel with our filesystem. We need to tell QEMU to use our image as a virtual hard drive and we also need to tell the Kernel to use the hard drive as the root filesystem:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This time the Kernel shouldn&amp;rsquo;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&amp;rsquo;s annoying to have to login each time we boot up the VM. Let&amp;rsquo;s enable auto login as root instead.&lt;/p&gt;
+
+&lt;p&gt;Terminate QEMU (&lt;code&gt;Ctrl-c&lt;/code&gt;, &lt;code&gt;x&lt;/code&gt;), mount the filesystem image again and then create the configuration folder structure:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo mount -o loop rootfs.img mnt/
+sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Add the following lines to &lt;code&gt;mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;Service&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;
+&lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-/sbin/agetty --noissue --autologin root %I &lt;span style=&#34;color:#b8860b&#34;&gt;$TERM&lt;/span&gt;
+&lt;span style=&#34;color:#b8860b&#34;&gt;Type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;idle&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Make sure to unmount the filesystem and then boot the Kernel again. This time you should be automatically logged in.&lt;/p&gt;
+
+&lt;p&gt;Gracefully shutdown the VM:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;halt -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&#34;attaching-a-debugger&#34;&gt;Attaching a debugger&lt;/h3&gt;
+
+&lt;p&gt;Let&amp;rsquo;s rebuild the Kernel with debugging symbols enabled:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./scripts/config -e CONFIG_DEBUG_INFO
+make -j4&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now, boot the Kernel again, this time passing the &lt;code&gt;-s&lt;/code&gt; flag which will make QEMU listen on TCP port 1234:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now, in another terminal start gdb and attach to QEMU:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;gdb ./linux-4.20.6/vmlinux 
+...
+Reading symbols from ./linux-4.20.6/vmlinux...done.
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; target remote :1234
+Remote debugging using :1234
+0xffffffff95a2f8f4 in ?? &lt;span style=&#34;color:#666&#34;&gt;()&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can set a breakpoint on Kernel function, for instance &lt;code&gt;do_sys_open()&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; b do_sys_open 
+Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; at 0xffffffff811b2720: file fs/open.c, line &lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;.
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; c
+Continuing.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now try opening a file in VM which should result in &lt;code&gt;do_sys_open()&lt;/code&gt; getting invoked&amp;hellip; And nothing happens?! The breakpoint in gdb is not hit. This due to a Kernel security feature called &lt;a href=&#34;https://lwn.net/Articles/569635/&#34;&gt;KASLR&lt;/a&gt;. KASLR can be disabled at boot time by adding &lt;code&gt;nokaslr&lt;/code&gt; to the Kernel command line arguments. But, let&amp;rsquo;s actually rebuild the Kernel without KASLR. While we are at it, let&amp;rsquo;s also disable loadable module support as well which will save us the trouble of copying the modules to the filesystem.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./scripts/config -e CONFIG_DEBUG_INFO -d CONFIG_RANDOMIZE_BASE -d CONFIG_MODULES
+make olddefconfig &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Resolve dependencies
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;make -j4&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Reboot the Kernel again, attach gdb, set a breakpoint on &lt;code&gt;do_sys_open()&lt;/code&gt; and run &lt;code&gt;cat /etc/issue&lt;/code&gt; in the guest. This time the breakpoint should be hit. But probably not where you expected:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7f96074ad428 &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/etc/ld.so.cache&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;557056&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
+&lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; c
+Continuing.
+
+Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7f96076b5dd0 &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/lib/x86_64-linux-gnu/libc.so.6&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;557056&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
+&lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; c
+Continuing.
+
+Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7ffe9e630e8e &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/etc/issue&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;32768&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
+&lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Congratulations! From this point, you can single-step away to your heart&amp;rsquo;s content.&lt;/p&gt;
+
+&lt;p&gt;By default, the root filesystem is mounted read only. If you want to be able to write to it, add &lt;code&gt;rw&lt;/code&gt; after &lt;code&gt;root=/dev/sda&lt;/code&gt; in the Kernel parameters:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&#34;bonus-networking&#34;&gt;Bonus: Networking&lt;/h3&gt;
+
+&lt;p&gt;You can create a point to point link between the QEMU VM and the host using a &lt;a href=&#34;https://en.wikipedia.org/wiki/TUN/TAP&#34;&gt;TAP interface&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;First install &lt;code&gt;tunctl&lt;/code&gt; and create a persistent TAP interface to avoid running QEMU as root:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo apt install uml-utilities
+sudo sudo tunctl -u &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;$(&lt;/span&gt;id -u&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;)&lt;/span&gt;
+Set &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;tap0&amp;#39;&lt;/span&gt; persistent and owned by uid &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
+sudo ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; tap0 up&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; virtual interface connected the host&amp;rsquo;s tap0 interface:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -device e1000,netdev&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0 -netdev tap,id&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0,ifname&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Once the guest boots up, bring the network interface up:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; enp0s3 up
+ip a
+&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#666&#34;&gt;65536&lt;/span&gt; qdisc noqueue state UNKNOWN group default qlen &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
+    link/loopback &lt;span style=&#34;color:#666&#34;&gt;00&lt;/span&gt;:00:00:00:00:00 brd &lt;span style=&#34;color:#666&#34;&gt;00&lt;/span&gt;:00:00:00:00:00
+    inet &lt;span style=&#34;color:#666&#34;&gt;127&lt;/span&gt;.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+&lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;: enp0s3: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#666&#34;&gt;1500&lt;/span&gt; qdisc pfifo_fast state UP group default qlen &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
+    link/ether &lt;span style=&#34;color:#666&#34;&gt;52&lt;/span&gt;:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::5054:ff:fe12:3456/64 scope link 
+       valid_lft forever preferred_lft forever&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;QEMU and the host can now communicate using their IPv6 Link-local addresses. After all, it is 2019.&lt;/p&gt;
+
+&lt;h3 id=&#34;copypasta&#34;&gt;Copypasta&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Building a minimal debuggable Kernel
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;make defconfig
+make kvmconfig
+./scripts/config -e CONFIG_DEBUG_INFO -d CONFIG_RANDOMIZE_BASE -d CONFIG_MODULES
+make olddefconfig
+make -j4
+
+
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Create root filesystem
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;qemu-img create rootfs.img 1G
+mkfs.ext4 rootfs.img
+mkdir mnt
+sudo mount -o loop rootfs.img mnt/
+sudo debootstrap bionic mnt/
+
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Add following lines to mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# START
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;Service&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;
+&lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-/sbin/agetty --noissue --autologin root %I &lt;span style=&#34;color:#b8860b&#34;&gt;$TERM&lt;/span&gt;
+&lt;span style=&#34;color:#b8860b&#34;&gt;Type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;idle
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# END
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Unmount the filesystem
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;sudo umount mnt
+
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Boot Kernel with root file system in QEMU
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s
+
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Attach gdb
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;gdb ./linux-4.20.6/vmlinux 
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; target remote :1234&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
       <title>Books I Read in 2017</title>
       <link>https://www.anmolsarma.in/post/books-2017/</link>
       <pubDate>Wed, 09 May 2018 20:28:40 +0530</pubDate>
