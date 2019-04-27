@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Stop Memsetting Structures</title>
+    
+    
+    <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+    
+    <meta name="generator" content="Hugo 0.40.3" />
+</head>
+<body>
+<header>
+    <b>
+        <a href="https://www.anmolsarma.in/">Anmol Sarma</a>
+    </b>
+<nav>
+    
+    <a href="/about">About</a> |
+    
+    <a href="/">Blog</a> |
+    
+    <a href="/renders">Renders</a> |
+    
+    <a href="/tags/talks/">Talks</a> |
+    
+    <a href="/index.xml">RSS</a>
+    </nav>
+</header>
+<hr/>
+
+<main>
+	<article>
+		<h1>Stop Memsetting Structures</h1>
+		
+			<span id="pubdate"> Apr 27, 2019</span>
+			
+			<a href="/tags/tech">tech</a>
+			
+			<a href="/tags/c">C</a>
+			
+			<a href="/tags/rant">rant</a>
+			
+			<a href="/tags/language-lawyering">language-lawyering</a>
+			
+		
+        <p><em>TL;DR: Use C99&rsquo;s designated initializers instead. Because it&rsquo;s 2019!</em></p>
+
+<p>One of the little things that annoy me when reading code is the unnecessary use of <code>memset()</code> to zero-out a <code>struct</code>. Something I see frequently in networking code that uses the BSD sockets API.</p>
+
+<p>Consider this snippet of code from the venerable <a href="https://beej.us/guide/bgnet/html/single/bgnet.html#simpleserver">Beej&rsquo;s Guide to Network Programming</a>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#a2f;font-weight:bold">struct</span> addrinfo hints;
+...
+
+memset(<span style="color:#666">&amp;</span>hints, <span style="color:#666">0</span>, <span style="color:#a2f;font-weight:bold">sizeof</span> hints);
+hints.ai_family <span style="color:#666">=</span> AF_UNSPEC;
+hints.ai_socktype <span style="color:#666">=</span> SOCK_STREAM;
+hints.ai_flags <span style="color:#666">=</span> AI_PASSIVE; <span style="color:#666">//</span> use my IP</code></pre></div>
+<p>So, we first declare a struct, memset it to zero and then initialize the fields we are interested in. This is all fine except for the fact that the same result can be achieved with the following:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#a2f;font-weight:bold">struct</span> addrinfo hints <span style="color:#666">=</span> {
+	.ai_family <span style="color:#666">=</span> AF_UNSPEC,
+	.ai_socktype <span style="color:#666">=</span> SOCK_STREAM,
+	.ai_flags <span style="color:#666">=</span> AI_PASSIVE, <span style="color:#080;font-style:italic">// use my IP
+</span><span style="color:#080;font-style:italic"></span>};</code></pre></div>
+<p>Which in my humble and very subjective opinion looks much cleaner.</p>
+
+<p>The second version uses a feature standardized in C99 called designated initializers. This allows initializing elements of an aggregate type in any order by specifying the array indices or structure field names. Elements that are not specified are initialized as if they are static objects: arithmetic types are initialized to <code>0</code>; pointers are initialized to <code>NULL</code>.</p>
+
+<p>Now to be fair to Beej, he first wrote <em>The Guide</em> in 1995. But if you&rsquo;re writing new code in 2019, there is really no reason to not use designated initializers. <em>Cue the Rust Evangelism Strike Force chiming in to say that there is really no reason to be writing new C code in 2019.</em></p>
+
+<p>While we&rsquo;re on the topic of little annoyances, another pattern I often see is using a variable just to pass what is effectively a literal to <code>setsockopt()</code>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#0b0;font-weight:bold">int</span> yes<span style="color:#666">=</span><span style="color:#666">1</span>;
+setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, <span style="color:#666">&amp;</span>yes, <span style="color:#a2f;font-weight:bold">sizeof</span> (yes)) ;</code></pre></div>
+<p>Which can instead be written as:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, <span style="color:#666">&amp;</span>(<span style="color:#0b0;font-weight:bold">int</span>) {<span style="color:#666">1</span>}, <span style="color:#a2f;font-weight:bold">sizeof</span>(<span style="color:#0b0;font-weight:bold">int</span>));</code></pre></div>
+<p>And finally, there is absolutely no reason to check if a pointer is <code>NULL</code> just before calling <code>free()</code> on it:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#a2f;font-weight:bold">if</span>(<span style="color:#a2f">NULL</span> <span style="color:#666">!=</span> ptr)
+	free(ptr);</code></pre></div>
+<p>Quoting the <a href="http://www.open-std.org/JTC1/SC22/wg14/www/docs/n1124.pdf">standard</a>: <em>If ptr is a null pointer, no action occurs.</em></p>
+
+		
+			<div>
+				<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+function load_disqus() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'anmolsarma';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}
+</script>
+
+<a href="#" onclick="load_disqus();return false;">Show Comments</a>
+
+<noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
+
+			</div>
+		
+    </article>
+</main>
+<hr/>
+<footer>
+    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content licensed under a <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>.</p>
+</footer>
+
+
