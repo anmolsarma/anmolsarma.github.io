@@ -48,6 +48,8 @@
 		
         <p><em>TL;DR: Use C99&rsquo;s designated initializers instead. Because it&rsquo;s 2019!</em></p>
 
+<p><em><strong>Edit:</strong> This post was discussed on <a href="https://news.ycombinator.com/item?id=19766930">Hacker News</a>, <a href="https://lobste.rs/s/7aqidd/stop_memsetting_structures">Lobste.rs</a> and <a href="https://www.reddit.com/r/C_Programming/comments/bi23w6/stop_memsetting_structures/">/r/c_programming</a>. It has been updated to address some of the concerns raised by commenters.</em></p>
+
 <p>One of the little things that annoy me when reading code is the unnecessary use of <code>memset()</code> to zero-out a <code>struct</code>. Something I see frequently in networking code that uses the BSD sockets API.</p>
 
 <p>Consider this snippet of code from the venerable <a href="https://beej.us/guide/bgnet/html/single/bgnet.html#simpleserver">Beej&rsquo;s Guide to Network Programming</a>:</p>
@@ -62,23 +64,37 @@ hints.ai_flags <span style="color:#666">=</span> AI_PASSIVE; <span style="color:
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#a2f;font-weight:bold">struct</span> addrinfo hints <span style="color:#666">=</span> {
 	.ai_family <span style="color:#666">=</span> AF_UNSPEC,
 	.ai_socktype <span style="color:#666">=</span> SOCK_STREAM,
-	.ai_flags <span style="color:#666">=</span> AI_PASSIVE, <span style="color:#080;font-style:italic">// use my IP
+	.ai_flags <span style="color:#666">=</span> AI_PASSIVE <span style="color:#080;font-style:italic">// use my IP
 </span><span style="color:#080;font-style:italic"></span>};</code></pre></div>
 <p>Which in my humble and very subjective opinion looks much cleaner.</p>
 
-<p>The second version uses a feature standardized in C99 called designated initializers. This allows initializing elements of an aggregate type in any order by specifying the array indices or structure field names. Elements that are not specified are initialized as if they are static objects: arithmetic types are initialized to <code>0</code>; pointers are initialized to <code>NULL</code>.</p>
+<p>The second version uses a feature standardized in C99 called designated initializers. This allows initializing elements of an aggregate type in any order by specifying the array indices or structure field names. Elements that are not specified are initialized as if they are static objects: arithmetic types are initialized to <code>0</code>; pointers are initialized to <code>NULL</code>. This is also presumably less expensive than a <code>memset()</code> as it avoids clearing memory that will be assigned to.</p>
 
-<p>Now to be fair to Beej, he first wrote <em>The Guide</em> in 1995. But if you&rsquo;re writing new code in 2019, there is really no reason to not use designated initializers. <em>Cue the Rust Evangelism Strike Force chiming in to say that there is really no reason to be writing new C code in 2019.</em></p>
+<p>If the structure has padding, using designated initializers will not initialize it to zero.  This is not <em>usually</em> a problem. However, this may inadvertently lead to information leaks when passing a structure from a more privileged context to a less privileged one: <a href="https://lwn.net/Articles/417989/">Like when passing memory from the kernel back to userspace</a>.</p>
+
+<p>Now to be fair to Beej, he first wrote <em>The Guide</em> in 1995. But if you&rsquo;re writing new code in 2019, there is really no reason to not use designated initializers<sup class="footnote-ref" id="fnref:-"><a href="#fn:-">1</a></sup>. Except to specifically avoid memory disclosures. <em>Cue the Rust Evangelism Strike Force chiming in to say that there is really no reason to be writing new C code in 2019.</em></p>
 
 <p>While we&rsquo;re on the topic of little annoyances, another pattern I often see is using a variable just to pass what is effectively a literal to <code>setsockopt()</code>:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#0b0;font-weight:bold">int</span> yes<span style="color:#666">=</span><span style="color:#666">1</span>;
 setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, <span style="color:#666">&amp;</span>yes, <span style="color:#a2f;font-weight:bold">sizeof</span> (yes)) ;</code></pre></div>
 <p>Which can instead be written as:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, <span style="color:#666">&amp;</span>(<span style="color:#0b0;font-weight:bold">int</span>) {<span style="color:#666">1</span>}, <span style="color:#a2f;font-weight:bold">sizeof</span>(<span style="color:#0b0;font-weight:bold">int</span>));</code></pre></div>
+<p>This uses yet another C99 feature called compound literals. If the magic 1 value bothers you, you can always:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, <span style="color:#666">&amp;</span>(<span style="color:#0b0;font-weight:bold">int</span>) {<span style="color:#a2f">true</span>}, <span style="color:#a2f;font-weight:bold">sizeof</span>(<span style="color:#0b0;font-weight:bold">int</span>));</code></pre></div>
 <p>And finally, there is absolutely no reason to check if a pointer is <code>NULL</code> just before calling <code>free()</code> on it:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#a2f;font-weight:bold">if</span>(<span style="color:#a2f">NULL</span> <span style="color:#666">!=</span> ptr)
 	free(ptr);</code></pre></div>
-<p>Quoting the <a href="http://www.open-std.org/JTC1/SC22/wg14/www/docs/n1124.pdf">standard</a>: <em>If ptr is a null pointer, no action occurs.</em></p>
+<p>Quoting the <a href="http://www.open-std.org/JTC1/SC22/wg14/www/docs/n1124.pdf">standard Section 7.20.3.2 (p. 313)</a>: <em>If ptr is a null pointer, no action occurs.</em> If a system deviates from this expectation, it is clearly evil. It is advised to <em>Kill It With Fire</em>.</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:-">If you were relying on <code>memcmp()</code> to compare structs, that will probably no longer work. But you knew what you were getting yourself into, didn&rsquo;t you?
+
+ <a class="footnote-return" href="#fnref:-"><sup>[return]</sup></a></li>
+</ol>
+</div>
 
 		
 			<div>
