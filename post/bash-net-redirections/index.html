@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Network Redirections in Bash</title>
+    
+    
+    <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+    
+    <meta name="generator" content="Hugo 0.40.3" />
+</head>
+<body>
+<header>
+    <b>
+        <a href="https://www.anmolsarma.in/">Anmol Sarma</a>
+    </b>
+<nav>
+    
+    <a href="/about">About</a> |
+    
+    <a href="/">Blog</a> |
+    
+    <a href="/renders">Renders</a> |
+    
+    <a href="/tags/talks/">Talks</a> |
+    
+    <a href="/index.xml">RSS</a>
+    </nav>
+</header>
+<hr/>
+
+<main>
+	<article>
+		<h1>Network Redirections in Bash</h1>
+		
+			<span id="pubdate"> May 4, 2019</span>
+			
+			<a href="/tags/tech">tech</a>
+			
+			<a href="/tags/linux">linux</a>
+			
+		
+        <p>A few months ago, while reading the man page for <code>recvmmsg()</code>, I came across this snippet:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#a2f;font-weight:bold">while</span> true; <span style="color:#a2f;font-weight:bold">do</span> <span style="color:#a2f">echo</span> <span style="color:#b8860b">$RANDOM</span> &gt; /dev/udp/127.0.0.1/1234;
+     sleep <span style="color:#666">0</span>.25; <span style="color:#a2f;font-weight:bold">done</span></code></pre></div>
+<p>And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&rsquo;t recall ever seeing a <code>/dev/udp</code> and so was a bit surprised that it worked. And as it happens, <code>ls</code> was not able to access the file that I had just written to:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ls: cannot access <span style="color:#b44">&#39;/dev/udp/127.0.0.1/1234&#39;</span>: No such file or directory</code></pre></div>
+<p>Puzzled and intrigued, I <code>echoe</code>d <em>Foo Bar Baz</em> to <code>/dev/udp/127.0.0.1/1337</code> and reached for <code>strace</code>:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">...
+<span style="color:#666">2423</span> socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) <span style="color:#666">=</span> <span style="color:#666">4</span>
+<span style="color:#666">12423</span> connect(<span style="color:#666">4</span>, {sa_family<span style="color:#666">=</span>AF_INET, sin_port<span style="color:#666">=</span>htons(<span style="color:#666">1337</span>), sin_addr<span style="color:#666">=</span>inet_addr(<span style="color:#b44">&#34;127.0.0.1&#34;</span>)}, <span style="color:#666">16</span>) <span style="color:#666">=</span> <span style="color:#666">0</span>
+<span style="color:#666">12423</span> fcntl(<span style="color:#666">1</span>, F_GETFD)                 <span style="color:#666">=</span> <span style="color:#666">0</span>
+<span style="color:#666">12423</span> fcntl(<span style="color:#666">1</span>, F_DUPFD, <span style="color:#666">10</span>)             <span style="color:#666">=</span> <span style="color:#666">10</span>
+<span style="color:#666">12423</span> fcntl(<span style="color:#666">1</span>, F_GETFD)                 <span style="color:#666">=</span> <span style="color:#666">0</span>
+<span style="color:#666">12423</span> fcntl(<span style="color:#666">10</span>, F_SETFD, FD_CLOEXEC)    <span style="color:#666">=</span> <span style="color:#666">0</span>
+<span style="color:#666">12423</span> dup2(<span style="color:#666">4</span>, <span style="color:#666">1</span>)                        <span style="color:#666">=</span> <span style="color:#666">1</span>
+<span style="color:#666">12423</span> close(<span style="color:#666">4</span>)                          <span style="color:#666">=</span> <span style="color:#666">0</span>
+<span style="color:#666">12423</span> fstat(<span style="color:#666">1</span>, {st_mode<span style="color:#666">=</span>S_IFSOCK<span style="color:#666">|</span><span style="color:#666">0777</span>, st_size<span style="color:#666">=</span><span style="color:#666">0</span>, ...}) <span style="color:#666">=</span> <span style="color:#666">0</span>
+<span style="color:#666">12423</span> write(<span style="color:#666">1</span>, <span style="color:#b44">&#34;Foo Bar Baz</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>, <span style="color:#666">12</span>)     <span style="color:#666">=</span> <span style="color:#666">12</span>
+...</code></pre></div>
+<p>Seemingly, a normal UDP socket was being created and written to using the regular sycall interface. That refuted my initial suspicion that some kind of a special file backed by the kernel was involved. But who was actually creating the socket?</p>
+
+<p>A peek at Bash&rsquo;s code answered that question:</p>
+
+<p><strong>redir.c:</strong></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#080;font-style:italic">/* A list of pattern/value pairs for filenames that the redirection
+</span><span style="color:#080;font-style:italic">   code handles specially. */</span>
+<span style="color:#a2f;font-weight:bold">static</span> STRING_INT_ALIST _redir_special_filenames[] <span style="color:#666">=</span> {
+<span style="color:#080">#if !defined (HAVE_DEV_FD)
+</span><span style="color:#080"></span>  { <span style="color:#b44">&#34;/dev/fd/[0-9]*&#34;</span>, RF_DEVFD },
+<span style="color:#080">#endif
+</span><span style="color:#080">#if !defined (HAVE_DEV_STDIN)
+</span><span style="color:#080"></span>  { <span style="color:#b44">&#34;/dev/stderr&#34;</span>, RF_DEVSTDERR },
+  { <span style="color:#b44">&#34;/dev/stdin&#34;</span>, RF_DEVSTDIN },
+  { <span style="color:#b44">&#34;/dev/stdout&#34;</span>, RF_DEVSTDOUT },
+<span style="color:#080">#endif
+</span><span style="color:#080">#if defined (NETWORK_REDIRECTIONS)
+</span><span style="color:#080"></span>  { <span style="color:#b44">&#34;/dev/tcp/*/*&#34;</span>, RF_DEVTCP },
+  { <span style="color:#b44">&#34;/dev/udp/*/*&#34;</span>, RF_DEVUDP },
+<span style="color:#080">#endif
+</span><span style="color:#080"></span>  { (<span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">*</span>)<span style="color:#a2f">NULL</span>, <span style="color:#666">-</span><span style="color:#666">1</span> }
+};</code></pre></div>
+<p>So, redirection involving <code>/dev/udp/</code> is handled specially by Bash<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> and it uses BSD Sockets API to create a socket:</p>
+
+<p><strong>lib/sh/netopen.c:</strong></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#080;font-style:italic">/*
+</span><span style="color:#080;font-style:italic"> * Open a TCP or UDP connection to HOST on port SERV.  Uses the
+</span><span style="color:#080;font-style:italic"> * traditional BSD mechanisms.  Returns the connected socket or -1 on error.
+</span><span style="color:#080;font-style:italic"> */</span>
+<span style="color:#a2f;font-weight:bold">static</span> <span style="color:#0b0;font-weight:bold">int</span>
+<span style="color:#00a000">_netopen4</span>(host, serv, typ)
+     <span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">*</span>host, <span style="color:#666">*</span>serv;
+     <span style="color:#0b0;font-weight:bold">int</span> typ;
+{
+  <span style="color:#a2f;font-weight:bold">struct</span> in_addr ina;
+  <span style="color:#a2f;font-weight:bold">struct</span> sockaddr_in sin;
+  <span style="color:#0b0;font-weight:bold">unsigned</span> <span style="color:#0b0;font-weight:bold">short</span> p;
+  <span style="color:#0b0;font-weight:bold">int</span> s, e;
+
+  <span style="color:#a2f;font-weight:bold">if</span> (_getaddr(host, <span style="color:#666">&amp;</span>ina) <span style="color:#666">==</span> <span style="color:#666">0</span>)
+    {
+      internal_error (_(<span style="color:#b44">&#34;%s: host unknown&#34;</span>), host);
+      errno <span style="color:#666">=</span> EINVAL;
+      <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#666">1</span>;
+    }
+
+  <span style="color:#a2f;font-weight:bold">if</span> (_getserv(serv, typ, <span style="color:#666">&amp;</span>p) <span style="color:#666">==</span> <span style="color:#666">0</span>)
+    {
+      internal_error(_(<span style="color:#b44">&#34;%s: invalid service&#34;</span>), serv);
+      errno <span style="color:#666">=</span> EINVAL;
+      <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#666">1</span>;
+    }
+
+  memset ((<span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">*</span>)<span style="color:#666">&amp;</span>sin, <span style="color:#666">0</span>, <span style="color:#a2f;font-weight:bold">sizeof</span>(sin));
+  sin.sin_family <span style="color:#666">=</span> AF_INET;
+  sin.sin_port <span style="color:#666">=</span> p;
+  sin.sin_addr <span style="color:#666">=</span> ina;
+
+  s <span style="color:#666">=</span> socket(AF_INET, (typ <span style="color:#666">==</span> <span style="color:#b44">&#39;t&#39;</span>) <span style="color:#666">?</span> <span style="color:#a0a000">SOCK_STREAM</span> : SOCK_DGRAM, <span style="color:#666">0</span>);
+  <span style="color:#a2f;font-weight:bold">if</span> (s <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+    {
+      sys_error (<span style="color:#b44">&#34;socket&#34;</span>);
+      <span style="color:#a2f;font-weight:bold">return</span> (<span style="color:#666">-</span><span style="color:#666">1</span>);
+    }
+
+  <span style="color:#a2f;font-weight:bold">if</span> (connect (s, (<span style="color:#a2f;font-weight:bold">struct</span> sockaddr <span style="color:#666">*</span>)<span style="color:#666">&amp;</span>sin, <span style="color:#a2f;font-weight:bold">sizeof</span> (sin)) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
+    {
+      e <span style="color:#666">=</span> errno;
+      sys_error(<span style="color:#b44">&#34;connect&#34;</span>);
+      close(s);
+      errno <span style="color:#666">=</span> e;
+      <span style="color:#a2f;font-weight:bold">return</span> (<span style="color:#666">-</span><span style="color:#666">1</span>);
+    }
+
+  <span style="color:#a2f;font-weight:bold">return</span>(s);
+}</code></pre></div>
+<p>Which means we can actually make HTTP requests using Bash:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#a2f">exec</span> <span style="color:#666">3</span>&lt;&gt; /dev/tcp/checkip.amazonaws.com/80
+<span style="color:#a2f">printf</span> <span style="color:#b44">&#34;GET / HTTP/1.1\r\nHost: checkip.amazonaws.com\r\nConnection: close\r\n\r\n&#34;</span> &gt;&amp;<span style="color:#666">3</span>
+tail -n1 &lt;&amp;<span style="color:#666">3</span></code></pre></div>
+<p>No <code>curl</code> needed! /jk</p>
+
+<p>Apart from Bash, in the versions and configurations packaged in Ubuntu 18.04, only <code>ksh</code> supports network redirections &ndash; <code>ash</code>, <code>csh</code>, <code>dash</code>,  <code>fish</code>,  and <code>zsh</code> do not.</p>
+
+<p>I don&rsquo;t think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.</p>
+
+<p><strong>NOTE:</strong> Code snippets from Bash are licensed under GPLv3, the snippet from the man page is licensed <a href="http://man7.org/linux/man-pages/man2/recvmmsg.2.license.html">differently</a></p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">At least on Linux, the other special patterns handled by bash like <a href="http://www.informit.com/articles/article.aspx?p=99706&amp;seqNum=15"><code>/dev/fd</code></a> and <code>/dev/stdint</code> actually are special files backed by the kernel. The <a href="https://www.gnu.org/software/bash/manual/html_node/Redirections.html">Bash manual</a> notes that it may emulate them internally on platforms that do not support them.
+ <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+		
+			<div>
+				<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+function load_disqus() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'anmolsarma';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}
+</script>
+
+<a href="#" onclick="load_disqus();return false;">Show Comments</a>
+
+<noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
+
+			</div>
+		
+    </article>
+</main>
+<hr/>
+<footer>
+    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content licensed under a <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>.</p>
+</footer>
+
+

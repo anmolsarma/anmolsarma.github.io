@@ -10,6 +10,129 @@
     <atom:link href="https://www.anmolsarma.in/tags/linux/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Network Redirections in Bash</title>
+      <link>https://www.anmolsarma.in/post/bash-net-redirections/</link>
+      <pubDate>Sat, 04 May 2019 20:59:15 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/bash-net-redirections/</guid>
+      <description>&lt;p&gt;A few months ago, while reading the man page for &lt;code&gt;recvmmsg()&lt;/code&gt;, I came across this snippet:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;while&lt;/span&gt; true; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color:#a2f&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#b8860b&#34;&gt;$RANDOM&lt;/span&gt; &amp;gt; /dev/udp/127.0.0.1/1234;
+     sleep &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;.25; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&amp;rsquo;t recall ever seeing a &lt;code&gt;/dev/udp&lt;/code&gt; and so was a bit surprised that it worked. And as it happens, &lt;code&gt;ls&lt;/code&gt; was not able to access the file that I had just written to:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ls: cannot access &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;/dev/udp/127.0.0.1/1234&amp;#39;&lt;/span&gt;: No such file or directory&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Puzzled and intrigued, I &lt;code&gt;echoe&lt;/code&gt;d &lt;em&gt;Foo Bar Baz&lt;/em&gt; to &lt;code&gt;/dev/udp/127.0.0.1/1337&lt;/code&gt; and reached for &lt;code&gt;strace&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;...
+&lt;span style=&#34;color:#666&#34;&gt;2423&lt;/span&gt; socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; connect(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, {sa_family&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;AF_INET, sin_port&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;htons(&lt;span style=&#34;color:#666&#34;&gt;1337&lt;/span&gt;), sin_addr&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;inet_addr(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;127.0.0.1&amp;#34;&lt;/span&gt;)}, &lt;span style=&#34;color:#666&#34;&gt;16&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_GETFD)                 &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_DUPFD, &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)             &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_GETFD)                 &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;, F_SETFD, FD_CLOEXEC)    &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; dup2(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;)                        &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; close(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)                          &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fstat(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, {st_mode&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;S_IFSOCK&lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0777&lt;/span&gt;, st_size&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, ...}) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; write(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Foo Bar Baz&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;)     &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;
+...&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Seemingly, a normal UDP socket was being created and written to using the regular sycall interface. That refuted my initial suspicion that some kind of a special file backed by the kernel was involved. But who was actually creating the socket?&lt;/p&gt;
+
+&lt;p&gt;A peek at Bash&amp;rsquo;s code answered that question:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;redir.c:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* A list of pattern/value pairs for filenames that the redirection
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;   code handles specially. */&lt;/span&gt;
+&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;static&lt;/span&gt; STRING_INT_ALIST _redir_special_filenames[] &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
+&lt;span style=&#34;color:#080&#34;&gt;#if !defined (HAVE_DEV_FD)
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/fd/[0-9]*&amp;#34;&lt;/span&gt;, RF_DEVFD },
+&lt;span style=&#34;color:#080&#34;&gt;#endif
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#if !defined (HAVE_DEV_STDIN)
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stderr&amp;#34;&lt;/span&gt;, RF_DEVSTDERR },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stdin&amp;#34;&lt;/span&gt;, RF_DEVSTDIN },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stdout&amp;#34;&lt;/span&gt;, RF_DEVSTDOUT },
+&lt;span style=&#34;color:#080&#34;&gt;#endif
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#if defined (NETWORK_REDIRECTIONS)
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/tcp/*/*&amp;#34;&lt;/span&gt;, RF_DEVTCP },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/udp/*/*&amp;#34;&lt;/span&gt;, RF_DEVUDP },
+&lt;span style=&#34;color:#080&#34;&gt;#endif
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#a2f&#34;&gt;NULL&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; }
+};&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So, redirection involving &lt;code&gt;/dev/udp/&lt;/code&gt; is handled specially by Bash&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; and it uses BSD Sockets API to create a socket:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;lib/sh/netopen.c:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/*
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt; * Open a TCP or UDP connection to HOST on port SERV.  Uses the
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt; * traditional BSD mechanisms.  Returns the connected socket or -1 on error.
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt; */&lt;/span&gt;
+&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;span style=&#34;color:#00a000&#34;&gt;_netopen4&lt;/span&gt;(host, serv, typ)
+     &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;host, &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;serv;
+     &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; typ;
+{
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; in_addr ina;
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in sin;
+  &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;unsigned&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;short&lt;/span&gt; p;
+  &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; s, e;
+
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getaddr(host, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;ina) &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+    {
+      internal_error (_(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%s: host unknown&amp;#34;&lt;/span&gt;), host);
+      errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; EINVAL;
+      &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
+    }
+
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getserv(serv, typ, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;p) &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+    {
+      internal_error(_(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%s: invalid service&amp;#34;&lt;/span&gt;), serv);
+      errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; EINVAL;
+      &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
+    }
+
+  memset ((&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;sin, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(sin));
+  sin.sin_family &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; AF_INET;
+  sin.sin_port &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; p;
+  sin.sin_addr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; ina;
+
+  s &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, (typ &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;t&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#a0a000&#34;&gt;SOCK_STREAM&lt;/span&gt; : SOCK_DGRAM, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (s &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+    {
+      sys_error (&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
+      &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
+    }
+
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (connect (s, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;sin, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt; (sin)) &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+    {
+      e &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; errno;
+      sys_error(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;connect&amp;#34;&lt;/span&gt;);
+      close(s);
+      errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; e;
+      &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
+    }
+
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt;(s);
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Which means we can actually make HTTP requests using Bash:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#a2f&#34;&gt;exec&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;&amp;lt;&amp;gt; /dev/tcp/checkip.amazonaws.com/80
+&lt;span style=&#34;color:#a2f&#34;&gt;printf&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;GET / HTTP/1.1\r\nHost: checkip.amazonaws.com\r\nConnection: close\r\n\r\n&amp;#34;&lt;/span&gt; &amp;gt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;
+tail -n1 &amp;lt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;No &lt;code&gt;curl&lt;/code&gt; needed! /jk&lt;/p&gt;
+
+&lt;p&gt;Apart from Bash, in the versions and configurations packaged in Ubuntu 18.04, only &lt;code&gt;ksh&lt;/code&gt; supports network redirections &amp;ndash; &lt;code&gt;ash&lt;/code&gt;, &lt;code&gt;csh&lt;/code&gt;, &lt;code&gt;dash&lt;/code&gt;,  &lt;code&gt;fish&lt;/code&gt;,  and &lt;code&gt;zsh&lt;/code&gt; do not.&lt;/p&gt;
+
+&lt;p&gt;I don&amp;rsquo;t think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; Code snippets from Bash are licensed under GPLv3, the snippet from the man page is licensed &lt;a href=&#34;http://man7.org/linux/man-pages/man2/recvmmsg.2.license.html&#34;&gt;differently&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;At least on Linux, the other special patterns handled by bash like &lt;a href=&#34;http://www.informit.com/articles/article.aspx?p=99706&amp;amp;seqNum=15&#34;&gt;&lt;code&gt;/dev/fd&lt;/code&gt;&lt;/a&gt; and &lt;code&gt;/dev/stdint&lt;/code&gt; actually are special files backed by the kernel. The &lt;a href=&#34;https://www.gnu.org/software/bash/manual/html_node/Redirections.html&#34;&gt;Bash manual&lt;/a&gt; notes that it may emulate them internally on platforms that do not support them.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Single-stepping through the Kernel</title>
       <link>https://www.anmolsarma.in/post/single-step-kernel/</link>
       <pubDate>Sun, 03 Feb 2019 18:57:45 +0530</pubDate>
