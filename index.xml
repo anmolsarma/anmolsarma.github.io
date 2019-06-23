@@ -10,6 +10,42 @@
     <atom:link href="https://www.anmolsarma.in/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>File Creation Time in Linux</title>
+      <link>https://www.anmolsarma.in/post/linux-file-creation-time/</link>
+      <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/linux-file-creation-time/</guid>
+      <description>&lt;p&gt;The &lt;a href=&#34;http://man7.org/linux/man-pages/man1/stat.1.html&#34;&gt;&lt;code&gt;stat&lt;/code&gt;&lt;/a&gt; utility can be used to retrieve the Unix file timestamps namely &lt;code&gt;atime&lt;/code&gt;, &lt;code&gt;ctime&lt;/code&gt; and &lt;code&gt;mtime&lt;/code&gt;. Of these, the benefit of &lt;code&gt;mtime&lt;/code&gt; which records the last time when the file was modified is immediately apparent. On the other hand, &lt;code&gt;atime&lt;/code&gt; which records the last time the file was accessed has been called &lt;a href=&#34;https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/&#34;&gt;&amp;ldquo;perhaps the most stupid Unix design idea of all times&amp;rdquo;&lt;/a&gt;. Intuitively, one might expect &lt;code&gt;ctime&lt;/code&gt; to record the creation time of a file. However, &lt;code&gt;ctime&lt;/code&gt; records the last time when the metadata of a file was changed.&lt;/p&gt;
+
+&lt;p&gt;Typically, Unices do not record file creation times. While some individual filesystems do record file creation times, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of &lt;code&gt;stat&lt;/code&gt; (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ stat .
+  File: .
+  Size: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;            Blocks: &lt;span style=&#34;color:#666&#34;&gt;8&lt;/span&gt;          IO Block: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;   directory
+Device: 803h/2051d      Inode: &lt;span style=&#34;color:#666&#34;&gt;3588416&lt;/span&gt;     Links: &lt;span style=&#34;color:#666&#34;&gt;18&lt;/span&gt;
+Access: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0775&lt;/span&gt;/drwxrwxr-x&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;  Uid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;   Gid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+Access: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-06-23 &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;:49:04.056933574 +0000
+Modify: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
+Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
+ Birth: -&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;With the &amp;ldquo;&lt;code&gt;Birth&lt;/code&gt;&amp;rdquo; field, meant to show the creation time, sporting a depressing &amp;ldquo;&lt;code&gt;-&lt;/code&gt;&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;The fact that &lt;code&gt;ctime&lt;/code&gt; does not mean creation time but change time coupled with the absence of a real creation time interface does lead to quite a bit of confusion. The confusion seems so pervasive that the &lt;code&gt;msdos&lt;/code&gt; driver in the Linux kernel &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/fat/inode.c#L883&#34;&gt;happily clobbers&lt;/a&gt; the FAT creation time with the Unix change time!&lt;/p&gt;
+
+&lt;p&gt;The limitations of the current &lt;code&gt;stat()&lt;/code&gt; system call have been known for some time. A new system call providing extended attributes was &lt;a href=&#34;https://www.spinics.net/lists/linux-fsdevel/msg33831.html&#34;&gt;first proposed in 2010&lt;/a&gt; with the new &lt;a href=&#34;https://lwn.net/Articles/685791/#statx&#34;&gt;&lt;code&gt;statx()&lt;/code&gt;&lt;/a&gt; interface finally &lt;a href=&#34;https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a528d35e8bfcc521d7cb70aaf03e1bd296c8493f&#34;&gt;being merged into Linux 4.11 in 2017&lt;/a&gt;. It took so long at least in part because kernel developers quickly ran into one of the hardest problems in Computer Science: &lt;a href=&#34;https://lkml.org/lkml/2010/7/22/249&#34;&gt;naming things&lt;/a&gt;. Because there was no standard to guide them, each filesystem took to calling creation time by a different name. &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/ext4/ext4.h#L744&#34;&gt;Ext4&lt;/a&gt; and &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/xfs/libxfs/xfs_inode_buf.h#L40&#34;&gt;XFS&lt;/a&gt; called it &lt;code&gt;crtime&lt;/code&gt; while &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/btrfs/btrfs_inode.h#L187&#34;&gt;Btrfs&lt;/a&gt; and &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/jfs/jfs_incore.h#L46&#34;&gt;JFS&lt;/a&gt; called it &lt;code&gt;otime&lt;/code&gt;. Implementations also have slightly different semantics with JFS storing creation time only with the &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/jfs/jfs_imap.c#L3166&#34;&gt;precision of seconds&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Glibc took a while to add a wrapper for statx() with support landing in &lt;a href=&#34;https://www.sourceware.org/ml/libc-alpha/2018-08/msg00003.html&#34;&gt;version 2.28&lt;/a&gt; which was released in 2018. Fast forward to March 2019 when GNU &lt;a href=&#34;https://lists.gnu.org/archive/html/coreutils-announce/2019-03/msg00000.html&#34;&gt;coreutils 8.31&lt;/a&gt; was released with &lt;code&gt;stat&lt;/code&gt; finally gaining support for reading the file creation time:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ stat .
+  File: .
+  Size: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;            Blocks: &lt;span style=&#34;color:#666&#34;&gt;8&lt;/span&gt;          IO Block: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;   directory
+Device: 803h/2051d      Inode: &lt;span style=&#34;color:#666&#34;&gt;3588416&lt;/span&gt;     Links: &lt;span style=&#34;color:#666&#34;&gt;18&lt;/span&gt;
+Access: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0775&lt;/span&gt;/drwxrwxr-x&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;  Uid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;   Gid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+Access: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-06-23 &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;:49:04.056933574 +0000
+Modify: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
+Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
+ Birth: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:13:50.100925514 +0000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
       <title>Books I Read in 2018</title>
       <link>https://www.anmolsarma.in/post/books-2018/</link>
       <pubDate>Sun, 12 May 2019 23:41:22 +0530</pubDate>
@@ -19,11 +55,11 @@
 
 &lt;h3 id=&#34;the-information-a-history-a-theory-a-flood-by-james-gleick&#34;&gt;The Information: A History, a Theory, a Flood by James Gleick&lt;/h3&gt;
 
-&lt;p&gt;Eclectic, engrossing and thoroughly enjoyable. From Ada Lovelace and Charles Babbage to Maxwell and Einstein to Shanon and Turing: Gleick&amp;rsquo;s masterful prose captures both the ideas and personalities of the men and women who made the world what it is today. Apart from the extremely lucid explanations of the foundations of the Information Age, the book is packed full of fascinating historical accounts. To top it off is the brilliant synthesis and narrative. Would highly recommend.&lt;/p&gt;
+&lt;p&gt;Eclectic, engrossing and thoroughly enjoyable. From Ada Lovelace and Charles Babbage to Maxwell and Einstein to Shanon and Turing: Gleick&amp;rsquo;s masterful prose captures both the ideas and personalities of the men and women who made the world what it is today. Apart from the lucid explanation of the foundations of information theory, the book is packed full of fascinating historical accounts. To top it off is the brilliant synthesis and narrative. Would highly recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;the-white-tiger-by-aravind-adiga&#34;&gt;The White Tiger by Aravind Adiga&lt;/h3&gt;
 
-&lt;p&gt;A parable of the new India relating individuality&amp;rsquo;s struggle from freedom from the societal forces of class and caste that seek to imprison it. The narrative while being deeply allegorical is at the same time raw, visceral and credulous. Devoid of any idealistic or ideological pretensions, the story of Balram Halwai&amp;rsquo;s rise paints a wholly unflattering yet undeniably accurate picture of modern India. Would highly recommend.&lt;/p&gt;
+&lt;p&gt;A parable new India relating individuality&amp;rsquo;s struggle for freedom from the societal forces of class and caste that seek to imprison it. The narrative while being deeply allegorical is at the same time raw, visceral and credulous. Devoid of any idealistic or ideological pretensions, the story of Balram Halwai&amp;rsquo;s rise paints a wholly unflattering yet undeniably accurate picture of modern India. Would highly recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;masters-of-doom-by-david-kushner&#34;&gt;Masters of Doom by David Kushner&lt;/h3&gt;
 
@@ -31,11 +67,11 @@
 
 &lt;h3 id=&#34;artemis-by-andy-weir&#34;&gt;Artemis by Andy Weir&lt;/h3&gt;
 
-&lt;p&gt;Like The Martian but on the moon with added criminal intrigue. The action-packed plot is complemented by charming and extremely likeable characters. While the science is solid the writing is anything but. The dialogue which is mostly unambitious turns wince-inducing in some places. Overall, a quick and enjoyable read. Would recommend.&lt;/p&gt;
+&lt;p&gt;Like &lt;em&gt;The Martian&lt;/em&gt; but on the moon and with added criminal intrigue. The action-packed plot is complemented by charming and extremely likeable characters. While the science is solid the writing is anything but. The mostly unambitious dialogue turns wince-inducing in places. Overall, a quick and enjoyable read. Would recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;an-era-of-darkness-by-shashi-tharoor&#34;&gt;An Era of Darkness by Shashi Tharoor&lt;/h3&gt;
 
-&lt;p&gt;Based on Tharoor&amp;rsquo;s virally popular Oxford Union debate, An Era of Darkness is a breathless polemic about the horrors of British rule in India. While the book does not offer anything new &amp;ndash; something that the preface readily admits, it does offer a cogent rebuttal to revived colonial apologism. The work is assuredly nationalistic, not of a narrow, parochial, exclusionary sort but of the staunchly liberal, self-assured and inclusive variety. That being said, the book does feel a bit longer than necessary. Would recommend.&lt;/p&gt;
+&lt;p&gt;Based on Tharoor&amp;rsquo;s virally popular Oxford Union debate, &lt;em&gt;An Era of Darkness&lt;/em&gt; is a breathless polemic about the horrors of British rule in India. While the book does not offer anything new &amp;ndash; something that the preface readily admits, it does offer a cogent rebuttal to revived colonial apologism. The work is assuredly nationalistic, not of a narrow, parochial or exclusionary sort but of the staunchly liberal, self-assured and inclusive variety. That being said, the book does feel a bit longer than necessary. Would recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;the-girl-with-the-dragon-tattoo-by-stieg-larsson-as-translated-by-reg-keeland&#34;&gt;The Girl with the Dragon Tattoo by Stieg Larsson as translated by Reg Keeland&lt;/h3&gt;
 
@@ -43,11 +79,11 @@
 
 &lt;h3 id=&#34;flash-boys-by-michael-lewis&#34;&gt;Flash Boys by Michael Lewis&lt;/h3&gt;
 
-&lt;p&gt;Part misguided hit piece on High Frequency Trading, part hagiography of Brad Katsuyama and part native advertisement for the IEX stock exchange: Flash Boys is utterly without merit. Michel Lewis valiantly tries to project large institutional investors as heroic victims while repeatedly making the absurd claim that the markets are rigged. Even putting the bias aside, the book could be cut down to a long-form article while conveying exactly the same amount of information. Would not recommend.&lt;/p&gt;
+&lt;p&gt;Part misguided hit piece on High Frequency Trading, part hagiography of Brad Katsuyama and part native advertisement for the IEX stock exchange: &lt;em&gt;Flash Boys&lt;/em&gt; is utterly without merit. Michel Lewis valiantly tries to project large institutional investors as heroic victims while repeatedly making the absurd claim that the markets are rigged. Even putting the bias aside, the book could be cut down to a long-form article while conveying exactly the same amount of information. Would not recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;flowers-for-algernon-by-daniel-keyes&#34;&gt;Flowers for Algernon by Daniel Keyes&lt;/h3&gt;
 
-&lt;p&gt;A heart wrenching science fiction tale that questions our notions of intelligence, humanity, love and kindness. Written as a series of progress reports by the protagonist Charlie Gordon as he experiences the full cycle of effects of an experimental cognitive enhancement operation. The journey is captivating and ultimately heartbreaking. Would highly recommend.&lt;/p&gt;
+&lt;p&gt;A heart-wrenching science fiction tale that confronts the accepted notions of intelligence, humanity, love and kindness. Written as a series of progress reports by the protagonist Charlie Gordon as he experiences the full cycle of effects of an experimental cognitive enhancement operation. The journey is captivating and ultimately heartbreaking. Would highly recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;surely-you-re-joking-mr-feynman-by-richard-feynman&#34;&gt;Surely You&amp;rsquo;re Joking, Mr. Feynman! by Richard Feynman&lt;/h3&gt;
 
@@ -63,7 +99,7 @@
 
 &lt;h3 id=&#34;the-ministry-of-utmost-happiness-by-arundhati-roy&#34;&gt;The Ministry of Utmost Happiness by Arundhati Roy&lt;/h3&gt;
 
-&lt;p&gt;A somewhat underwhelming comeback novel from Arundhati Roy after a gap of more than two decades. The sprawling plot line is unfolded mostly by telling and not by showing. And while Roy can effortlessly make the reader look where she wants, it&amp;rsquo;s not entirely clear as to what is meant to be seen. In the hands of a lesser writer, such faults would have spelt doom but in Roy more than redeems the novel with her masterful prose. However, the perspective in some places is confusing and politics are inserted into the narrative with all the subtlety of a sledgehammer. While no &lt;em&gt;God of Small things&lt;/em&gt;, it makes for a decent read. Would recommend.&lt;/p&gt;
+&lt;p&gt;A somewhat underwhelming comeback novel from Arundhati Roy after a gap of more than two decades. The sprawling plot line is unfolded mostly by telling and not by showing. And while Roy can effortlessly make the reader look where she wants, it&amp;rsquo;s not entirely clear as to what she wants us to see. In the hands of a lesser writer, such faults would have spelt doom but in Roy more than redeems the novel with her masterful prose. However, the perspective in some places is confusing and politics are inserted into the narrative with all the subtlety of a sledgehammer. While it&amp;rsquo;s no &lt;em&gt;God of Small Things&lt;/em&gt;, it makes for a decent read. Would recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;factfulness-by-hans-rosling-ola-rosling-and-anna-rosling-rönnlund&#34;&gt;Factfulness by  Hans Rosling, Ola Rosling and Anna Rosling Rönnlund&lt;/h3&gt;
 
@@ -71,19 +107,19 @@
 
 &lt;h3 id=&#34;dune-by-frank-herbert&#34;&gt;Dune by Frank Herbert&lt;/h3&gt;
 
-&lt;p&gt;An undeniable classic of science fiction, Dune at its surface is about an interplanetary blood feud. But beyond the seemingly trite premise is a vivid account of a weird and wonderful world of an inhabited desert planet with a very unique zoology.  The world building with its myriad cultural influence is absolutely stellar, the political intrigue is captivating and the character dynamics are powerfully evocative. The only weakness of the novel is the tendency to use long winding speeches to explain the plot points. Would recommend.&lt;/p&gt;
+&lt;p&gt;An undeniable classic of science fiction, &lt;em&gt;Dune&lt;/em&gt; at its surface is about an interplanetary blood feud. But beyond the seemingly trite premise is a vivid account of a weird and wonderful world with a very unique zoology.  The world building with its myriad cultures is absolutely stellar, the political intrigue is captivating and the character dynamics are powerfully evocative. The only weakness of the novel is the tendency to use long winding speeches to explain the plot points. Would recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;bad-blood-by-john-carreyrou&#34;&gt;Bad Blood by John Carreyrou&lt;/h3&gt;
 
-&lt;p&gt;The riveting tale of the spectacular rise and epic fall of Silicon Valley&amp;rsquo;s Blood Unicorn. A behind-the-scenes account of John Carreyrou&amp;rsquo;s initial revelations in the Wall Street Journal came to be, Bad Blood combines journalistic prowess with narrative flair. The lurid details of the puffery, duplicity and manipulation that ultimately lead to Theranos&amp;rsquo;s eye-watering valuation make for a satisfying sense of schadenfreude. Would recommend.&lt;/p&gt;
+&lt;p&gt;The riveting tale of the spectacular rise and epic fall of Silicon Valley&amp;rsquo;s Blood Unicorn. A behind-the-scenes account of how John Carreyrou&amp;rsquo;s explosive pieces in the Wall Street Journal came to be, &lt;em&gt;Bad Blood&lt;/em&gt; combines journalistic prowess with narrative flair. The lurid details of the puffery, duplicity and manipulation behind Theranos&amp;rsquo;s eye-watering valuation make for a satisfying sense of schadenfreude. Would recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;sacred-games-by-vikram-chandra&#34;&gt;Sacred Games by Vikram Chandra&lt;/h3&gt;
 
-&lt;p&gt;A story about a washed up gangster, a cynical cop and the city of Mumbai in peril. The main plot flows at a meandering pace while drawing in a staggering number of tributaries. And frankly, the tributaries are far more interesting. The expected impending doom never really hits home and everything is a bit too well done. Too much time is spent on the protagonist&amp;rsquo;s backstory which is neither evocative nor strictly speaking, necessary. The dialogue while interlaced with vernacular vocabulary simply does not carry any emotional force. At over 700 pages, the book just isn&amp;rsquo;t worth the effort. The Netflix show though, significantly different from the book&amp;rsquo;s storyline is a much better proposition. Would not recommend.&lt;/p&gt;
+&lt;p&gt;A story about a washed up gangster, a cynical cop and the city of Mumbai in peril. The main plot flows at a meandering pace while drawing in a staggering number of tributaries. And frankly, the tributaries are far more interesting. The sense of impending doom never really hits home and everything is a bit too well done. Too much time is spent on the protagonist&amp;rsquo;s backstory which is entirely uninteresting. The dialogue while interlaced with vernacular vocabulary simply does not carry any emotional force. At over 700 pages, the book just isn&amp;rsquo;t worth the effort. The Netflix show, while significantly different from the source material, is a much better proposition. Would not recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;born-a-crime-by-trevor-noah&#34;&gt;Born a Crime by Trevor Noah&lt;/h3&gt;
 
-&lt;p&gt;A collection of stories from Trever Noah&amp;rsquo;s youth while growing up in of post-Apartheid South Africa. Not a book is not meant to be a comprehensive treatise of that tumultuous period but a personal account of how it was to live through it. The writing is both insightful and extremely humorous. Naturally, it deals with issues of racism, poverty and crime: But despite its heavy subject matter, it is a very pleasant read. Would recommend.&lt;/p&gt;
+&lt;p&gt;A collection of stories from Trever Noah&amp;rsquo;s youth while growing up in of post-Apartheid South Africa. Yhe book is not meant to be a comprehensive treatise of that tumultuous period but a personal account of how it was to live through it all. The writing is both insightful and extremely humorous. Naturally, it deals with issues of racism, poverty and crime: But despite its heavy subject matter, it is a very pleasant read. Would recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;tinker-tailor-soldier-spy-by-john-le-carré&#34;&gt;Tinker Tailor Soldier Spy by John le Carré&lt;/h3&gt;
 
@@ -99,15 +135,15 @@
 
 &lt;h3 id=&#34;thinking-fast-and-slow-by-daniel-kahneman&#34;&gt;Thinking, Fast and Slow by Daniel Kahneman&lt;/h3&gt;
 
-&lt;p&gt;Really should have been subtitled The Ludic Fallacy Run Amok. A collection of studies and anecdotal stories all around a central theme, described in an easy to read fashion. Filled with grand generalisations based on dubious conclusions from small under-powered behavioural experiments. The prime example being the Priming Effect described in the book which has now been thoroughly been debunked. The central premise of there being two distinct modes of thinking is asserted without evidence and therefore logic dictates must be dismissed without evidence. The book is just further evidence that behavioral cconomics like much of psychology and its other bastard children is built on an edifice of fashionable nonsense. Would not recommend.&lt;/p&gt;
+&lt;p&gt;Really should have been subtitled &lt;em&gt;The Ludic Fallacy Run Amok&lt;/em&gt;. A collection of studies and anecdotal stories all around a central theme, suitably vulgarized for general consumption. Filled with grand generalisations based on dubious conclusions from small under-powered behavioural experiments. Much ado is made about the so-called &lt;em&gt;Priming Effect&lt;/em&gt; which has since been thoroughly been debunked. The central premise of there being two distinct modes of thinking is asserted with no evidence. One this the book does prove is that behavioural economics &amp;ndash;that bastard child of psychology &amp;ndash; is built on an edifice of fashionable nonsense. Would not recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;the-handmaid-s-tale-by-margaret-atwood&#34;&gt;The Handmaid&amp;rsquo;s Tale by Margaret Atwood&lt;/h3&gt;
 
-&lt;p&gt;A speculative dystopian novel set in a world taken over by religious fundamentalists with an extremely patriarchal society. The protagonist is a woman called &amp;lsquo;Offred&amp;rsquo;, her name signifying her status as a possession &amp;lsquo;of Fred&amp;rsquo;. Extremely well written, the book features a double narrative, with one chronicling the fall of the old order and the other the working of the new. The intimate prose and visceral detail make reading The Handmaid&amp;rsquo;s Tale an almost physical experience. Would highly recommend.&lt;/p&gt;
+&lt;p&gt;A speculative dystopian novel set in a deeply patriarchal world taken over by religious fundamentalists. The protagonist is a woman called &amp;lsquo;Offred&amp;rsquo;, her name signifying her status as a possession &amp;lsquo;of Fred&amp;rsquo;. Extremely well written, the book features a double narrative, with one chronicling the fall of the old order and the other dealing with life under the new. The intimate prose and visceral detail make reading The Handmaid&amp;rsquo;s Tale an almost physical experience. Would highly recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;man-s-search-for-meaning-by-viktor-frankl&#34;&gt;Man&amp;rsquo;s Search for Meaning by Viktor Frankl&lt;/h3&gt;
 
-&lt;p&gt;Literal survivorship bias taken to the absolute extreme. Frankl devises an entire theory of psychotherapy backed by the fact that he survived a concentration camp when so many others perished. The narrative deceptively suggests that Frankl spent months in Auschwitz death camp when in reality he spent most of his time as a prisoner in the Dachau labour camp. Also conveniently left out are details about Frankl&amp;rsquo;s unqualified experiments with lobotomy on his fellow prisoners. Would not recommend.&lt;/p&gt;
+&lt;p&gt;Literal survivorship bias taken to the absolute extreme. Frankl devises an entire theory of psychotherapy backed by the fact that he survived a concentration camp when so many others perished. The narrative deceptively suggests that Frankl spent months in the Auschwitz death camp when in reality he spent most of his time as a prisoner in the Dachau labour camp. Also conveniently left out are details about Frankl&amp;rsquo;s unqualified experiments with lobotomy on his fellow prisoners. Would not recommend.&lt;/p&gt;
 
 &lt;h3 id=&#34;em-and-the-big-hoom-by-jerry-pinto&#34;&gt;Em and the Big Hoom by Jerry Pinto&lt;/h3&gt;
 
