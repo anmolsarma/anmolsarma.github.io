@@ -84,7 +84,7 @@ sudo mount -o loop rootfs.img mnt/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;This time the Kernel shouldn&amp;rsquo;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&amp;rsquo;s annoying to have to login each time we boot up the VM. Let&amp;rsquo;s enable auto login as root instead.&lt;/p&gt;
 
-&lt;p&gt;Terminate QEMU (&lt;code&gt;Ctrl-c&lt;/code&gt;, &lt;code&gt;x&lt;/code&gt;), mount the filesystem image again and then create the configuration folder structure:&lt;/p&gt;
+&lt;p&gt;Terminate QEMU (&lt;code&gt;Ctrl-a&lt;/code&gt;, &lt;code&gt;x&lt;/code&gt;), mount the filesystem image again and then create the configuration folder structure:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo mount -o loop rootfs.img mnt/
 sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Add the following lines to &lt;code&gt;mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf&lt;/code&gt;:&lt;/p&gt;
@@ -147,7 +147,7 @@ Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &l
 sudo sudo tunctl -u &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;$(&lt;/span&gt;id -u&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;)&lt;/span&gt;
 Set &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;tap0&amp;#39;&lt;/span&gt; persistent and owned by uid &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
 sudo ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; tap0 up&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; virtual interface connected the host&amp;rsquo;s tap0 interface:&lt;/p&gt;
+&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; interface connected the host&amp;rsquo;s tap0 interface:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -device e1000,netdev&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0 -netdev tap,id&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0,ifname&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Once the guest boots up, bring the network interface up:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; enp0s3 up

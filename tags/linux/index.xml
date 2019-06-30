@@ -15,9 +15,9 @@
       <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/linux-file-creation-time/</guid>
-      <description>&lt;p&gt;The &lt;a href=&#34;http://man7.org/linux/man-pages/man1/stat.1.html&#34;&gt;&lt;code&gt;stat&lt;/code&gt;&lt;/a&gt; utility can be used to retrieve the Unix file timestamps namely &lt;code&gt;atime&lt;/code&gt;, &lt;code&gt;ctime&lt;/code&gt; and &lt;code&gt;mtime&lt;/code&gt;. Of these, the benefit of &lt;code&gt;mtime&lt;/code&gt; which records the last time when the file was modified is immediately apparent. On the other hand, &lt;code&gt;atime&lt;/code&gt; which records the last time the file was accessed has been called &lt;a href=&#34;https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/&#34;&gt;&amp;ldquo;perhaps the most stupid Unix design idea of all times&amp;rdquo;&lt;/a&gt;. Intuitively, one might expect &lt;code&gt;ctime&lt;/code&gt; to record the creation time of a file. However, &lt;code&gt;ctime&lt;/code&gt; records the last time when the metadata of a file was changed.&lt;/p&gt;
+      <description>&lt;p&gt;The &lt;a href=&#34;http://man7.org/linux/man-pages/man1/stat.1.html&#34;&gt;&lt;code&gt;stat&lt;/code&gt;&lt;/a&gt; utility can be used to retrieve the Unix file timestamps namely &lt;code&gt;atime&lt;/code&gt;, &lt;code&gt;ctime&lt;/code&gt; and &lt;code&gt;mtime&lt;/code&gt;. Of these, the benefit of &lt;code&gt;mtime&lt;/code&gt; which records the last time when the file was modified is immediately apparent. On the other hand, &lt;code&gt;atime&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; which records the last time the file was accessed has been called &lt;a href=&#34;https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/&#34;&gt;&amp;ldquo;perhaps the most stupid Unix design idea of all times&amp;rdquo;&lt;/a&gt;. Intuitively, one might expect &lt;code&gt;ctime&lt;/code&gt; to record the creation time of a file. However, &lt;code&gt;ctime&lt;/code&gt; records the last time when the metadata of a file was changed.&lt;/p&gt;
 
-&lt;p&gt;Typically, Unices do not record file creation times. While some individual filesystems do record file creation times, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of &lt;code&gt;stat&lt;/code&gt; (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:&lt;/p&gt;
+&lt;p&gt;Typically, Unices do not record file creation times. While some individual filesystems do record file creation times&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of &lt;code&gt;stat&lt;/code&gt; (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ stat .
   File: .
   Size: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;            Blocks: &lt;span style=&#34;color:#666&#34;&gt;8&lt;/span&gt;          IO Block: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;   directory
@@ -42,7 +42,18 @@ Access: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34
 Access: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-06-23 &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;:49:04.056933574 +0000
 Modify: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
 Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
- Birth: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:13:50.100925514 +0000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+ Birth: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:13:50.100925514 +0000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;The impact of &lt;code&gt;atime&lt;/code&gt; on disk performance is mitigated by the use of &lt;a href=&#34;https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/power_management_guide/relatime&#34;&gt;&lt;code&gt;relatime&lt;/code&gt;&lt;/a&gt; on modern Linux systems.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;For ext4, one can get the &lt;code&gt;crtime&lt;/code&gt; of a file using the &lt;code&gt;stat&lt;/code&gt; subcommand of the confusingly named &lt;a href=&#34;https://linux.die.net/man/8/debugfs&#34;&gt;&lt;code&gt;debugfs&lt;/code&gt;&lt;/a&gt; utility.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -243,7 +254,7 @@ sudo mount -o loop rootfs.img mnt/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;This time the Kernel shouldn&amp;rsquo;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&amp;rsquo;s annoying to have to login each time we boot up the VM. Let&amp;rsquo;s enable auto login as root instead.&lt;/p&gt;
 
-&lt;p&gt;Terminate QEMU (&lt;code&gt;Ctrl-c&lt;/code&gt;, &lt;code&gt;x&lt;/code&gt;), mount the filesystem image again and then create the configuration folder structure:&lt;/p&gt;
+&lt;p&gt;Terminate QEMU (&lt;code&gt;Ctrl-a&lt;/code&gt;, &lt;code&gt;x&lt;/code&gt;), mount the filesystem image again and then create the configuration folder structure:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo mount -o loop rootfs.img mnt/
 sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Add the following lines to &lt;code&gt;mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf&lt;/code&gt;:&lt;/p&gt;
@@ -306,7 +317,7 @@ Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &l
 sudo sudo tunctl -u &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;$(&lt;/span&gt;id -u&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;)&lt;/span&gt;
 Set &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;tap0&amp;#39;&lt;/span&gt; persistent and owned by uid &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
 sudo ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; tap0 up&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; virtual interface connected the host&amp;rsquo;s tap0 interface:&lt;/p&gt;
+&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; interface connected the host&amp;rsquo;s tap0 interface:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -device e1000,netdev&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0 -netdev tap,id&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0,ifname&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Once the guest boots up, bring the network interface up:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; enp0s3 up

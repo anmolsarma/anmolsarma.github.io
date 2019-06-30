@@ -113,7 +113,7 @@ sudo mount -o loop rootfs.img mnt/</code></pre></div>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append <span style="color:#b44">&#34;root=/dev/sda console=ttyS0&#34;</span> </code></pre></div>
 <p>This time the Kernel shouldn&rsquo;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&rsquo;s annoying to have to login each time we boot up the VM. Let&rsquo;s enable auto login as root instead.</p>
 
-<p>Terminate QEMU (<code>Ctrl-c</code>, <code>x</code>), mount the filesystem image again and then create the configuration folder structure:</p>
+<p>Terminate QEMU (<code>Ctrl-a</code>, <code>x</code>), mount the filesystem image again and then create the configuration folder structure:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mount -o loop rootfs.img mnt/
 sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d</code></pre></div>
 <p>Add the following lines to <code>mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf</code>:</p>
@@ -176,7 +176,7 @@ Breakpoint <span style="color:#666">1</span>, do_sys_open <span style="color:#66
 sudo sudo tunctl -u <span style="color:#a2f;font-weight:bold">$(</span>id -u<span style="color:#a2f;font-weight:bold">)</span>
 Set <span style="color:#b44">&#39;tap0&#39;</span> persistent and owned by uid <span style="color:#666">1000</span>
 sudo ip link <span style="color:#a2f">set</span> tap0 up</code></pre></div>
-<p>Now launch QEMU with a virtual <code>e1000</code> virtual interface connected the host&rsquo;s tap0 interface:</p>
+<p>Now launch QEMU with a virtual <code>e1000</code> interface connected the host&rsquo;s tap0 interface:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-system-x86_64 -nographic -device e1000,netdev<span style="color:#666">=</span>net0 -netdev tap,id<span style="color:#666">=</span>net0,ifname<span style="color:#666">=</span>tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append <span style="color:#b44">&#34;root=/dev/sda rw console=ttyS0&#34;</span> -s</code></pre></div>
 <p>Once the guest boots up, bring the network interface up:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip link <span style="color:#a2f">set</span> enp0s3 up

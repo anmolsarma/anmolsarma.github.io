@@ -44,9 +44,9 @@
 			<a href="/tags/filesystem">filesystem</a>
 			
 		
-        <p>The <a href="http://man7.org/linux/man-pages/man1/stat.1.html"><code>stat</code></a> utility can be used to retrieve the Unix file timestamps namely <code>atime</code>, <code>ctime</code> and <code>mtime</code>. Of these, the benefit of <code>mtime</code> which records the last time when the file was modified is immediately apparent. On the other hand, <code>atime</code> which records the last time the file was accessed has been called <a href="https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/">&ldquo;perhaps the most stupid Unix design idea of all times&rdquo;</a>. Intuitively, one might expect <code>ctime</code> to record the creation time of a file. However, <code>ctime</code> records the last time when the metadata of a file was changed.</p>
+        <p>The <a href="http://man7.org/linux/man-pages/man1/stat.1.html"><code>stat</code></a> utility can be used to retrieve the Unix file timestamps namely <code>atime</code>, <code>ctime</code> and <code>mtime</code>. Of these, the benefit of <code>mtime</code> which records the last time when the file was modified is immediately apparent. On the other hand, <code>atime</code><sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> which records the last time the file was accessed has been called <a href="https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/">&ldquo;perhaps the most stupid Unix design idea of all times&rdquo;</a>. Intuitively, one might expect <code>ctime</code> to record the creation time of a file. However, <code>ctime</code> records the last time when the metadata of a file was changed.</p>
 
-<p>Typically, Unices do not record file creation times. While some individual filesystems do record file creation times, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of <code>stat</code> (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:</p>
+<p>Typically, Unices do not record file creation times. While some individual filesystems do record file creation times<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of <code>stat</code> (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ stat .
   File: .
   Size: <span style="color:#666">4096</span>            Blocks: <span style="color:#666">8</span>          IO Block: <span style="color:#666">4096</span>   directory
@@ -71,7 +71,18 @@ Access: <span style="color:#666">(</span><span style="color:#666">0775</span>/dr
 Access: <span style="color:#666">2019</span>-06-23 <span style="color:#666">10</span>:49:04.056933574 +0000
 Modify: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:29:59.609167627 +0000
 Change: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:29:59.609167627 +0000
- Birth: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:13:50.100925514 +0000</code></pre></div>
+ Birth: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:13:50.100925514 +0000</code></pre></div><div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">The impact of <code>atime</code> on disk performance is mitigated by the use of <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/power_management_guide/relatime"><code>relatime</code></a> on modern Linux systems.
+ <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
+<li id="fn:2">For ext4, one can get the <code>crtime</code> of a file using the <code>stat</code> subcommand of the confusingly named <a href="https://linux.die.net/man/8/debugfs"><code>debugfs</code></a> utility.
+ <a class="footnote-return" href="#fnref:2"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
 		
 			<div>
 				<div id="disqus_thread"></div>
