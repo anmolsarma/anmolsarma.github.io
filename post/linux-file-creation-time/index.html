@@ -8,8 +8,6 @@
     
     
     <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
-    
-    <meta name="generator" content="Hugo 0.40.3" />
 </head>
 <body>
 <header>
@@ -44,44 +42,41 @@
 			<a href="/tags/filesystem">filesystem</a>
 			
 		
-        <p>The <a href="http://man7.org/linux/man-pages/man1/stat.1.html"><code>stat</code></a> utility can be used to retrieve the Unix file timestamps namely <code>atime</code>, <code>ctime</code> and <code>mtime</code>. Of these, the benefit of <code>mtime</code> which records the last time when the file was modified is immediately apparent. On the other hand, <code>atime</code><sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup> which records the last time the file was accessed has been called <a href="https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/">&ldquo;perhaps the most stupid Unix design idea of all times&rdquo;</a>. Intuitively, one might expect <code>ctime</code> to record the creation time of a file. However, <code>ctime</code> records the last time when the metadata of a file was changed.</p>
-
-<p>Typically, Unices do not record file creation times. While some individual filesystems do record file creation times<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of <code>stat</code> (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:</p>
+        <p>The <a href="http://man7.org/linux/man-pages/man1/stat.1.html"><code>stat</code></a> utility can be used to retrieve the Unix file timestamps namely <code>atime</code>, <code>ctime</code> and <code>mtime</code>. Of these, the benefit of <code>mtime</code> which records the last time when the file was modified is immediately apparent. On the other hand, <code>atime</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> which records the last time the file was accessed has been called <a href="https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/">&ldquo;perhaps the most stupid Unix design idea of all times&rdquo;</a>. Intuitively, one might expect <code>ctime</code> to record the creation time of a file. However, <code>ctime</code> records the last time when the metadata of a file was changed.</p>
+<p>Typically, Unices do not record file creation times. While some individual filesystems do record file creation times<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of <code>stat</code> (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ stat .
   File: .
   Size: <span style="color:#666">4096</span>            Blocks: <span style="color:#666">8</span>          IO Block: <span style="color:#666">4096</span>   directory
 Device: 803h/2051d      Inode: <span style="color:#666">3588416</span>     Links: <span style="color:#666">18</span>
-Access: <span style="color:#666">(</span><span style="color:#666">0775</span>/drwxrwxr-x<span style="color:#666">)</span>  Uid: <span style="color:#666">(</span> <span style="color:#666">1000</span>/ anmol<span style="color:#666">)</span>   Gid: <span style="color:#666">(</span> <span style="color:#666">1000</span>/ anmol<span style="color:#666">)</span>
-Access: <span style="color:#666">2019</span>-06-23 <span style="color:#666">10</span>:49:04.056933574 +0000
-Modify: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:29:59.609167627 +0000
-Change: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:29:59.609167627 +0000
- Birth: -</code></pre></div>
-<p>With the &ldquo;<code>Birth</code>&rdquo; field, meant to show the creation time, sporting a depressing &ldquo;<code>-</code>&rdquo;.</p>
-
+Access: <span style="color:#666">(</span>0775/drwxrwxr-x<span style="color:#666">)</span>  Uid: <span style="color:#666">(</span> 1000/ anmol<span style="color:#666">)</span>   Gid: <span style="color:#666">(</span> 1000/ anmol<span style="color:#666">)</span>
+Access: 2019-06-23 10:49:04.056933574 +0000
+Modify: 2019-05-19 13:29:59.609167627 +0000
+Change: 2019-05-19 13:29:59.609167627 +0000
+ Birth: -
+</code></pre></div><p>With the &ldquo;<code>Birth</code>&rdquo; field, meant to show the creation time, sporting a depressing &ldquo;<code>-</code>&rdquo;.</p>
 <p>The fact that <code>ctime</code> does not mean creation time but change time coupled with the absence of a real creation time interface does lead to quite a bit of confusion. The confusion seems so pervasive that the <code>msdos</code> driver in the Linux kernel <a href="https://elixir.bootlin.com/linux/v5.1.14/source/fs/fat/inode.c#L883">happily clobbers</a> the FAT creation time with the Unix change time!</p>
-
 <p>The limitations of the current <code>stat()</code> system call have been known for some time. A new system call providing extended attributes was <a href="https://www.spinics.net/lists/linux-fsdevel/msg33831.html">first proposed in 2010</a> with the new <a href="https://lwn.net/Articles/685791/#statx"><code>statx()</code></a> interface finally <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a528d35e8bfcc521d7cb70aaf03e1bd296c8493f">being merged into Linux 4.11 in 2017</a>. It took so long at least in part because kernel developers quickly ran into one of the hardest problems in Computer Science: <a href="https://lkml.org/lkml/2010/7/22/249">naming things</a>. Because there was no standard to guide them, each filesystem took to calling creation time by a different name. <a href="https://elixir.bootlin.com/linux/v5.1.14/source/fs/ext4/ext4.h#L744">Ext4</a> and <a href="https://elixir.bootlin.com/linux/v5.1.14/source/fs/xfs/libxfs/xfs_inode_buf.h#L40">XFS</a> called it <code>crtime</code> while <a href="https://elixir.bootlin.com/linux/v5.1.14/source/fs/btrfs/btrfs_inode.h#L187">Btrfs</a> and <a href="https://elixir.bootlin.com/linux/v5.1.14/source/fs/jfs/jfs_incore.h#L46">JFS</a> called it <code>otime</code>. Implementations also have slightly different semantics with JFS storing creation time only with the <a href="https://elixir.bootlin.com/linux/v5.1.14/source/fs/jfs/jfs_imap.c#L3166">precision of seconds</a>.</p>
-
 <p>Glibc took a while to add a wrapper for statx() with support landing in <a href="https://www.sourceware.org/ml/libc-alpha/2018-08/msg00003.html">version 2.28</a> which was released in 2018. Fast forward to March 2019 when GNU <a href="https://lists.gnu.org/archive/html/coreutils-announce/2019-03/msg00000.html">coreutils 8.31</a> was released with <code>stat</code> finally gaining support for reading the file creation time:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ stat .
   File: .
   Size: <span style="color:#666">4096</span>            Blocks: <span style="color:#666">8</span>          IO Block: <span style="color:#666">4096</span>   directory
 Device: 803h/2051d      Inode: <span style="color:#666">3588416</span>     Links: <span style="color:#666">18</span>
-Access: <span style="color:#666">(</span><span style="color:#666">0775</span>/drwxrwxr-x<span style="color:#666">)</span>  Uid: <span style="color:#666">(</span> <span style="color:#666">1000</span>/ anmol<span style="color:#666">)</span>   Gid: <span style="color:#666">(</span> <span style="color:#666">1000</span>/ anmol<span style="color:#666">)</span>
-Access: <span style="color:#666">2019</span>-06-23 <span style="color:#666">10</span>:49:04.056933574 +0000
-Modify: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:29:59.609167627 +0000
-Change: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:29:59.609167627 +0000
- Birth: <span style="color:#666">2019</span>-05-19 <span style="color:#666">13</span>:13:50.100925514 +0000</code></pre></div><div class="footnotes">
-
-<hr />
-
+Access: <span style="color:#666">(</span>0775/drwxrwxr-x<span style="color:#666">)</span>  Uid: <span style="color:#666">(</span> 1000/ anmol<span style="color:#666">)</span>   Gid: <span style="color:#666">(</span> 1000/ anmol<span style="color:#666">)</span>
+Access: 2019-06-23 10:49:04.056933574 +0000
+Modify: 2019-05-19 13:29:59.609167627 +0000
+Change: 2019-05-19 13:29:59.609167627 +0000
+ Birth: 2019-05-19 13:13:50.100925514 +0000
+</code></pre></div><section class="footnotes" role="doc-endnotes">
+<hr>
 <ol>
-<li id="fn:1">The impact of <code>atime</code> on disk performance is mitigated by the use of <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/power_management_guide/relatime"><code>relatime</code></a> on modern Linux systems.
- <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
-<li id="fn:2">For ext4, one can get the <code>crtime</code> of a file using the <code>stat</code> subcommand of the confusingly named <a href="https://linux.die.net/man/8/debugfs"><code>debugfs</code></a> utility.
- <a class="footnote-return" href="#fnref:2"><sup>[return]</sup></a></li>
+<li id="fn:1" role="doc-endnote">
+<p>The impact of <code>atime</code> on disk performance is mitigated by the use of <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/power_management_guide/relatime"><code>relatime</code></a> on modern Linux systems. <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>For ext4, one can get the <code>crtime</code> of a file using the <code>stat</code> subcommand of the confusingly named <a href="https://linux.die.net/man/8/debugfs"><code>debugfs</code></a> utility. <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
 </ol>
-</div>
+</section>
 
 		
 			<div>
@@ -106,7 +101,7 @@ function load_disqus() {
 </main>
 <hr/>
 <footer>
-    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content on this webiste is licensed under a <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>.</p>
+    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content on this webiste is licensed under a <!-- raw HTML omitted -->Creative Commons Attribution 4.0 International License<!-- raw HTML omitted -->.</p>
 </footer>
 
 

@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Protocols on Anmol Sarma</title>
+    <title>protocols on Anmol Sarma</title>
     <link>https://www.anmolsarma.in/tags/protocols/</link>
     
     <language>en-in</language>
@@ -9,82 +8,64 @@
     
     <atom:link href="https://www.anmolsarma.in/tags/protocols/" rel="self" type="application/rss+xml" />
     
+    
+    
     <item>
       <title>DCCP: The socket type you probably never heard of</title>
       <link>https://www.anmolsarma.in/post/dccp/</link>
       <pubDate>Tue, 13 Dec 2016 23:10:50 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/dccp/</guid>
-      <description>
-
-&lt;p&gt;&lt;em&gt;TL;DR: DCCP is a relatively newer transport layer protocol which draws from both TCP and UDP. Jump straight to the &lt;a href=&#34;#example-in-c&#34;&gt;example C code&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
-
+      <description>&lt;p&gt;&lt;em&gt;TL;DR: DCCP is a relatively newer transport layer protocol which draws from both TCP and UDP. Jump straight to the &lt;a href=&#34;#example-in-c&#34;&gt;example C code&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
-
-&lt;p&gt;Historically, the majority of the traffic on the Internet has been over &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; which provides a reliable connection-oriented stream between two hosts. &lt;a href=&#34;https://en.wikipedia.org/wiki/User_Datagram_Protocol&#34;&gt;UDP&lt;/a&gt; has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&amp;rsquo;s connection establishment overhead or those for which timeliness is more important than reliability. However, the increasing use of UDP for applications such as internet telephony and streaming media which transfer a large amount of data can lead to significant &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_congestion&#34;&gt;network congestion&lt;/a&gt;. Since unlike TCP, UDP provides no inherent congestion control mechanism, an application can send UDP datagrams at a much higher rate than the available path capacity and cause congestion along the path. Increased congestion may lead to delays, packet loss and the degradation of the network&amp;rsquo;s quality of service.&lt;/p&gt;
-
+&lt;p&gt;Historically, the majority of the traffic on the Internet has been over &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; which provides a reliable connection-oriented stream between two hosts. &lt;a href=&#34;https://en.wikipedia.org/wiki/User_Datagram_Protocol&#34;&gt;UDP&lt;/a&gt; has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&#39;s connection establishment overhead or those for which timeliness is more important than reliability. However, the increasing use of UDP for applications such as internet telephony and streaming media which transfer a large amount of data can lead to significant &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_congestion&#34;&gt;network congestion&lt;/a&gt;. Since unlike TCP, UDP provides no inherent congestion control mechanism, an application can send UDP datagrams at a much higher rate than the available path capacity and cause congestion along the path. Increased congestion may lead to delays, packet loss and the degradation of the network&#39;s quality of service.&lt;/p&gt;
 &lt;p&gt;Applications and protocols that choose to use UDP as their transport must, therefore, employ mechanisms to prevent congestion and to establish some degree of fairness with concurrent traffic so that the network remains usable. A prominent example of such a congestion control scheme is &lt;a href=&#34;https://en.wikipedia.org/wiki/LEDBAT&#34;&gt;LEDBAT&lt;/a&gt; employed by &lt;a href=&#34;https://en.wikipedia.org/wiki/BitTorrent&#34;&gt;BitTorrent&lt;/a&gt;. However, implementing a congestion control scheme is difficult, time-consuming and error-prone. Multiple non-standard implementations also make it difficult to reason about how applications would respond to network congestion. &lt;a href=&#34;https://en.wikipedia.org/wiki/Datagram_Congestion_Control_Protocol&#34;&gt;DCCP&lt;/a&gt; - Datagram Congestion Control Protocol is intended to mitigate this problem as a transport for unreliable datagrams with built-in congestion control.&lt;/p&gt;
-
-&lt;p&gt;From an application programmer&amp;rsquo;s perspective, DCCP differs from UDP by providing four additional features:&lt;/p&gt;
-
+&lt;p&gt;From an application programmer&#39;s perspective, DCCP differs from UDP by providing four additional features:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Explicit connection establishment between hosts&lt;/li&gt;
 &lt;li&gt;Selectable congestion control schemes&lt;/li&gt;
 &lt;li&gt;Path MTU discovery to avoid fragmentation&lt;/li&gt;
 &lt;li&gt;Service Codes for identifying applications&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;DCCP makes use of Explicit Congestion Notification but it is transparent the  application. DCCP is designed to leave additional functionality such as reliability or Forward Error Correction (FEC) to be layered on top, as and when required rather than at the protocol level itself.&lt;/p&gt;
-
 &lt;h2 id=&#34;explicit-connection-establishment&#34;&gt;Explicit connection establishment&lt;/h2&gt;
-
 &lt;p&gt;The connection establishment semantics of DCCP mirror those of TCP with a client that actively connects to a server that is passively listening on a port. DCCP connections are bidirectional. Logically, however, a DCCP connection consists of two separate unidirectional connections, called half-connections. Each half-connection is a one-way, unreliable datagram pipe. The rationale for this explained in the next section.&lt;/p&gt;
-
 &lt;h2 id=&#34;selectable-congestion-control-schemes&#34;&gt;Selectable congestion control schemes&lt;/h2&gt;
-
 &lt;p&gt;TCP implements congestion control entirely transparently to the application. While it is possible to configure the host to use a specific variant, there is no way for the application to discover which congestion control scheme is in force, let alone negotiate one. DCCP, however, can cater to the different needs of applications by allowing applications to negotiate the congestion control schemes. In fact, each of the half-connections can use a different scheme, allowing for greater control.&lt;/p&gt;
-
 &lt;p&gt;Congesting the network by sending data at a rate that is faster than the slowest link between the endpoints will overwhelm it. This may lead to packet loss leading to retransmissions which may, in turn, lead to further congestion. The solution to this problem is to start transmitting data at a slow rate on a new connection and to then ramp up the speed until packet loss is detected. The transmission rate may then be scaled back until no further packet loss occurs. The optimum speed at which to transfer data  will change with network conditions over the life of the connection. Congestion control schemes differ in how packet loss is estimated and the rate at which is the transmission speed is ramped up or scaled back. DCCP congestion control schemes are denoted by Congestion Control Identifiers - CCIDs. Currently, three CCIDs have been formally specified:&lt;/p&gt;
-
 &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4341&#34;&gt;CCID 2&lt;/a&gt; -  TCP-like Congestion Control:&lt;/strong&gt; A quick reacting scheme modelled after TCP which will rapidly ramp up speed to take advantage of available bandwidth and also rapidly scale back when congestion is detected. Suitable for applications that can handle large swings in transmission rates.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc5348&#34;&gt;CCID 3&lt;/a&gt; - TCP-Friendly Rate Control (TFRC):&lt;/strong&gt; A slower reacting scheme intended to be friendly to concurrent TCP flows in the network. Provides a relatively smoother sending rate at the expense of possibly not utilising all available bandwidth. Suitable for media streaming applications that prefer to minimise abrupt changes in the sending rate.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4828&#34;&gt;CCID 4&lt;/a&gt; - TCP-Friendly Rate Control for Small Packets (TFRC-SP):&lt;/strong&gt; An experimental scheme for applications that use a small datagram size and those that change their sending rate by varying the datagram size.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4341&#34;&gt;CCID 2&lt;/a&gt; -  TCP-like Congestion Control:&lt;/strong&gt; A quick reacting scheme modelled after TCP which will rapidly ramp up speed to take advantage of available bandwidth and also rapidly scale back when congestion is detected. Suitable for applications that can handle large swings in transmission rates.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc5348&#34;&gt;CCID 3&lt;/a&gt; - TCP-Friendly Rate Control (TFRC):&lt;/strong&gt; A slower reacting scheme intended to be friendly to concurrent TCP flows in the network. Provides a relatively smoother sending rate at the expense of possibly not utilising all available bandwidth. Suitable for media streaming applications that prefer to minimise abrupt changes in the sending rate.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4828&#34;&gt;CCID 4&lt;/a&gt; - TCP-Friendly Rate Control for Small Packets (TFRC-SP):&lt;/strong&gt; An experimental scheme for applications that use a small datagram size and those that change their sending rate by varying the datagram size.&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;p&gt;In addition, the Linux kernel&amp;rsquo;s &lt;a href=&#34;https://github.com/uoaerg/linux-dccp&#34;&gt;DCCP Test Tree&lt;/a&gt; contains an experimental implementation of a scheme modelled after &lt;a href=&#34;https://en.wikipedia.org/wiki/CUBIC_TCP&#34;&gt;TCP CUBIC&lt;/a&gt;. There is also a mode that disables congestion control altogether for &lt;em&gt;UDP-like&lt;/em&gt; behaviour.&lt;/p&gt;
-
+&lt;p&gt;In addition, the Linux kernel&#39;s &lt;a href=&#34;https://github.com/uoaerg/linux-dccp&#34;&gt;DCCP Test Tree&lt;/a&gt; contains an experimental implementation of a scheme modelled after &lt;a href=&#34;https://en.wikipedia.org/wiki/CUBIC_TCP&#34;&gt;TCP CUBIC&lt;/a&gt;. There is also a mode that disables congestion control altogether for &lt;em&gt;UDP-like&lt;/em&gt; behaviour.&lt;/p&gt;
 &lt;h2 id=&#34;pmtu-discovery&#34;&gt;PMTU discovery&lt;/h2&gt;
-
 &lt;p&gt;Data between two internet hosts is transferred transmitted as a series of IP packets that pass through intermediate links. Each of these links has a maximum packet size or maximum transmission unit (MTU) that it can transmit without having to break it up into smaller fragments. The largest packet size that does not require fragmentation anywhere along a path is referred to as the path maximum transmission unit or PMTU. Applications can usually get better error tolerance by producing packets smaller than the PMTU. DCCP defines a maximum packet size (MPS) based on the PMTU and the congestion control scheme used for each connection. DCCP implementations will not send any packet bigger than the MPS and instead return an appropriate error to the application. The application can query the DCCP stack for the current MPS and restrict itself from sending datagrams larger than this value and thereby avoid &lt;a href=&#34;https://en.wikipedia.org/wiki/IP_fragmentation&#34;&gt;fragmentation&lt;/a&gt;.&lt;/p&gt;
-
 &lt;h2 id=&#34;service-codes&#34;&gt;Service Codes&lt;/h2&gt;
-
 &lt;p&gt;DCCP defines a 32 bit Service Code to disambiguate between multiple applications associated with a single a server port. The client specifies the Service Code it wants to connect to and this is used to identify the intended service or application to process a DCCP connection request. Essentially, Service Codes provide an additional level of indirection for connection multiplexing. A server listening on a port may be associated with multiple Service Codes but a client may have only one Service Code, indicating the application it wishes to connect to.&lt;/p&gt;
-
 &lt;h2 id=&#34;usage&#34;&gt;Usage&lt;/h2&gt;
-
-&lt;p&gt;The mainline Linux kernel has included DCCP support since &lt;a href=&#34;https://lwn.net/Articles/149756/&#34;&gt;2.6.14&lt;/a&gt; and mainstream distributions like Ubuntu enable it by default. However, to get the newer experimental features, you will have to build the kernel from the DCCP Test Tree. Or you can also grab the latest stable kernel release merged with the experimental DCCP changes from &lt;a href=&#34;https://github.com/unmole/linux-dccp/releases/latest&#34;&gt;here&lt;/a&gt;. Be sure to enable all the CCIDs in the kernel configuration in &lt;em&gt;Networking Support&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;Networking Options&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;The DCCP Protocol&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;DCCP CCIDs Configuration&lt;/em&gt;. Like the Debian Installation Guide Says, &amp;ldquo;&lt;em&gt;Don&amp;rsquo;t be afraid to try compiling the kernel. It&amp;rsquo;s fun and profitable.&lt;/em&gt;&amp;rdquo; For now, Linux is the only operating system supporting native DCCP, unless you count the patch for an ancient version of FreeBSD.&lt;/p&gt;
-
+&lt;p&gt;The mainline Linux kernel has included DCCP support since &lt;a href=&#34;https://lwn.net/Articles/149756/&#34;&gt;2.6.14&lt;/a&gt; and mainstream distributions like Ubuntu enable it by default. However, to get the newer experimental features, you will have to build the kernel from the DCCP Test Tree. Or you can also grab the latest stable kernel release merged with the experimental DCCP changes from &lt;a href=&#34;https://github.com/unmole/linux-dccp/releases/latest&#34;&gt;here&lt;/a&gt;. Be sure to enable all the CCIDs in the kernel configuration in &lt;em&gt;Networking Support&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;Networking Options&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;The DCCP Protocol&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;DCCP CCIDs Configuration&lt;/em&gt;. Like the Debian Installation Guide Says, &amp;ldquo;&lt;em&gt;Don&#39;t be afraid to try compiling the kernel. It&#39;s fun and profitable.&lt;/em&gt;&amp;rdquo; For now, Linux is the only operating system supporting native DCCP, unless you count the patch for an ancient version of FreeBSD.&lt;/p&gt;
 &lt;h2 id=&#34;example-in-c&#34;&gt;Example in C&lt;/h2&gt;
-
-&lt;p&gt;The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses &lt;em&gt;getsockopt()&lt;/em&gt; to read the current maximum packet size. Reading the available CCIDs on the host is shown in &lt;strong&gt;probe.c&lt;/strong&gt;. As libc doesn&amp;rsquo;t still have a &lt;strong&gt;netinet/dccp.h&lt;/strong&gt; header, you will have to get the required constants from the kernel sources or directly use the &lt;strong&gt;dccp.h&lt;/strong&gt; header below. &lt;a href=&#34;https://www.anmolsarma.in/dl/dccp_socket_example.tar.gz&#34;&gt;Download Code&lt;/a&gt;&lt;/p&gt;
-
+&lt;p&gt;The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses &lt;em&gt;getsockopt()&lt;/em&gt; to read the current maximum packet size. Reading the available CCIDs on the host is shown in &lt;strong&gt;probe.c&lt;/strong&gt;. As libc doesn&#39;t still have a &lt;strong&gt;netinet/dccp.h&lt;/strong&gt; header, you will have to get the required constants from the kernel sources or directly use the &lt;strong&gt;dccp.h&lt;/strong&gt; header below. &lt;a href=&#34;https://www.anmolsarma.in/dl/dccp_socket_example.tar.gz&#34;&gt;Download Code&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;server.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#define PORT 1337
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define SERVICE_CODE 42
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define PORT 1337&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define SERVICE_CODE 42&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;error_exit&lt;/span&gt;(&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;str)
 {
@@ -92,11 +73,11 @@
 	exit(errno);
 }
 
-&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;**&lt;/span&gt;argv)
+&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;argv)
 {
 	&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; listen_sock &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (listen_sock &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in servaddr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
 		.sin_family &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; AF_INET,
@@ -106,33 +87,33 @@
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
 		       &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(SO_REUSEADDR)&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(SO_REUSEADDR)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (bind(listen_sock, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;servaddr, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(servaddr)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;bind&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;bind&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// DCCP mandates the use of a &amp;#39;Service Code&amp;#39; in addition the port
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(listen_sock, SOL_DCCP, DCCP_SOCKOPT_SERVICE, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
 		       htonl(SERVICE_CODE)}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(DCCP_SOCKOPT_SERVICE)&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(DCCP_SOCKOPT_SERVICE)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (listen(listen_sock, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;listen&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;listen&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (;;) {
 
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Waiting for connection...&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Waiting for connection...&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in client_addr;
 		socklen_t addr_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(client_addr);
 
 		&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; conn_sock &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; accept(listen_sock, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;client_addr, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;addr_len);
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (conn_sock &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;) {
-			perror(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;accept&amp;#34;&lt;/span&gt;);
+			perror(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;accept&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;continue&lt;/span&gt;;
 		}
 
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Connection received from %s:%d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;,
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Connection received from %s:%d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;,
 		       inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (;;) {
@@ -141,7 +122,7 @@
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Datagrams, not a stream!
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; ret &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; recv(conn_sock, buffer, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(buffer), &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (ret &lt;span style=&#34;color:#666&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-				printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Received: %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, buffer);
+				printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Received: %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, buffer);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;else&lt;/span&gt;
 				&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;break&lt;/span&gt;;
 
@@ -149,18 +130,18 @@
 
 		close(conn_sock);
 	}
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;client.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;client.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;error_exit&lt;/span&gt;(&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;str)
 {
@@ -171,7 +152,7 @@
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;argv[])
 {
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (argc &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;) {
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Usage: ./client &amp;lt;server address&amp;gt; &amp;lt;port&amp;gt; &amp;lt;service code&amp;gt; &amp;lt;message 1&amp;gt; [message 2] ... &lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Usage: ./client &amp;lt;server address&amp;gt; &amp;lt;port&amp;gt; &amp;lt;service code&amp;gt; &amp;lt;message 1&amp;gt; [message 2] ... &lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 		exit(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
 	}
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in server_addr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
@@ -180,30 +161,30 @@
 	};
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;inet_pton(AF_INET, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;], &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;server_addr.sin_addr.s_addr)) {
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Invalid address %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Invalid address %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]);
 		exit(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
 	}
 
 	&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; socket_fd &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (socket_fd &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_SERVICE, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {htonl(atoi(argv[&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;]))}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(DCCP_SOCKOPT_SERVICE)&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(DCCP_SOCKOPT_SERVICE)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (connect(socket_fd, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;server_addr, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(server_addr)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;connect&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;connect&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Get the maximum packet size
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	uint32_t mps;
 	socklen_t res_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(mps);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (getsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_GET_CUR_MPS, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;mps, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;res_len))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&amp;#34;&lt;/span&gt;);
-	printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Maximum Packet Size: %d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, mps);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+	printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Maximum Packet Size: %d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, mps);
 
-	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; argc; i&lt;span style=&#34;color:#666&#34;&gt;++&lt;/span&gt;) {
+	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; argc; i&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;) {
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (send(socket_fd, argv[i], strlen(argv[i]) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-			error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;send&amp;#34;&lt;/span&gt;);
+			error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;send&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 	}
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Wait for a while to allow all the messages to be transmitted
@@ -211,13 +192,14 @@
 
 	close(socket_fd);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;;
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;probe.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;probe.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;()
 {
@@ -227,46 +209,46 @@
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	socklen_t res_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;;
 	uint8_t ccids[&lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;];
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (getsockopt(sock_fd, SOL_DCCP, DCCP_SOCKOPT_AVAILABLE_CCIDS, ccids, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;res_len)) {
-		perror(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&amp;#34;&lt;/span&gt;);
+		perror(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
 	}
 
-	printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%d CCIDs available:&amp;#34;&lt;/span&gt;, res_len);
-	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; res_len; i&lt;span style=&#34;color:#666&#34;&gt;++&lt;/span&gt;)
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34; %d&amp;#34;&lt;/span&gt;, ccids[i]);
+	printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;%d CCIDs available:&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, res_len);
+	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; res_len; i&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;)
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt; %d&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, ccids[i]);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; res_len;
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;dccp.h&lt;/strong&gt;&lt;/p&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;dccp.h&lt;/strong&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* This file only contains constants necessary for user space to call
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt; * into the kernel and thus, contains no copyrightable information. */&lt;/span&gt;
 
-&lt;span style=&#34;color:#080&#34;&gt;#ifndef DCCP_DCCP_H
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_DCCP_H
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;ifndef DCCP_DCCP_H&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_DCCP_H&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// From the kernel&amp;#39;s include/linux/socket.h
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define SOL_DCCP                        269
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define SOL_DCCP                        269&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// From kernel&amp;#39;s include/uapi/linux/dccp.h
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SERVICE            2
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CHANGE_L           3
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CHANGE_R           4
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_GET_CUR_MPS        5
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SERVER_TIMEWAIT    6
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SEND_CSCOV         10
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_RECV_CSCOV         11
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_AVAILABLE_CCIDS    12
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID               13
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_TX_CCID            14
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_RX_CCID            15
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_QPOLICY_ID         16
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_QPOLICY_TXQLEN     17
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID_RX_INFO       128
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID_TX_INFO       192
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SERVICE            2&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CHANGE_L           3&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CHANGE_R           4&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_GET_CUR_MPS        5&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SERVER_TIMEWAIT    6&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SEND_CSCOV         10&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_RECV_CSCOV         11&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_AVAILABLE_CCIDS    12&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID               13&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_TX_CCID            14&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_RX_CCID            15&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_QPOLICY_ID         16&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_QPOLICY_TXQLEN     17&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID_RX_INFO       128&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID_TX_INFO       192&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#endif //DCCP_DCCP_H&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h2 id=&#34;caveats-and-conclusion&#34;&gt;Caveats and Conclusion&lt;/h2&gt;
-
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;//DCCP_DCCP_H
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;caveats-and-conclusion&#34;&gt;Caveats and Conclusion&lt;/h2&gt;
 &lt;p&gt;DCCP is not mainstream. It is not widely deployed or even supported. Documentation is sparse. Although Linux DCCP NAT is functional, many intermediate boxes will probably just drop DCCP traffic. DCCP is the Fixed-gear bicycle of Layer 4, it is the ultimate hipster transport.&lt;/p&gt;
 </description>
     </item>

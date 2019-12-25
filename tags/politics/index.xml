@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Politics on Anmol Sarma</title>
+    <title>politics on Anmol Sarma</title>
     <link>https://www.anmolsarma.in/tags/politics/</link>
     
     <language>en-in</language>
     
     
     <atom:link href="https://www.anmolsarma.in/tags/politics/" rel="self" type="application/rss+xml" />
+    
+    
     
     <item>
       <title>Defeating India&#39;s Central Monitoring System</title>
@@ -16,13 +17,9 @@
       
       <guid>https://www.anmolsarma.in/post/defeating-the-central-monitoring-system/</guid>
       <description>&lt;p&gt;The Government of India has rolled out the &lt;a href=&#34;http://en.wikipedia.org/wiki/Central_Monitoring_System&#34;&gt;Central Monitoring System&lt;/a&gt; which will allow it to access any piece of data passing through an Indian service provider. This means the government can now read all your text messages, emails and call records.&lt;/p&gt;
-
 &lt;p&gt;Because &lt;em&gt;privacy&lt;/em&gt; does not bring in votes, it is highly unlikely that any political party will oppose this system. Circumventing this system however, is rather simple using &lt;a href=&#34;http://en.wikipedia.org/wiki/Pretty_Good_Privacy&#34;&gt;PGP&lt;/a&gt; or any other &lt;em&gt;munition grade&lt;/em&gt; cryptographic scheme. So, if anyone wishes to communicate with me securely, please encrypt your message using this &lt;a href=&#34;https://www.anmolsarma.in/pgp/anmol_pgp.asc&#34;&gt;key&lt;/a&gt;, whose fingerprint should be:&lt;/p&gt;
-
-&lt;p&gt;&lt;center&gt;&lt;code&gt;AA3C 18D8 88D6 EC67 6887  2B21 5D64 D65C 162D 0A3C&lt;/code&gt;&lt;/center&gt;&lt;/p&gt;
-
+&lt;!-- raw HTML omitted --&gt;
 &lt;p&gt;You may now put your tin-foil hat back on again.&lt;/p&gt;
-
 &lt;p&gt;Edit: Replaced my old key with a 4096-bit RSA key.&lt;/p&gt;
 </description>
     </item>

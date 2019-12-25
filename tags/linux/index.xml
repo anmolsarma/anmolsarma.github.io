@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Linux on Anmol Sarma</title>
+    <title>linux on Anmol Sarma</title>
     <link>https://www.anmolsarma.in/tags/linux/</link>
     
     <language>en-in</language>
@@ -9,50 +8,49 @@
     
     <atom:link href="https://www.anmolsarma.in/tags/linux/" rel="self" type="application/rss+xml" />
     
+    
+    
     <item>
       <title>File Creation Time in Linux</title>
       <link>https://www.anmolsarma.in/post/linux-file-creation-time/</link>
       <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/linux-file-creation-time/</guid>
-      <description>&lt;p&gt;The &lt;a href=&#34;http://man7.org/linux/man-pages/man1/stat.1.html&#34;&gt;&lt;code&gt;stat&lt;/code&gt;&lt;/a&gt; utility can be used to retrieve the Unix file timestamps namely &lt;code&gt;atime&lt;/code&gt;, &lt;code&gt;ctime&lt;/code&gt; and &lt;code&gt;mtime&lt;/code&gt;. Of these, the benefit of &lt;code&gt;mtime&lt;/code&gt; which records the last time when the file was modified is immediately apparent. On the other hand, &lt;code&gt;atime&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; which records the last time the file was accessed has been called &lt;a href=&#34;https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/&#34;&gt;&amp;ldquo;perhaps the most stupid Unix design idea of all times&amp;rdquo;&lt;/a&gt;. Intuitively, one might expect &lt;code&gt;ctime&lt;/code&gt; to record the creation time of a file. However, &lt;code&gt;ctime&lt;/code&gt; records the last time when the metadata of a file was changed.&lt;/p&gt;
-
-&lt;p&gt;Typically, Unices do not record file creation times. While some individual filesystems do record file creation times&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of &lt;code&gt;stat&lt;/code&gt; (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:&lt;/p&gt;
+      <description>&lt;p&gt;The &lt;a href=&#34;http://man7.org/linux/man-pages/man1/stat.1.html&#34;&gt;&lt;code&gt;stat&lt;/code&gt;&lt;/a&gt; utility can be used to retrieve the Unix file timestamps namely &lt;code&gt;atime&lt;/code&gt;, &lt;code&gt;ctime&lt;/code&gt; and &lt;code&gt;mtime&lt;/code&gt;. Of these, the benefit of &lt;code&gt;mtime&lt;/code&gt; which records the last time when the file was modified is immediately apparent. On the other hand, &lt;code&gt;atime&lt;/code&gt;&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; which records the last time the file was accessed has been called &lt;a href=&#34;https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/&#34;&gt;&amp;ldquo;perhaps the most stupid Unix design idea of all times&amp;rdquo;&lt;/a&gt;. Intuitively, one might expect &lt;code&gt;ctime&lt;/code&gt; to record the creation time of a file. However, &lt;code&gt;ctime&lt;/code&gt; records the last time when the metadata of a file was changed.&lt;/p&gt;
+&lt;p&gt;Typically, Unices do not record file creation times. While some individual filesystems do record file creation times&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of &lt;code&gt;stat&lt;/code&gt; (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ stat .
   File: .
   Size: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;            Blocks: &lt;span style=&#34;color:#666&#34;&gt;8&lt;/span&gt;          IO Block: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;   directory
 Device: 803h/2051d      Inode: &lt;span style=&#34;color:#666&#34;&gt;3588416&lt;/span&gt;     Links: &lt;span style=&#34;color:#666&#34;&gt;18&lt;/span&gt;
-Access: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0775&lt;/span&gt;/drwxrwxr-x&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;  Uid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;   Gid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
-Access: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-06-23 &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;:49:04.056933574 +0000
-Modify: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
-Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
- Birth: -&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;With the &amp;ldquo;&lt;code&gt;Birth&lt;/code&gt;&amp;rdquo; field, meant to show the creation time, sporting a depressing &amp;ldquo;&lt;code&gt;-&lt;/code&gt;&amp;rdquo;.&lt;/p&gt;
-
+Access: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;0775/drwxrwxr-x&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;  Uid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; 1000/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;   Gid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; 1000/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+Access: 2019-06-23 10:49:04.056933574 +0000
+Modify: 2019-05-19 13:29:59.609167627 +0000
+Change: 2019-05-19 13:29:59.609167627 +0000
+ Birth: -
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With the &amp;ldquo;&lt;code&gt;Birth&lt;/code&gt;&amp;rdquo; field, meant to show the creation time, sporting a depressing &amp;ldquo;&lt;code&gt;-&lt;/code&gt;&amp;rdquo;.&lt;/p&gt;
 &lt;p&gt;The fact that &lt;code&gt;ctime&lt;/code&gt; does not mean creation time but change time coupled with the absence of a real creation time interface does lead to quite a bit of confusion. The confusion seems so pervasive that the &lt;code&gt;msdos&lt;/code&gt; driver in the Linux kernel &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/fat/inode.c#L883&#34;&gt;happily clobbers&lt;/a&gt; the FAT creation time with the Unix change time!&lt;/p&gt;
-
 &lt;p&gt;The limitations of the current &lt;code&gt;stat()&lt;/code&gt; system call have been known for some time. A new system call providing extended attributes was &lt;a href=&#34;https://www.spinics.net/lists/linux-fsdevel/msg33831.html&#34;&gt;first proposed in 2010&lt;/a&gt; with the new &lt;a href=&#34;https://lwn.net/Articles/685791/#statx&#34;&gt;&lt;code&gt;statx()&lt;/code&gt;&lt;/a&gt; interface finally &lt;a href=&#34;https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a528d35e8bfcc521d7cb70aaf03e1bd296c8493f&#34;&gt;being merged into Linux 4.11 in 2017&lt;/a&gt;. It took so long at least in part because kernel developers quickly ran into one of the hardest problems in Computer Science: &lt;a href=&#34;https://lkml.org/lkml/2010/7/22/249&#34;&gt;naming things&lt;/a&gt;. Because there was no standard to guide them, each filesystem took to calling creation time by a different name. &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/ext4/ext4.h#L744&#34;&gt;Ext4&lt;/a&gt; and &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/xfs/libxfs/xfs_inode_buf.h#L40&#34;&gt;XFS&lt;/a&gt; called it &lt;code&gt;crtime&lt;/code&gt; while &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/btrfs/btrfs_inode.h#L187&#34;&gt;Btrfs&lt;/a&gt; and &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/jfs/jfs_incore.h#L46&#34;&gt;JFS&lt;/a&gt; called it &lt;code&gt;otime&lt;/code&gt;. Implementations also have slightly different semantics with JFS storing creation time only with the &lt;a href=&#34;https://elixir.bootlin.com/linux/v5.1.14/source/fs/jfs/jfs_imap.c#L3166&#34;&gt;precision of seconds&lt;/a&gt;.&lt;/p&gt;
-
 &lt;p&gt;Glibc took a while to add a wrapper for statx() with support landing in &lt;a href=&#34;https://www.sourceware.org/ml/libc-alpha/2018-08/msg00003.html&#34;&gt;version 2.28&lt;/a&gt; which was released in 2018. Fast forward to March 2019 when GNU &lt;a href=&#34;https://lists.gnu.org/archive/html/coreutils-announce/2019-03/msg00000.html&#34;&gt;coreutils 8.31&lt;/a&gt; was released with &lt;code&gt;stat&lt;/code&gt; finally gaining support for reading the file creation time:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ stat .
   File: .
   Size: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;            Blocks: &lt;span style=&#34;color:#666&#34;&gt;8&lt;/span&gt;          IO Block: &lt;span style=&#34;color:#666&#34;&gt;4096&lt;/span&gt;   directory
 Device: 803h/2051d      Inode: &lt;span style=&#34;color:#666&#34;&gt;3588416&lt;/span&gt;     Links: &lt;span style=&#34;color:#666&#34;&gt;18&lt;/span&gt;
-Access: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0775&lt;/span&gt;/drwxrwxr-x&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;  Uid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;   Gid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
-Access: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-06-23 &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;:49:04.056933574 +0000
-Modify: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
-Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:29:59.609167627 +0000
- Birth: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span style=&#34;color:#666&#34;&gt;13&lt;/span&gt;:13:50.100925514 +0000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;footnotes&#34;&gt;
-
-&lt;hr /&gt;
-
+Access: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;0775/drwxrwxr-x&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;  Uid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; 1000/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;   Gid: &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt; 1000/ anmol&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+Access: 2019-06-23 10:49:04.056933574 +0000
+Modify: 2019-05-19 13:29:59.609167627 +0000
+Change: 2019-05-19 13:29:59.609167627 +0000
+ Birth: 2019-05-19 13:13:50.100925514 +0000
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
 &lt;ol&gt;
-&lt;li id=&#34;fn:1&#34;&gt;The impact of &lt;code&gt;atime&lt;/code&gt; on disk performance is mitigated by the use of &lt;a href=&#34;https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/power_management_guide/relatime&#34;&gt;&lt;code&gt;relatime&lt;/code&gt;&lt;/a&gt; on modern Linux systems.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:2&#34;&gt;For ext4, one can get the &lt;code&gt;crtime&lt;/code&gt; of a file using the &lt;code&gt;stat&lt;/code&gt; subcommand of the confusingly named &lt;a href=&#34;https://linux.die.net/man/8/debugfs&#34;&gt;&lt;code&gt;debugfs&lt;/code&gt;&lt;/a&gt; utility.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;The impact of &lt;code&gt;atime&lt;/code&gt; on disk performance is mitigated by the use of &lt;a href=&#34;https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/power_management_guide/relatime&#34;&gt;&lt;code&gt;relatime&lt;/code&gt;&lt;/a&gt; on modern Linux systems. &lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;For ext4, one can get the &lt;code&gt;crtime&lt;/code&gt; of a file using the &lt;code&gt;stat&lt;/code&gt; subcommand of the confusingly named &lt;a href=&#34;https://linux.die.net/man/8/debugfs&#34;&gt;&lt;code&gt;debugfs&lt;/code&gt;&lt;/a&gt; utility. &lt;a href=&#34;#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;
+&lt;/section&gt;
 </description>
     </item>
     
@@ -64,13 +62,13 @@ Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span 
       <guid>https://www.anmolsarma.in/post/bash-net-redirections/</guid>
       <description>&lt;p&gt;A few months ago, while reading the man page for &lt;code&gt;recvmmsg()&lt;/code&gt;, I came across this snippet:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;while&lt;/span&gt; true; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color:#a2f&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#b8860b&#34;&gt;$RANDOM&lt;/span&gt; &amp;gt; /dev/udp/127.0.0.1/1234;
-     sleep &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;.25; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&amp;rsquo;t recall ever seeing a &lt;code&gt;/dev/udp&lt;/code&gt; and so was a bit surprised that it worked. And as it happens, &lt;code&gt;ls&lt;/code&gt; was not able to access the file that I had just written to:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ls: cannot access &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;/dev/udp/127.0.0.1/1234&amp;#39;&lt;/span&gt;: No such file or directory&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Puzzled and intrigued, I &lt;code&gt;echoe&lt;/code&gt;d &lt;em&gt;Foo Bar Baz&lt;/em&gt; to &lt;code&gt;/dev/udp/127.0.0.1/1337&lt;/code&gt; and reached for &lt;code&gt;strace&lt;/code&gt;:&lt;/p&gt;
+     sleep 0.25; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;done&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&#39;t recall ever seeing a &lt;code&gt;/dev/udp&lt;/code&gt; and so was a bit surprised that it worked. And as it happens, &lt;code&gt;ls&lt;/code&gt; was not able to access the file that I had just written to:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ls: cannot access &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;/dev/udp/127.0.0.1/1234&amp;#39;&lt;/span&gt;: No such file or directory
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Puzzled and intrigued, I &lt;code&gt;echoe&lt;/code&gt;d &lt;em&gt;Foo Bar Baz&lt;/em&gt; to &lt;code&gt;/dev/udp/127.0.0.1/1337&lt;/code&gt; and reached for &lt;code&gt;strace&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;...
 &lt;span style=&#34;color:#666&#34;&gt;2423&lt;/span&gt; socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; connect(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, {sa_family&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;AF_INET, sin_port&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;htons(&lt;span style=&#34;color:#666&#34;&gt;1337&lt;/span&gt;), sin_addr&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;inet_addr(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;127.0.0.1&amp;#34;&lt;/span&gt;)}, &lt;span style=&#34;color:#666&#34;&gt;16&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; connect(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, {sa_family&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;AF_INET, sin_port&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;htons(&lt;span style=&#34;color:#666&#34;&gt;1337&lt;/span&gt;), sin_addr&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;inet_addr(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;127.0.0.1&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;)}, &lt;span style=&#34;color:#666&#34;&gt;16&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_GETFD)                 &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_DUPFD, &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)             &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_GETFD)                 &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
@@ -78,32 +76,29 @@ Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span 
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; dup2(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;)                        &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; close(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)                          &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fstat(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, {st_mode&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;S_IFSOCK&lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0777&lt;/span&gt;, st_size&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, ...}) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; write(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Foo Bar Baz&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;)     &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;
-...&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Seemingly, a normal UDP socket was being created and written to using the regular sycall interface. That refuted my initial suspicion that some kind of a special file backed by the kernel was involved. But who was actually creating the socket?&lt;/p&gt;
-
-&lt;p&gt;A peek at Bash&amp;rsquo;s code answered that question:&lt;/p&gt;
-
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; write(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Foo Bar Baz&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;)     &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Seemingly, a normal UDP socket was being created and written to using the regular sycall interface. That refuted my initial suspicion that some kind of a special file backed by the kernel was involved. But who was actually creating the socket?&lt;/p&gt;
+&lt;p&gt;A peek at Bash&#39;s code answered that question:&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;redir.c:&lt;/strong&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* A list of pattern/value pairs for filenames that the redirection
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;   code handles specially. */&lt;/span&gt;
 &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;static&lt;/span&gt; STRING_INT_ALIST _redir_special_filenames[] &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
-&lt;span style=&#34;color:#080&#34;&gt;#if !defined (HAVE_DEV_FD)
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/fd/[0-9]*&amp;#34;&lt;/span&gt;, RF_DEVFD },
-&lt;span style=&#34;color:#080&#34;&gt;#endif
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#if !defined (HAVE_DEV_STDIN)
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stderr&amp;#34;&lt;/span&gt;, RF_DEVSTDERR },
-  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stdin&amp;#34;&lt;/span&gt;, RF_DEVSTDIN },
-  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stdout&amp;#34;&lt;/span&gt;, RF_DEVSTDOUT },
-&lt;span style=&#34;color:#080&#34;&gt;#endif
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#if defined (NETWORK_REDIRECTIONS)
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/tcp/*/*&amp;#34;&lt;/span&gt;, RF_DEVTCP },
-  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/udp/*/*&amp;#34;&lt;/span&gt;, RF_DEVUDP },
-&lt;span style=&#34;color:#080&#34;&gt;#endif
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;if !defined (HAVE_DEV_FD)&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/fd/[0-9]*&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVFD },
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;if !defined (HAVE_DEV_STDIN)&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/stderr&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVSTDERR },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/stdin&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVSTDIN },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/stdout&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVSTDOUT },
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;if defined (NETWORK_REDIRECTIONS)&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/tcp/*/*&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVTCP },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/udp/*/*&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVUDP },
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#a2f&#34;&gt;NULL&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; }
-};&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;So, redirection involving &lt;code&gt;/dev/udp/&lt;/code&gt; is handled specially by Bash&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; and it uses BSD Sockets API to create a socket:&lt;/p&gt;
-
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, redirection involving &lt;code&gt;/dev/udp/&lt;/code&gt; is handled specially by Bash&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; and it uses BSD Sockets API to create a socket:&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;lib/sh/netopen.c:&lt;/strong&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/*
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt; * Open a TCP or UDP connection to HOST on port SERV.  Uses the
@@ -119,16 +114,16 @@ Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span 
   &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;unsigned&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;short&lt;/span&gt; p;
   &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; s, e;
 
-  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getaddr(host, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;ina) &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getaddr(host, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;ina) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
-      internal_error (_(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%s: host unknown&amp;#34;&lt;/span&gt;), host);
+      internal_error (_(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;%s: host unknown&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;), host);
       errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; EINVAL;
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
     }
 
-  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getserv(serv, typ, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;p) &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getserv(serv, typ, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;p) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
-      internal_error(_(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%s: invalid service&amp;#34;&lt;/span&gt;), serv);
+      internal_error(_(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;%s: invalid service&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;), serv);
       errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; EINVAL;
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
     }
@@ -138,44 +133,40 @@ Change: &lt;span style=&#34;color:#666&#34;&gt;2019&lt;/span&gt;-05-19 &lt;span 
   sin.sin_port &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; p;
   sin.sin_addr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; ina;
 
-  s &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, (typ &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;t&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#a0a000&#34;&gt;SOCK_STREAM&lt;/span&gt; : SOCK_DGRAM, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
+  s &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, (typ &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#a0a000&#34;&gt;SOCK_STREAM&lt;/span&gt; : SOCK_DGRAM, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
   &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (s &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
-      sys_error (&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
+      sys_error (&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
     }
 
   &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (connect (s, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;sin, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt; (sin)) &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
       e &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; errno;
-      sys_error(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;connect&amp;#34;&lt;/span&gt;);
+      sys_error(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;connect&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
       close(s);
       errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; e;
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
     }
 
   &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt;(s);
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Which means we can actually make HTTP requests using Bash:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#a2f&#34;&gt;exec&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;&amp;lt;&amp;gt; /dev/tcp/checkip.amazonaws.com/80
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which means we can actually make HTTP requests using Bash:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#a2f&#34;&gt;exec&lt;/span&gt; 3&amp;lt;&amp;gt; /dev/tcp/checkip.amazonaws.com/80
 &lt;span style=&#34;color:#a2f&#34;&gt;printf&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;GET / HTTP/1.1\r\nHost: checkip.amazonaws.com\r\nConnection: close\r\n\r\n&amp;#34;&lt;/span&gt; &amp;gt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;
-tail -n1 &amp;lt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;No &lt;code&gt;curl&lt;/code&gt; needed! /jk&lt;/p&gt;
-
+tail -n1 &amp;lt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;No &lt;code&gt;curl&lt;/code&gt; needed! /jk&lt;/p&gt;
 &lt;p&gt;Apart from Bash, in the versions and configurations packaged in Ubuntu 18.04, only &lt;code&gt;ksh&lt;/code&gt; supports network redirections &amp;ndash; &lt;code&gt;ash&lt;/code&gt;, &lt;code&gt;csh&lt;/code&gt;, &lt;code&gt;dash&lt;/code&gt;,  &lt;code&gt;fish&lt;/code&gt;,  and &lt;code&gt;zsh&lt;/code&gt; do not.&lt;/p&gt;
-
-&lt;p&gt;I don&amp;rsquo;t think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.&lt;/p&gt;
-
+&lt;p&gt;I don&#39;t think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; Code snippets from Bash are licensed under GPLv3, the snippet from the man page is licensed &lt;a href=&#34;http://man7.org/linux/man-pages/man2/recvmmsg.2.license.html&#34;&gt;differently&lt;/a&gt;&lt;/p&gt;
-&lt;div class=&#34;footnotes&#34;&gt;
-
-&lt;hr /&gt;
-
+&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
 &lt;ol&gt;
-&lt;li id=&#34;fn:1&#34;&gt;At least on Linux, the other special patterns handled by bash like &lt;a href=&#34;http://www.informit.com/articles/article.aspx?p=99706&amp;amp;seqNum=15&#34;&gt;&lt;code&gt;/dev/fd&lt;/code&gt;&lt;/a&gt; and &lt;code&gt;/dev/stdint&lt;/code&gt; actually are special files backed by the kernel. The &lt;a href=&#34;https://www.gnu.org/software/bash/manual/html_node/Redirections.html&#34;&gt;Bash manual&lt;/a&gt; notes that it may emulate them internally on platforms that do not support them.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;At least on Linux, the other special patterns handled by bash like &lt;a href=&#34;http://www.informit.com/articles/article.aspx?p=99706&amp;amp;seqNum=15&#34;&gt;&lt;code&gt;/dev/fd&lt;/code&gt;&lt;/a&gt; and &lt;code&gt;/dev/stdint&lt;/code&gt; actually are special files backed by the kernel. The &lt;a href=&#34;https://www.gnu.org/software/bash/manual/html_node/Redirections.html&#34;&gt;Bash manual&lt;/a&gt; notes that it may emulate them internally on platforms that do not support them. &lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;
+&lt;/section&gt;
 </description>
     </item>
     
@@ -185,188 +176,171 @@ tail -n1 &amp;lt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;&
       <pubDate>Sun, 03 Feb 2019 18:57:45 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/single-step-kernel/</guid>
-      <description>
-
-&lt;p&gt;There may come a time in a system programmer&amp;rsquo;s life when she needs to leave the civilized safety of the userland and confront the unspeakable horrors that dwell in the depths of the Kernel space. While &lt;a href=&#34;https://lkml.org/lkml/2000/9/6/65&#34;&gt;higher beings might pour scorn&lt;/a&gt; on the very idea of a Kernel debugger, us lesser mortals may have no other recourse but to single-step through Kernel code when the rivers begin to run dry. This guide will help you do just that. We hope you never actually have to.&lt;/p&gt;
-
-&lt;p&gt;Ominous sounding intro-bait notwithstanding, setting up a virtual machine for Kernel debugging isn&amp;rsquo;t really that difficult.  It only needs a bit of preparation. If you just want a copypasta, &lt;a href=&#34;#copypasta&#34;&gt;skip to the end&lt;/a&gt;. If you&amp;rsquo;re interested in the predicaments involved and how to deal with them, read on.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;N.B.:&lt;/strong&gt; &amp;ldquo;But which kernel are you talking about?&amp;rdquo;, some heathens may invariably ask when it is obvious that Kernel with a capital K refers to the &lt;a href=&#34;https://www.kernel.org/&#34;&gt;One True Kernel&lt;/a&gt;.&lt;/p&gt;
-
+      <description>&lt;p&gt;There may come a time in a system programmer&#39;s life when she needs to leave the civilized safety of the userland and confront the unspeakable horrors that dwell in the depths of the Kernel space. While &lt;a href=&#34;https://lkml.org/lkml/2000/9/6/65&#34;&gt;higher beings might pour scorn&lt;/a&gt; on the very idea of a Kernel debugger, us lesser mortals may have no other recourse but to single-step through Kernel code when the rivers begin to run dry. This guide will help you do just that. We hope you never actually have to.&lt;/p&gt;
+&lt;p&gt;Ominous sounding intro-bait notwithstanding, setting up a virtual machine for Kernel debugging isn&#39;t really that difficult.  It only needs a bit of preparation. If you just want a copypasta, &lt;a href=&#34;#copypasta&#34;&gt;skip to the end&lt;/a&gt;. If you&#39;re interested in the predicaments involved and how to deal with them, read on.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;N.B.:&lt;/strong&gt; &amp;ldquo;But which kernel are you talking about?&amp;quot;, some heathens may invariably ask when it is obvious that Kernel with a capital K refers to the &lt;a href=&#34;https://www.kernel.org/&#34;&gt;One True Kernel&lt;/a&gt;.&lt;/p&gt;
 &lt;h3 id=&#34;building-the-kernel&#34;&gt;Building the Kernel&lt;/h3&gt;
-
 &lt;p&gt;Using a minimal Kernel configuration instead of the kitchen-sink one that distributions usually ship will make life a lot easier. You will first need to grab the source code for the Kernel you are interested in. We will use the latest Kernel release tarball from &lt;a href=&#34;https://www.kernel.org/&#34;&gt;kernel.org&lt;/a&gt;, which at the time of writing is &lt;a href=&#34;https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.6.tar.xz&#34;&gt;4.20.6&lt;/a&gt;. Inside the extracted source directory, invoke the following:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;make defconfig
 make kvmconfig
-make -j4  &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;This will build a minimal Kernel image that can be booted in QEMU like so:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel linux-4.20.6/arch/x86/boot/bzImage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;This should bring up an ancient-looking window with a cryptic error message:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/kernel_panic.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;You could try pasting the error message into &lt;del&gt;Google&lt;/del&gt; a search engine: Except for the fact that you can&amp;rsquo;t select the text in the window. And frankly, the window just looks annoying! So, ignoring the actual error for a moment, let&amp;rsquo;s try to get QEMU to print to the console instead of a spawning a new graphical window:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel -nographic linux-4.20.6/arch/x86/boot/bzImage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;QEMU spits out a single line:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64: warning: TCG doesn&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;t support requested feature: CPUID.01H:ECX.vmx &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;bit &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;a href=&#34;https://hisham.hm/htop/&#34;&gt;Htop&lt;/a&gt; tells me QEMU is using 100% of a CPU and my laptop fan agrees. But there is no output whatsoever and &lt;code&gt;Ctrl-c&lt;/code&gt; doesn&amp;rsquo;t work! What &lt;a href=&#34;https://superuser.com/a/1211516&#34;&gt;does work&lt;/a&gt;, however, is pressing &lt;code&gt;Ctrl-a&lt;/code&gt; and then hitting &lt;code&gt;x&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;QEMU: Terminated&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Turns out that by passing &lt;code&gt;-nographic&lt;/code&gt;, we have plugged out QEMU&amp;rsquo;s &lt;em&gt;virtual&lt;/em&gt; monitor. Now, to actually see any output, we need to tell the Kernel to write to a &lt;a href=&#34;https://www.kernel.org/doc/html/v4.20/admin-guide/serial-console.html&#34;&gt;serial port&lt;/a&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;console=ttyS0&amp;#34;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;It worked! Now we can read error message in all its glory:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.333008&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; VFS: Cannot open root device &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;(null)&amp;#34;&lt;/span&gt; or unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;: error -6
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.334024&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Please append a correct &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=&amp;#34;&lt;/span&gt; boot option; here are the available partitions:
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.335152&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; 0b00         &lt;span style=&#34;color:#666&#34;&gt;1048575&lt;/span&gt; sr0 
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.335153&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  driver: sr
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.335996&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.337104&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; CPU: &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt; PID: &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; Comm: swapper/0 Not tainted &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;.20.6 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#1
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.337901&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Hardware name: QEMU Standard PC &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;i440FX + PIIX, &lt;span style=&#34;color:#666&#34;&gt;1996&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;, BIOS &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.10.2-1ubuntu1 &lt;span style=&#34;color:#666&#34;&gt;04&lt;/span&gt;/01/2014
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.339091&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Call Trace:
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.339437&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  dump_stack+0x46/0x5b
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.339888&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  panic+0xf3/0x248
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.340295&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  mount_block_root+0x184/0x248
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.340838&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ? set_debug_rodata+0xc/0xc
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.341357&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  mount_root+0x121/0x13f
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.341837&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  prepare_namespace+0x130/0x166
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.342378&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  kernel_init_freeable+0x1ed/0x1ff
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.342965&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ? rest_init+0xb0/0xb0
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.343427&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  kernel_init+0x5/0x100
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.343888&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ret_from_fork+0x35/0x40
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.344526&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Kernel Offset: 0x1200000 from 0xffffffff81000000 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;relocation range: 0xffffffff80000000-0xffffffffbfffffff&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;.345956&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; ---&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt; end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;---&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;So, the Kernel didn&amp;rsquo;t find a root filesystem to kick off the user mode and panicked. Lets fix that by creating a root filesystem image.&lt;/p&gt;
-
+make -j4  
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will build a minimal Kernel image that can be booted in QEMU like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel linux-4.20.6/arch/x86/boot/bzImage
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This should bring up an ancient-looking window with a cryptic error message:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/kernel_panic.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;You could try pasting the error message into &lt;del&gt;Google&lt;/del&gt; a search engine: Except for the fact that you can&#39;t select the text in the window. And frankly, the window just looks annoying! So, ignoring the actual error for a moment, let&#39;s try to get QEMU to print to the console instead of a spawning a new graphical window:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel -nographic linux-4.20.6/arch/x86/boot/bzImage
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;QEMU spits out a single line:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64: warning: TCG doesn&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;t support requested feature: CPUID.01H:ECX.vmx &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;bit 5&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://hisham.hm/htop/&#34;&gt;Htop&lt;/a&gt; tells me QEMU is using 100% of a CPU and my laptop fan agrees. But there is no output whatsoever and &lt;code&gt;Ctrl-c&lt;/code&gt; doesn&#39;t work! What &lt;a href=&#34;https://superuser.com/a/1211516&#34;&gt;does work&lt;/a&gt;, however, is pressing &lt;code&gt;Ctrl-a&lt;/code&gt; and then hitting &lt;code&gt;x&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;QEMU: Terminated
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Turns out that by passing &lt;code&gt;-nographic&lt;/code&gt;, we have plugged out QEMU&#39;s &lt;em&gt;virtual&lt;/em&gt; monitor. Now, to actually see any output, we need to tell the Kernel to write to a &lt;a href=&#34;https://www.kernel.org/doc/html/v4.20/admin-guide/serial-console.html&#34;&gt;serial port&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;console=ttyS0&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It worked! Now we can read error message in all its glory:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.333008&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; VFS: Cannot open root device &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;(null)&amp;#34;&lt;/span&gt; or unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;0,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;: error -6
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.334024&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Please append a correct &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=&amp;#34;&lt;/span&gt; boot option; here are the available partitions:
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.335152&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; 0b00         &lt;span style=&#34;color:#666&#34;&gt;1048575&lt;/span&gt; sr0 
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.335153&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  driver: sr
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.335996&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;0,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.337104&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; CPU: &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt; PID: &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; Comm: swapper/0 Not tainted 4.20.6 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#1&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.337901&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Hardware name: QEMU Standard PC &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;i440FX + PIIX, 1996&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;, BIOS 1.10.2-1ubuntu1 04/01/2014
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.339091&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Call Trace:
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.339437&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  dump_stack+0x46/0x5b
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.339888&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  panic+0xf3/0x248
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.340295&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  mount_block_root+0x184/0x248
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.340838&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ? set_debug_rodata+0xc/0xc
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.341357&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  mount_root+0x121/0x13f
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.341837&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  prepare_namespace+0x130/0x166
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.342378&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  kernel_init_freeable+0x1ed/0x1ff
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.342965&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ? rest_init+0xb0/0xb0
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.343427&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  kernel_init+0x5/0x100
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.343888&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ret_from_fork+0x35/0x40
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.344526&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Kernel Offset: 0x1200000 from 0xffffffff81000000 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;relocation range: 0xffffffff80000000-0xffffffffbfffffff&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.345956&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; ---&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt; end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;0,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;---
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, the Kernel didn&#39;t find a root filesystem to kick off the user mode and panicked. Lets fix that by creating a root filesystem image.&lt;/p&gt;
 &lt;h3 id=&#34;creating-a-root-filesystem&#34;&gt;Creating a Root Filesystem&lt;/h3&gt;
-
 &lt;p&gt;Start by creating an empty image:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-img create rootfs.img 1G&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;And then format it as &lt;a href=&#34;https://en.wikipedia.org/wiki/Ext4&#34;&gt;&lt;code&gt;ext4&lt;/code&gt;&lt;/a&gt; and mount it:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-img create rootfs.img 1G
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And then format it as &lt;a href=&#34;https://en.wikipedia.org/wiki/Ext4&#34;&gt;&lt;code&gt;ext4&lt;/code&gt;&lt;/a&gt; and mount it:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;mkfs.ext4 rootfs.img
 mkdir mnt
-sudo mount -o loop rootfs.img mnt/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now we can populate it using &lt;a href=&#34;https://wiki.debian.org/Debootstrap&#34;&gt;&lt;code&gt;debootstrap&lt;/code&gt;&lt;/a&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo debootstrap bionic mnt/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;This will create a root filesystem based on Ubuntu 18.04 Bionic Beaver. Of course, feel free to replace &lt;code&gt;bionic&lt;/code&gt; with any release that you prefer.&lt;/p&gt;
-
-&lt;p&gt;And unmount the filesystem once we&amp;rsquo;re done. &lt;strong&gt;This is important if you want to avoid corrupted images!&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo umount mnt&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now boot the Kernel with our filesystem. We need to tell QEMU to use our image as a virtual hard drive and we also need to tell the Kernel to use the hard drive as the root filesystem:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;This time the Kernel shouldn&amp;rsquo;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&amp;rsquo;s annoying to have to login each time we boot up the VM. Let&amp;rsquo;s enable auto login as root instead.&lt;/p&gt;
-
+sudo mount -o loop rootfs.img mnt/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can populate it using &lt;a href=&#34;https://wiki.debian.org/Debootstrap&#34;&gt;&lt;code&gt;debootstrap&lt;/code&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo debootstrap bionic mnt/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a root filesystem based on Ubuntu 18.04 Bionic Beaver. Of course, feel free to replace &lt;code&gt;bionic&lt;/code&gt; with any release that you prefer.&lt;/p&gt;
+&lt;p&gt;And unmount the filesystem once we&#39;re done. &lt;strong&gt;This is important if you want to avoid corrupted images!&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo umount mnt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now boot the Kernel with our filesystem. We need to tell QEMU to use our image as a virtual hard drive and we also need to tell the Kernel to use the hard drive as the root filesystem:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This time the Kernel shouldn&#39;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&#39;s annoying to have to login each time we boot up the VM. Let&#39;s enable auto login as root instead.&lt;/p&gt;
 &lt;p&gt;Terminate QEMU (&lt;code&gt;Ctrl-a&lt;/code&gt;, &lt;code&gt;x&lt;/code&gt;), mount the filesystem image again and then create the configuration folder structure:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo mount -o loop rootfs.img mnt/
-sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Add the following lines to &lt;code&gt;mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf&lt;/code&gt;:&lt;/p&gt;
+sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Add the following lines to &lt;code&gt;mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;Service&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
 &lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;
 &lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-/sbin/agetty --noissue --autologin root %I &lt;span style=&#34;color:#b8860b&#34;&gt;$TERM&lt;/span&gt;
-&lt;span style=&#34;color:#b8860b&#34;&gt;Type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;idle&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Make sure to unmount the filesystem and then boot the Kernel again. This time you should be automatically logged in.&lt;/p&gt;
-
+&lt;span style=&#34;color:#b8860b&#34;&gt;Type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;idle
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Make sure to unmount the filesystem and then boot the Kernel again. This time you should be automatically logged in.&lt;/p&gt;
 &lt;p&gt;Gracefully shutdown the VM:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;halt -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h3 id=&#34;attaching-a-debugger&#34;&gt;Attaching a debugger&lt;/h3&gt;
-
-&lt;p&gt;Let&amp;rsquo;s rebuild the Kernel with debugging symbols enabled:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;halt -p
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;attaching-a-debugger&#34;&gt;Attaching a debugger&lt;/h3&gt;
+&lt;p&gt;Let&#39;s rebuild the Kernel with debugging symbols enabled:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./scripts/config -e CONFIG_DEBUG_INFO
-make -j4&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now, boot the Kernel again, this time passing the &lt;code&gt;-s&lt;/code&gt; flag which will make QEMU listen on TCP port 1234:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now, in another terminal start gdb and attach to QEMU:&lt;/p&gt;
+make -j4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, boot the Kernel again, this time passing the &lt;code&gt;-s&lt;/code&gt; flag which will make QEMU listen on TCP port 1234:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; -s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, in another terminal start gdb and attach to QEMU:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;gdb ./linux-4.20.6/vmlinux 
 ...
 Reading symbols from ./linux-4.20.6/vmlinux...done.
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; target remote :1234
 Remote debugging using :1234
-0xffffffff95a2f8f4 in ?? &lt;span style=&#34;color:#666&#34;&gt;()&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;You can set a breakpoint on Kernel function, for instance &lt;code&gt;do_sys_open()&lt;/code&gt;:&lt;/p&gt;
+0xffffffff95a2f8f4 in ?? &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can set a breakpoint on Kernel function, for instance &lt;code&gt;do_sys_open()&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; b do_sys_open 
-Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; at 0xffffffff811b2720: file fs/open.c, line &lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;.
+Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; at 0xffffffff811b2720: file fs/open.c, line 1049.
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; c
-Continuing.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now try opening a file in VM which should result in &lt;code&gt;do_sys_open()&lt;/code&gt; getting invoked&amp;hellip; And nothing happens?! The breakpoint in gdb is not hit. This due to a Kernel security feature called &lt;a href=&#34;https://lwn.net/Articles/569635/&#34;&gt;KASLR&lt;/a&gt;. KASLR can be disabled at boot time by adding &lt;code&gt;nokaslr&lt;/code&gt; to the Kernel command line arguments. But, let&amp;rsquo;s actually rebuild the Kernel without KASLR. While we are at it, let&amp;rsquo;s also disable loadable module support as well which will save us the trouble of copying the modules to the filesystem.&lt;/p&gt;
+Continuing.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now try opening a file in VM which should result in &lt;code&gt;do_sys_open()&lt;/code&gt; getting invoked&amp;hellip; And nothing happens?! The breakpoint in gdb is not hit. This due to a Kernel security feature called &lt;a href=&#34;https://lwn.net/Articles/569635/&#34;&gt;KASLR&lt;/a&gt;. KASLR can be disabled at boot time by adding &lt;code&gt;nokaslr&lt;/code&gt; to the Kernel command line arguments. But, let&#39;s actually rebuild the Kernel without KASLR. While we are at it, let&#39;s also disable loadable module support as well which will save us the trouble of copying the modules to the filesystem.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./scripts/config -e CONFIG_DEBUG_INFO -d CONFIG_RANDOMIZE_BASE -d CONFIG_MODULES
-make olddefconfig &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Resolve dependencies
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;make -j4&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Reboot the Kernel again, attach gdb, set a breakpoint on &lt;code&gt;do_sys_open()&lt;/code&gt; and run &lt;code&gt;cat /etc/issue&lt;/code&gt; in the guest. This time the breakpoint should be hit. But probably not where you expected:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7f96074ad428 &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/etc/ld.so.cache&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;557056&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
+make olddefconfig &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Resolve dependencies&lt;/span&gt;
+make -j4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Reboot the Kernel again, attach gdb, set a breakpoint on &lt;code&gt;do_sys_open()&lt;/code&gt; and run &lt;code&gt;cat /etc/issue&lt;/code&gt; in the guest. This time the breakpoint should be hit. But probably not where you expected:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;Breakpoint 1, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7f96074ad428 &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/etc/ld.so.cache&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;557056, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
 &lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; c
 Continuing.
 
-Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7f96076b5dd0 &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/lib/x86_64-linux-gnu/libc.so.6&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;557056&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
+Breakpoint 1, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7f96076b5dd0 &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/lib/x86_64-linux-gnu/libc.so.6&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;557056, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
 &lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; c
 Continuing.
 
-Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7ffe9e630e8e &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/etc/issue&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;32768&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
+Breakpoint 1, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7ffe9e630e8e &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/etc/issue&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;32768, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
 &lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Congratulations! From this point, you can single-step away to your heart&amp;rsquo;s content.&lt;/p&gt;
-
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Congratulations! From this point, you can single-step away to your heart&#39;s content.&lt;/p&gt;
 &lt;p&gt;By default, the root filesystem is mounted read only. If you want to be able to write to it, add &lt;code&gt;rw&lt;/code&gt; after &lt;code&gt;root=/dev/sda&lt;/code&gt; in the Kernel parameters:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h3 id=&#34;bonus-networking&#34;&gt;Bonus: Networking&lt;/h3&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;bonus-networking&#34;&gt;Bonus: Networking&lt;/h3&gt;
 &lt;p&gt;You can create a point to point link between the QEMU VM and the host using a &lt;a href=&#34;https://en.wikipedia.org/wiki/TUN/TAP&#34;&gt;TAP interface&lt;/a&gt;.&lt;/p&gt;
-
 &lt;p&gt;First install &lt;code&gt;tunctl&lt;/code&gt; and create a persistent TAP interface to avoid running QEMU as root:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo apt install uml-utilities
 sudo sudo tunctl -u &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;$(&lt;/span&gt;id -u&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;)&lt;/span&gt;
 Set &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;tap0&amp;#39;&lt;/span&gt; persistent and owned by uid &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
-sudo ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; tap0 up&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; interface connected the host&amp;rsquo;s tap0 interface:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -device e1000,netdev&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0 -netdev tap,id&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0,ifname&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Once the guest boots up, bring the network interface up:&lt;/p&gt;
+sudo ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; tap0 up
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; interface connected the host&#39;s tap0 interface:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -device e1000,netdev&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0 -netdev tap,id&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0,ifname&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Once the guest boots up, bring the network interface up:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; enp0s3 up
 ip a
-&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#666&#34;&gt;65536&lt;/span&gt; qdisc noqueue state UNKNOWN group default qlen &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
-    link/loopback &lt;span style=&#34;color:#666&#34;&gt;00&lt;/span&gt;:00:00:00:00:00 brd &lt;span style=&#34;color:#666&#34;&gt;00&lt;/span&gt;:00:00:00:00:00
-    inet &lt;span style=&#34;color:#666&#34;&gt;127&lt;/span&gt;.0.0.1/8 scope host lo
+1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#666&#34;&gt;65536&lt;/span&gt; qdisc noqueue state UNKNOWN group default qlen &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
     inet6 ::1/128 scope host 
        valid_lft forever preferred_lft forever
-&lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;: enp0s3: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#666&#34;&gt;1500&lt;/span&gt; qdisc pfifo_fast state UP group default qlen &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
-    link/ether &lt;span style=&#34;color:#666&#34;&gt;52&lt;/span&gt;:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+2: enp0s3: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style=&#34;color:#666&#34;&gt;1500&lt;/span&gt; qdisc pfifo_fast state UP group default qlen &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
     inet6 fe80::5054:ff:fe12:3456/64 scope link 
-       valid_lft forever preferred_lft forever&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;QEMU and the host can now communicate using their IPv6 Link-local addresses. After all, it is 2019.&lt;/p&gt;
-
+       valid_lft forever preferred_lft forever
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;QEMU and the host can now communicate using their IPv6 Link-local addresses. After all, it is 2019.&lt;/p&gt;
 &lt;h3 id=&#34;copypasta&#34;&gt;Copypasta&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Building a minimal debuggable Kernel
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;make defconfig
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Building a minimal debuggable Kernel&lt;/span&gt;
+make defconfig
 make kvmconfig
 ./scripts/config -e CONFIG_DEBUG_INFO -d CONFIG_RANDOMIZE_BASE -d CONFIG_MODULES
 make olddefconfig
 make -j4
 
 
-&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Create root filesystem
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;qemu-img create rootfs.img 1G
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Create root filesystem&lt;/span&gt;
+qemu-img create rootfs.img 1G
 mkfs.ext4 rootfs.img
 mkdir mnt
 sudo mount -o loop rootfs.img mnt/
 sudo debootstrap bionic mnt/
 
-&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Add following lines to mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# START
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;Service&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Add following lines to mnt/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf&lt;/span&gt;
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# START&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;Service&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
 &lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;
 &lt;span style=&#34;color:#b8860b&#34;&gt;ExecStart&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-/sbin/agetty --noissue --autologin root %I &lt;span style=&#34;color:#b8860b&#34;&gt;$TERM&lt;/span&gt;
 &lt;span style=&#34;color:#b8860b&#34;&gt;Type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;idle
-&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# END
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Unmount the filesystem
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;sudo umount mnt
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# END&lt;/span&gt;
 
-&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Boot Kernel with root file system in QEMU
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Unmount the filesystem&lt;/span&gt;
+sudo umount mnt
 
-&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Attach gdb
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;gdb ./linux-4.20.6/vmlinux 
-&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; target remote :1234&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Boot Kernel with root file system in QEMU&lt;/span&gt;
+qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s
+
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Attach gdb&lt;/span&gt;
+gdb ./linux-4.20.6/vmlinux 
+&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; target remote :1234
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
@@ -375,76 +349,56 @@ sudo debootstrap bionic mnt/
       <pubDate>Tue, 13 Dec 2016 23:10:50 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/dccp/</guid>
-      <description>
-
-&lt;p&gt;&lt;em&gt;TL;DR: DCCP is a relatively newer transport layer protocol which draws from both TCP and UDP. Jump straight to the &lt;a href=&#34;#example-in-c&#34;&gt;example C code&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
-
+      <description>&lt;p&gt;&lt;em&gt;TL;DR: DCCP is a relatively newer transport layer protocol which draws from both TCP and UDP. Jump straight to the &lt;a href=&#34;#example-in-c&#34;&gt;example C code&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
-
-&lt;p&gt;Historically, the majority of the traffic on the Internet has been over &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; which provides a reliable connection-oriented stream between two hosts. &lt;a href=&#34;https://en.wikipedia.org/wiki/User_Datagram_Protocol&#34;&gt;UDP&lt;/a&gt; has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&amp;rsquo;s connection establishment overhead or those for which timeliness is more important than reliability. However, the increasing use of UDP for applications such as internet telephony and streaming media which transfer a large amount of data can lead to significant &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_congestion&#34;&gt;network congestion&lt;/a&gt;. Since unlike TCP, UDP provides no inherent congestion control mechanism, an application can send UDP datagrams at a much higher rate than the available path capacity and cause congestion along the path. Increased congestion may lead to delays, packet loss and the degradation of the network&amp;rsquo;s quality of service.&lt;/p&gt;
-
+&lt;p&gt;Historically, the majority of the traffic on the Internet has been over &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; which provides a reliable connection-oriented stream between two hosts. &lt;a href=&#34;https://en.wikipedia.org/wiki/User_Datagram_Protocol&#34;&gt;UDP&lt;/a&gt; has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&#39;s connection establishment overhead or those for which timeliness is more important than reliability. However, the increasing use of UDP for applications such as internet telephony and streaming media which transfer a large amount of data can lead to significant &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_congestion&#34;&gt;network congestion&lt;/a&gt;. Since unlike TCP, UDP provides no inherent congestion control mechanism, an application can send UDP datagrams at a much higher rate than the available path capacity and cause congestion along the path. Increased congestion may lead to delays, packet loss and the degradation of the network&#39;s quality of service.&lt;/p&gt;
 &lt;p&gt;Applications and protocols that choose to use UDP as their transport must, therefore, employ mechanisms to prevent congestion and to establish some degree of fairness with concurrent traffic so that the network remains usable. A prominent example of such a congestion control scheme is &lt;a href=&#34;https://en.wikipedia.org/wiki/LEDBAT&#34;&gt;LEDBAT&lt;/a&gt; employed by &lt;a href=&#34;https://en.wikipedia.org/wiki/BitTorrent&#34;&gt;BitTorrent&lt;/a&gt;. However, implementing a congestion control scheme is difficult, time-consuming and error-prone. Multiple non-standard implementations also make it difficult to reason about how applications would respond to network congestion. &lt;a href=&#34;https://en.wikipedia.org/wiki/Datagram_Congestion_Control_Protocol&#34;&gt;DCCP&lt;/a&gt; - Datagram Congestion Control Protocol is intended to mitigate this problem as a transport for unreliable datagrams with built-in congestion control.&lt;/p&gt;
-
-&lt;p&gt;From an application programmer&amp;rsquo;s perspective, DCCP differs from UDP by providing four additional features:&lt;/p&gt;
-
+&lt;p&gt;From an application programmer&#39;s perspective, DCCP differs from UDP by providing four additional features:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Explicit connection establishment between hosts&lt;/li&gt;
 &lt;li&gt;Selectable congestion control schemes&lt;/li&gt;
 &lt;li&gt;Path MTU discovery to avoid fragmentation&lt;/li&gt;
 &lt;li&gt;Service Codes for identifying applications&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;DCCP makes use of Explicit Congestion Notification but it is transparent the  application. DCCP is designed to leave additional functionality such as reliability or Forward Error Correction (FEC) to be layered on top, as and when required rather than at the protocol level itself.&lt;/p&gt;
-
 &lt;h2 id=&#34;explicit-connection-establishment&#34;&gt;Explicit connection establishment&lt;/h2&gt;
-
 &lt;p&gt;The connection establishment semantics of DCCP mirror those of TCP with a client that actively connects to a server that is passively listening on a port. DCCP connections are bidirectional. Logically, however, a DCCP connection consists of two separate unidirectional connections, called half-connections. Each half-connection is a one-way, unreliable datagram pipe. The rationale for this explained in the next section.&lt;/p&gt;
-
 &lt;h2 id=&#34;selectable-congestion-control-schemes&#34;&gt;Selectable congestion control schemes&lt;/h2&gt;
-
 &lt;p&gt;TCP implements congestion control entirely transparently to the application. While it is possible to configure the host to use a specific variant, there is no way for the application to discover which congestion control scheme is in force, let alone negotiate one. DCCP, however, can cater to the different needs of applications by allowing applications to negotiate the congestion control schemes. In fact, each of the half-connections can use a different scheme, allowing for greater control.&lt;/p&gt;
-
 &lt;p&gt;Congesting the network by sending data at a rate that is faster than the slowest link between the endpoints will overwhelm it. This may lead to packet loss leading to retransmissions which may, in turn, lead to further congestion. The solution to this problem is to start transmitting data at a slow rate on a new connection and to then ramp up the speed until packet loss is detected. The transmission rate may then be scaled back until no further packet loss occurs. The optimum speed at which to transfer data  will change with network conditions over the life of the connection. Congestion control schemes differ in how packet loss is estimated and the rate at which is the transmission speed is ramped up or scaled back. DCCP congestion control schemes are denoted by Congestion Control Identifiers - CCIDs. Currently, three CCIDs have been formally specified:&lt;/p&gt;
-
 &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4341&#34;&gt;CCID 2&lt;/a&gt; -  TCP-like Congestion Control:&lt;/strong&gt; A quick reacting scheme modelled after TCP which will rapidly ramp up speed to take advantage of available bandwidth and also rapidly scale back when congestion is detected. Suitable for applications that can handle large swings in transmission rates.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc5348&#34;&gt;CCID 3&lt;/a&gt; - TCP-Friendly Rate Control (TFRC):&lt;/strong&gt; A slower reacting scheme intended to be friendly to concurrent TCP flows in the network. Provides a relatively smoother sending rate at the expense of possibly not utilising all available bandwidth. Suitable for media streaming applications that prefer to minimise abrupt changes in the sending rate.&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4828&#34;&gt;CCID 4&lt;/a&gt; - TCP-Friendly Rate Control for Small Packets (TFRC-SP):&lt;/strong&gt; An experimental scheme for applications that use a small datagram size and those that change their sending rate by varying the datagram size.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4341&#34;&gt;CCID 2&lt;/a&gt; -  TCP-like Congestion Control:&lt;/strong&gt; A quick reacting scheme modelled after TCP which will rapidly ramp up speed to take advantage of available bandwidth and also rapidly scale back when congestion is detected. Suitable for applications that can handle large swings in transmission rates.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc5348&#34;&gt;CCID 3&lt;/a&gt; - TCP-Friendly Rate Control (TFRC):&lt;/strong&gt; A slower reacting scheme intended to be friendly to concurrent TCP flows in the network. Provides a relatively smoother sending rate at the expense of possibly not utilising all available bandwidth. Suitable for media streaming applications that prefer to minimise abrupt changes in the sending rate.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4828&#34;&gt;CCID 4&lt;/a&gt; - TCP-Friendly Rate Control for Small Packets (TFRC-SP):&lt;/strong&gt; An experimental scheme for applications that use a small datagram size and those that change their sending rate by varying the datagram size.&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;p&gt;In addition, the Linux kernel&amp;rsquo;s &lt;a href=&#34;https://github.com/uoaerg/linux-dccp&#34;&gt;DCCP Test Tree&lt;/a&gt; contains an experimental implementation of a scheme modelled after &lt;a href=&#34;https://en.wikipedia.org/wiki/CUBIC_TCP&#34;&gt;TCP CUBIC&lt;/a&gt;. There is also a mode that disables congestion control altogether for &lt;em&gt;UDP-like&lt;/em&gt; behaviour.&lt;/p&gt;
-
+&lt;p&gt;In addition, the Linux kernel&#39;s &lt;a href=&#34;https://github.com/uoaerg/linux-dccp&#34;&gt;DCCP Test Tree&lt;/a&gt; contains an experimental implementation of a scheme modelled after &lt;a href=&#34;https://en.wikipedia.org/wiki/CUBIC_TCP&#34;&gt;TCP CUBIC&lt;/a&gt;. There is also a mode that disables congestion control altogether for &lt;em&gt;UDP-like&lt;/em&gt; behaviour.&lt;/p&gt;
 &lt;h2 id=&#34;pmtu-discovery&#34;&gt;PMTU discovery&lt;/h2&gt;
-
 &lt;p&gt;Data between two internet hosts is transferred transmitted as a series of IP packets that pass through intermediate links. Each of these links has a maximum packet size or maximum transmission unit (MTU) that it can transmit without having to break it up into smaller fragments. The largest packet size that does not require fragmentation anywhere along a path is referred to as the path maximum transmission unit or PMTU. Applications can usually get better error tolerance by producing packets smaller than the PMTU. DCCP defines a maximum packet size (MPS) based on the PMTU and the congestion control scheme used for each connection. DCCP implementations will not send any packet bigger than the MPS and instead return an appropriate error to the application. The application can query the DCCP stack for the current MPS and restrict itself from sending datagrams larger than this value and thereby avoid &lt;a href=&#34;https://en.wikipedia.org/wiki/IP_fragmentation&#34;&gt;fragmentation&lt;/a&gt;.&lt;/p&gt;
-
 &lt;h2 id=&#34;service-codes&#34;&gt;Service Codes&lt;/h2&gt;
-
 &lt;p&gt;DCCP defines a 32 bit Service Code to disambiguate between multiple applications associated with a single a server port. The client specifies the Service Code it wants to connect to and this is used to identify the intended service or application to process a DCCP connection request. Essentially, Service Codes provide an additional level of indirection for connection multiplexing. A server listening on a port may be associated with multiple Service Codes but a client may have only one Service Code, indicating the application it wishes to connect to.&lt;/p&gt;
-
 &lt;h2 id=&#34;usage&#34;&gt;Usage&lt;/h2&gt;
-
-&lt;p&gt;The mainline Linux kernel has included DCCP support since &lt;a href=&#34;https://lwn.net/Articles/149756/&#34;&gt;2.6.14&lt;/a&gt; and mainstream distributions like Ubuntu enable it by default. However, to get the newer experimental features, you will have to build the kernel from the DCCP Test Tree. Or you can also grab the latest stable kernel release merged with the experimental DCCP changes from &lt;a href=&#34;https://github.com/unmole/linux-dccp/releases/latest&#34;&gt;here&lt;/a&gt;. Be sure to enable all the CCIDs in the kernel configuration in &lt;em&gt;Networking Support&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;Networking Options&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;The DCCP Protocol&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;DCCP CCIDs Configuration&lt;/em&gt;. Like the Debian Installation Guide Says, &amp;ldquo;&lt;em&gt;Don&amp;rsquo;t be afraid to try compiling the kernel. It&amp;rsquo;s fun and profitable.&lt;/em&gt;&amp;rdquo; For now, Linux is the only operating system supporting native DCCP, unless you count the patch for an ancient version of FreeBSD.&lt;/p&gt;
-
+&lt;p&gt;The mainline Linux kernel has included DCCP support since &lt;a href=&#34;https://lwn.net/Articles/149756/&#34;&gt;2.6.14&lt;/a&gt; and mainstream distributions like Ubuntu enable it by default. However, to get the newer experimental features, you will have to build the kernel from the DCCP Test Tree. Or you can also grab the latest stable kernel release merged with the experimental DCCP changes from &lt;a href=&#34;https://github.com/unmole/linux-dccp/releases/latest&#34;&gt;here&lt;/a&gt;. Be sure to enable all the CCIDs in the kernel configuration in &lt;em&gt;Networking Support&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;Networking Options&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;The DCCP Protocol&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;DCCP CCIDs Configuration&lt;/em&gt;. Like the Debian Installation Guide Says, &amp;ldquo;&lt;em&gt;Don&#39;t be afraid to try compiling the kernel. It&#39;s fun and profitable.&lt;/em&gt;&amp;rdquo; For now, Linux is the only operating system supporting native DCCP, unless you count the patch for an ancient version of FreeBSD.&lt;/p&gt;
 &lt;h2 id=&#34;example-in-c&#34;&gt;Example in C&lt;/h2&gt;
-
-&lt;p&gt;The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses &lt;em&gt;getsockopt()&lt;/em&gt; to read the current maximum packet size. Reading the available CCIDs on the host is shown in &lt;strong&gt;probe.c&lt;/strong&gt;. As libc doesn&amp;rsquo;t still have a &lt;strong&gt;netinet/dccp.h&lt;/strong&gt; header, you will have to get the required constants from the kernel sources or directly use the &lt;strong&gt;dccp.h&lt;/strong&gt; header below. &lt;a href=&#34;https://www.anmolsarma.in/dl/dccp_socket_example.tar.gz&#34;&gt;Download Code&lt;/a&gt;&lt;/p&gt;
-
+&lt;p&gt;The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses &lt;em&gt;getsockopt()&lt;/em&gt; to read the current maximum packet size. Reading the available CCIDs on the host is shown in &lt;strong&gt;probe.c&lt;/strong&gt;. As libc doesn&#39;t still have a &lt;strong&gt;netinet/dccp.h&lt;/strong&gt; header, you will have to get the required constants from the kernel sources or directly use the &lt;strong&gt;dccp.h&lt;/strong&gt; header below. &lt;a href=&#34;https://www.anmolsarma.in/dl/dccp_socket_example.tar.gz&#34;&gt;Download Code&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;server.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#define PORT 1337
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define SERVICE_CODE 42
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define PORT 1337&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define SERVICE_CODE 42&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;error_exit&lt;/span&gt;(&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;str)
 {
@@ -452,11 +406,11 @@ sudo debootstrap bionic mnt/
 	exit(errno);
 }
 
-&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;**&lt;/span&gt;argv)
+&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;argv)
 {
 	&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; listen_sock &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (listen_sock &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in servaddr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
 		.sin_family &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; AF_INET,
@@ -466,33 +420,33 @@ sudo debootstrap bionic mnt/
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
 		       &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(SO_REUSEADDR)&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(SO_REUSEADDR)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (bind(listen_sock, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;servaddr, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(servaddr)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;bind&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;bind&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// DCCP mandates the use of a &amp;#39;Service Code&amp;#39; in addition the port
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(listen_sock, SOL_DCCP, DCCP_SOCKOPT_SERVICE, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
 		       htonl(SERVICE_CODE)}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(DCCP_SOCKOPT_SERVICE)&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(DCCP_SOCKOPT_SERVICE)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (listen(listen_sock, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;listen&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;listen&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (;;) {
 
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Waiting for connection...&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Waiting for connection...&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in client_addr;
 		socklen_t addr_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(client_addr);
 
 		&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; conn_sock &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; accept(listen_sock, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;client_addr, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;addr_len);
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (conn_sock &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;) {
-			perror(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;accept&amp;#34;&lt;/span&gt;);
+			perror(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;accept&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;continue&lt;/span&gt;;
 		}
 
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Connection received from %s:%d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;,
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Connection received from %s:%d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;,
 		       inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (;;) {
@@ -501,7 +455,7 @@ sudo debootstrap bionic mnt/
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Datagrams, not a stream!
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; ret &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; recv(conn_sock, buffer, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(buffer), &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (ret &lt;span style=&#34;color:#666&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-				printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Received: %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, buffer);
+				printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Received: %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, buffer);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;else&lt;/span&gt;
 				&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;break&lt;/span&gt;;
 
@@ -509,18 +463,18 @@ sudo debootstrap bionic mnt/
 
 		close(conn_sock);
 	}
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;client.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;client.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;error_exit&lt;/span&gt;(&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;str)
 {
@@ -531,7 +485,7 @@ sudo debootstrap bionic mnt/
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;argv[])
 {
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (argc &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;) {
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Usage: ./client &amp;lt;server address&amp;gt; &amp;lt;port&amp;gt; &amp;lt;service code&amp;gt; &amp;lt;message 1&amp;gt; [message 2] ... &lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Usage: ./client &amp;lt;server address&amp;gt; &amp;lt;port&amp;gt; &amp;lt;service code&amp;gt; &amp;lt;message 1&amp;gt; [message 2] ... &lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 		exit(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
 	}
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in server_addr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
@@ -540,30 +494,30 @@ sudo debootstrap bionic mnt/
 	};
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;inet_pton(AF_INET, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;], &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;server_addr.sin_addr.s_addr)) {
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Invalid address %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Invalid address %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]);
 		exit(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
 	}
 
 	&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; socket_fd &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (socket_fd &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_SERVICE, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {htonl(atoi(argv[&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;]))}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(DCCP_SOCKOPT_SERVICE)&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(DCCP_SOCKOPT_SERVICE)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (connect(socket_fd, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;server_addr, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(server_addr)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;connect&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;connect&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Get the maximum packet size
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	uint32_t mps;
 	socklen_t res_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(mps);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (getsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_GET_CUR_MPS, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;mps, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;res_len))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&amp;#34;&lt;/span&gt;);
-	printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Maximum Packet Size: %d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, mps);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+	printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Maximum Packet Size: %d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, mps);
 
-	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; argc; i&lt;span style=&#34;color:#666&#34;&gt;++&lt;/span&gt;) {
+	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; argc; i&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;) {
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (send(socket_fd, argv[i], strlen(argv[i]) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-			error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;send&amp;#34;&lt;/span&gt;);
+			error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;send&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 	}
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Wait for a while to allow all the messages to be transmitted
@@ -571,13 +525,14 @@ sudo debootstrap bionic mnt/
 
 	close(socket_fd);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;;
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;probe.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;probe.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;()
 {
@@ -587,46 +542,46 @@ sudo debootstrap bionic mnt/
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	socklen_t res_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;;
 	uint8_t ccids[&lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;];
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (getsockopt(sock_fd, SOL_DCCP, DCCP_SOCKOPT_AVAILABLE_CCIDS, ccids, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;res_len)) {
-		perror(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&amp;#34;&lt;/span&gt;);
+		perror(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
 	}
 
-	printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%d CCIDs available:&amp;#34;&lt;/span&gt;, res_len);
-	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; res_len; i&lt;span style=&#34;color:#666&#34;&gt;++&lt;/span&gt;)
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34; %d&amp;#34;&lt;/span&gt;, ccids[i]);
+	printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;%d CCIDs available:&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, res_len);
+	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; res_len; i&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;)
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt; %d&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, ccids[i]);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; res_len;
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;dccp.h&lt;/strong&gt;&lt;/p&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;dccp.h&lt;/strong&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* This file only contains constants necessary for user space to call
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt; * into the kernel and thus, contains no copyrightable information. */&lt;/span&gt;
 
-&lt;span style=&#34;color:#080&#34;&gt;#ifndef DCCP_DCCP_H
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_DCCP_H
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;ifndef DCCP_DCCP_H&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_DCCP_H&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// From the kernel&amp;#39;s include/linux/socket.h
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define SOL_DCCP                        269
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define SOL_DCCP                        269&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// From kernel&amp;#39;s include/uapi/linux/dccp.h
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SERVICE            2
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CHANGE_L           3
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CHANGE_R           4
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_GET_CUR_MPS        5
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SERVER_TIMEWAIT    6
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SEND_CSCOV         10
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_RECV_CSCOV         11
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_AVAILABLE_CCIDS    12
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID               13
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_TX_CCID            14
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_RX_CCID            15
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_QPOLICY_ID         16
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_QPOLICY_TXQLEN     17
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID_RX_INFO       128
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID_TX_INFO       192
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SERVICE            2&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CHANGE_L           3&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CHANGE_R           4&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_GET_CUR_MPS        5&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SERVER_TIMEWAIT    6&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SEND_CSCOV         10&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_RECV_CSCOV         11&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_AVAILABLE_CCIDS    12&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID               13&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_TX_CCID            14&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_RX_CCID            15&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_QPOLICY_ID         16&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_QPOLICY_TXQLEN     17&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID_RX_INFO       128&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID_TX_INFO       192&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#endif //DCCP_DCCP_H&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h2 id=&#34;caveats-and-conclusion&#34;&gt;Caveats and Conclusion&lt;/h2&gt;
-
+&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;//DCCP_DCCP_H
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;caveats-and-conclusion&#34;&gt;Caveats and Conclusion&lt;/h2&gt;
 &lt;p&gt;DCCP is not mainstream. It is not widely deployed or even supported. Documentation is sparse. Although Linux DCCP NAT is functional, many intermediate boxes will probably just drop DCCP traffic. DCCP is the Fixed-gear bicycle of Layer 4, it is the ultimate hipster transport.&lt;/p&gt;
 </description>
     </item>
@@ -638,8 +593,7 @@ sudo debootstrap bionic mnt/
       
       <guid>https://www.anmolsarma.in/post/talk-emware/</guid>
       <description>&lt;p&gt;Gave an introductory talk on Linux, basically a rehash of the &lt;a href=&#34;http://www.anmolsarma.in/talk-klu/&#34;&gt;talk I gave at KLU&lt;/a&gt; a couple of years ago.&lt;/p&gt;
-
-&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;cfa24e0065b4491d8c06a71a514df295&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+&lt;!-- raw HTML omitted --&gt;
 </description>
     </item>
     
@@ -650,10 +604,8 @@ sudo debootstrap bionic mnt/
       
       <guid>https://www.anmolsarma.in/post/msp430-launchpad-linux/</guid>
       <description>&lt;p&gt;TI’s &lt;a href=&#34;http://www.ti.com/tool/msp-exp430g2&#34; title=&#34;MSP430 Launchpad&#34;&gt;MSP430 LaunchPad&lt;/a&gt; development kit offers some serious bang for the buck. You get two modern 16-bit microcontrollers, a programmer-cum-debugger with pins broken out and a USB cable for less than 5 USD inclusive of shipping. TI even provides two free (as in beer) IDE’s for Windows. Linux support though was a bit sketchy when the board was first released.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/09/LaunchPad.jpg&#34; alt=&#34;&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/09/LaunchPad.jpg&#34; alt=&#34;&#34;&gt;
  &lt;/p&gt;
-
 &lt;p&gt;Things of course have greatly improved and getting the Launchpad to work with Linux is now a breeze. The versions of MSPGCC and MSPDebug in Ubuntu 11.10’s repositories seem to work just fine. There’s also functional Arduino fork for the MSP430 called &lt;a href=&#34;http://energia.nu/&#34; title=&#34;Energia&#34;&gt;Energia&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
@@ -664,31 +616,20 @@ sudo debootstrap bionic mnt/
       <pubDate>Sun, 19 Aug 2012 18:23:22 +0000</pubDate>
       
       <guid>https://www.anmolsarma.in/post/mole-nama-a-linux-fantasy-saga/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Mole Nama&lt;/strong&gt;&lt;br /&gt;
+      <description>&lt;p&gt;&lt;strong&gt;Mole Nama&lt;/strong&gt;&lt;br&gt;
 &lt;em&gt;A historical account of the Mole’ani people in the Free Lands&lt;/em&gt;&lt;/p&gt;
-
 &lt;p&gt; -Inestimabel Montcastellus&lt;/p&gt;
-
 &lt;p&gt; &lt;/p&gt;
-
 &lt;p&gt;  We Mole’ani are a Geekic people, who like millions of other races call the Free Lands home. However, our people originally came from the other side; the Dark Lands that shall not be named. The Dark Lands were under monopolistic rule of the Borg and their brethren. Piracy was common and so were the viral diseases which accompanied the booty. Systemic crashes and ‘illegal operations’ were the order of the day. The Three Fingered Salute was often the only way out. But even then, there was the ever present danger of being crippled by a terrorizing bout of Blue Death.&lt;/p&gt;
-
-&lt;p&gt;  In the midst of chaos, the Mole’ani saw hope. The communes of Firey Foxen and We El Sea brought some stability, the likes of which were never heard of in the Dark Lands. This coupled with the Enlightenment of Openness convinced our people that there was a better way.&lt;br /&gt;
- While the Mole’ani were eager to move to where there was freedom and openness, obtaining a passage to the other side was difficult. With their limited means, they could only go as far as the Isles of Pupey before being forced to return to the Dark Lands.&lt;/p&gt;
-
+&lt;p&gt;  In the midst of chaos, the Mole’ani saw hope. The communes of Firey Foxen and We El Sea brought some stability, the likes of which were never heard of in the Dark Lands. This coupled with the Enlightenment of Openness convinced our people that there was a better way.&lt;br&gt;
+While the Mole’ani were eager to move to where there was freedom and openness, obtaining a passage to the other side was difficult. With their limited means, they could only go as far as the Isles of Pupey before being forced to return to the Dark Lands.&lt;/p&gt;
 &lt;p&gt;  Then came redemption. The Mole’ani came to know that Benevolent Emperor of Ubunatia, determined to assist people like them, had declared the Shipet campaign and sent out his fleet. Finally, our people were able to cross the Vu’Bee Strait, landing on Ubunatian coasts in the era of the Heron.&lt;/p&gt;
-
 &lt;p&gt;  There, they quickly assimilated and became Ubunatians in name and spirit, severing their last ties to Darkness. The Mole’ani turned into missionary paladins, helping bring in dozens of new ally races into the Free Lands. Our people and our allies traveled widely across the Free Lands, touring Ubunatia’s vassal states Kubunatia and Zubunatia and even as far as the lands of the Scarlet Caps and Green Lizards.&lt;/p&gt;
-
 &lt;p&gt;  The Mole’ani however remained loyal Ubunatians. There was minimal dissent even during the Directional Reform of the Lynx era.Things changed with the stirring of the Unitarian Revolution. Hoping to preserve their way of life, our people sought refuge in the vassal state of Zubunatia. Their attempts to change the Zubunatian system proved disastrous, forcing them to flee North and defect to the Mint Realm.&lt;/p&gt;
-
 &lt;p&gt;  And our people remained in peace. However, trouble started once more. The Genom clergy’s antics had caused massive outrage across the Free Lands. Ubunatia, the region’s dominant power had already parted ways with the Genom during the Revolution and refused to have anything to do with it. Refugees fled to the North in their hundreds of thousands and the Mint Realm rose in defiance.&lt;/p&gt;
-
-&lt;p&gt;  In the far away Archinan Republic, a group of dissidents splintered from the Genom and proclaimed the Path of Mayte to defend their cherished old ways. The Mint Realm, although skeptical about Mayte’s future, immediately declared its support to the fledgling movement.&lt;br /&gt;
- At the same time, the Realm ennobled Sinamon to ensure the survival of the old ways.&lt;/p&gt;
-
+&lt;p&gt;  In the far away Archinan Republic, a group of dissidents splintered from the Genom and proclaimed the Path of Mayte to defend their cherished old ways. The Mint Realm, although skeptical about Mayte’s future, immediately declared its support to the fledgling movement.&lt;br&gt;
+At the same time, the Realm ennobled Sinamon to ensure the survival of the old ways.&lt;/p&gt;
 &lt;p&gt;  In the midst of turmoil, the Mole’ani yearned for stability. They returned to the South and settled in the borderlands of Ubunatia and Zubunatia where they remain to this day.&lt;/p&gt;
-
 &lt;p&gt;Inspired by the &lt;a href=&#34;http://www.dedoimedo.com/computers/linux-world-map.html&#34; title=&#34;Linux World Map&#34;&gt;Great Linux World Map&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
@@ -700,13 +641,10 @@ sudo debootstrap bionic mnt/
       
       <guid>https://www.anmolsarma.in/post/talk-klu/</guid>
       <description>&lt;p&gt;Gave an introductory talk on Linux at &lt;a href=&#34;http://www.kluniversity.in/&#34;&gt;Koneru Lakshmiah University&lt;/a&gt;, with &lt;a href=&#34;http://www.elitenewb.wordpress.com/&#34;&gt;Vamsi&lt;/a&gt;following up with a talk on Bugs and Hacks as a part of the ‘workshop’ organised by the KLU Linux Users Group. With about 150 newbish students in attendance, it was fun albeit in a masochistic kind of a way.&lt;/p&gt;
-
 &lt;p&gt;Here’s a shitty picture from the talk, courtesy of Vamsi:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/KLU-Linux-1.jpg&#34; alt=&#34;KLU Linux&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/KLU-Linux-1.jpg&#34; alt=&#34;KLU Linux&#34;&gt;
 And here are the sildes:
-&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/Linux-Say-whaat--2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
+&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/Linux-Say-whaat--2.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Edit: I lost the slides. Only this sad screenshot remains :(&lt;/p&gt;
 </description>
     </item>

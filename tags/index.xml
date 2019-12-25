@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Anmol Sarma</title>
@@ -9,8 +8,37 @@
     
     <atom:link href="https://www.anmolsarma.in/tags/" rel="self" type="application/rss+xml" />
     
+    
+    
     <item>
-      <title>Books</title>
+      <title>filesystem</title>
+      <link>https://www.anmolsarma.in/tags/filesystem/</link>
+      <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/filesystem/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://www.anmolsarma.in/tags/linux/</link>
+      <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tech</title>
+      <link>https://www.anmolsarma.in/tags/tech/</link>
+      <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/tech/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>books</title>
       <link>https://www.anmolsarma.in/tags/books/</link>
       <pubDate>Sun, 12 May 2019 23:41:22 +0530</pubDate>
       
@@ -28,43 +56,7 @@
     </item>
     
     <item>
-      <title>Embedded</title>
-      <link>https://www.anmolsarma.in/tags/embedded/</link>
-      <pubDate>Sat, 12 Jan 2013 19:06:05 +0000</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/embedded/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Fiction</title>
-      <link>https://www.anmolsarma.in/tags/fiction/</link>
-      <pubDate>Sun, 19 Aug 2012 18:23:22 +0000</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/fiction/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Filesystem</title>
-      <link>https://www.anmolsarma.in/tags/filesystem/</link>
-      <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/filesystem/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kernel</title>
-      <link>https://www.anmolsarma.in/tags/kernel/</link>
-      <pubDate>Sun, 03 Feb 2019 18:57:45 +0530</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/kernel/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Language Lawyering</title>
+      <title>language-lawyering</title>
       <link>https://www.anmolsarma.in/tags/language-lawyering/</link>
       <pubDate>Sat, 27 Apr 2019 23:59:42 +0530</pubDate>
       
@@ -73,52 +65,7 @@
     </item>
     
     <item>
-      <title>Linux</title>
-      <link>https://www.anmolsarma.in/tags/linux/</link>
-      <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Pesudoscience</title>
-      <link>https://www.anmolsarma.in/tags/pesudoscience/</link>
-      <pubDate>Sun, 28 Jul 2013 10:07:52 +0000</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/pesudoscience/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Politics</title>
-      <link>https://www.anmolsarma.in/tags/politics/</link>
-      <pubDate>Thu, 09 May 2013 14:08:00 +0000</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/politics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Privacy</title>
-      <link>https://www.anmolsarma.in/tags/privacy/</link>
-      <pubDate>Thu, 09 May 2013 14:08:00 +0000</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/privacy/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Protocols</title>
-      <link>https://www.anmolsarma.in/tags/protocols/</link>
-      <pubDate>Tue, 13 Dec 2016 23:10:50 +0530</pubDate>
-      
-      <guid>https://www.anmolsarma.in/tags/protocols/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Rant</title>
+      <title>rant</title>
       <link>https://www.anmolsarma.in/tags/rant/</link>
       <pubDate>Sat, 27 Apr 2019 23:59:42 +0530</pubDate>
       
@@ -127,16 +74,16 @@
     </item>
     
     <item>
-      <title>Scepticism</title>
-      <link>https://www.anmolsarma.in/tags/scepticism/</link>
-      <pubDate>Sun, 28 Jul 2013 10:07:52 +0000</pubDate>
+      <title>kernel</title>
+      <link>https://www.anmolsarma.in/tags/kernel/</link>
+      <pubDate>Sun, 03 Feb 2019 18:57:45 +0530</pubDate>
       
-      <guid>https://www.anmolsarma.in/tags/scepticism/</guid>
+      <guid>https://www.anmolsarma.in/tags/kernel/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Talks</title>
+      <title>talks</title>
       <link>https://www.anmolsarma.in/tags/talks/</link>
       <pubDate>Sat, 14 Oct 2017 11:56:27 +0530</pubDate>
       
@@ -145,11 +92,65 @@
     </item>
     
     <item>
-      <title>Tech</title>
-      <link>https://www.anmolsarma.in/tags/tech/</link>
-      <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
+      <title>protocols</title>
+      <link>https://www.anmolsarma.in/tags/protocols/</link>
+      <pubDate>Tue, 13 Dec 2016 23:10:50 +0530</pubDate>
       
-      <guid>https://www.anmolsarma.in/tags/tech/</guid>
+      <guid>https://www.anmolsarma.in/tags/protocols/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pesudoscience</title>
+      <link>https://www.anmolsarma.in/tags/pesudoscience/</link>
+      <pubDate>Sun, 28 Jul 2013 10:07:52 +0000</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/pesudoscience/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>scepticism</title>
+      <link>https://www.anmolsarma.in/tags/scepticism/</link>
+      <pubDate>Sun, 28 Jul 2013 10:07:52 +0000</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/scepticism/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>politics</title>
+      <link>https://www.anmolsarma.in/tags/politics/</link>
+      <pubDate>Thu, 09 May 2013 14:08:00 +0000</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/politics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>privacy</title>
+      <link>https://www.anmolsarma.in/tags/privacy/</link>
+      <pubDate>Thu, 09 May 2013 14:08:00 +0000</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/privacy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>embedded</title>
+      <link>https://www.anmolsarma.in/tags/embedded/</link>
+      <pubDate>Sat, 12 Jan 2013 19:06:05 +0000</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/embedded/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fiction</title>
+      <link>https://www.anmolsarma.in/tags/fiction/</link>
+      <pubDate>Sun, 19 Aug 2012 18:23:22 +0000</pubDate>
+      
+      <guid>https://www.anmolsarma.in/tags/fiction/</guid>
       <description></description>
     </item>
     
