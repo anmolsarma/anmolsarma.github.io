@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Network Redirections in Bash</title>
-    
-    
-    <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+    <meta property="og:title" content="Network Redirections in Bash" />
+<meta property="og:description" content="A few months ago, while reading the man page for recvmmsg(), I came across this snippet:
+$ while true; do echo $RANDOM &gt; /dev/udp/127.0.0.1/1234; sleep 0.25; done And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&rsquo;t recall ever seeing a /dev/udp and so was a bit surprised that it worked. And as it happens, ls was not able to access the file that I had just written to:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.anmolsarma.in/post/bash-net-redirections/" />
+<meta property="article:published_time" content="2019-05-04T20:59:15+05:30" />
+<meta property="article:modified_time" content="2019-05-04T20:59:15+05:30" />
+<link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
 </head>
 <body>
 <header>
@@ -30,25 +35,25 @@
 <hr/>
 
 <main>
-	<article>
-		<h1>Network Redirections in Bash</h1>
-		
-			<span id="pubdate"> May 4, 2019</span>
-			
-			<a href="/tags/tech">tech</a>
-			
-			<a href="/tags/linux">linux</a>
-			
-		
+    <article>
+        <h1>Network Redirections in Bash</h1>
+        
+            <span class="pubdate"> May 4, 2019</span>
+            
+                <a href="/tags/tech">tech</a>
+            
+                <a href="/tags/linux">linux</a>
+            
+        
         <p>A few months ago, while reading the man page for <code>recvmmsg()</code>, I came across this snippet:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#a2f;font-weight:bold">while</span> true; <span style="color:#a2f;font-weight:bold">do</span> <span style="color:#a2f">echo</span> <span style="color:#b8860b">$RANDOM</span> &gt; /dev/udp/127.0.0.1/1234;
      sleep 0.25; <span style="color:#a2f;font-weight:bold">done</span>
-</code></pre></div><p>And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn't recall ever seeing a <code>/dev/udp</code> and so was a bit surprised that it worked. And as it happens, <code>ls</code> was not able to access the file that I had just written to:</p>
+</code></pre></div><p>And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&rsquo;t recall ever seeing a <code>/dev/udp</code> and so was a bit surprised that it worked. And as it happens, <code>ls</code> was not able to access the file that I had just written to:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ls: cannot access <span style="color:#b44">&#39;/dev/udp/127.0.0.1/1234&#39;</span>: No such file or directory
 </code></pre></div><p>Puzzled and intrigued, I <code>echoe</code>d <em>Foo Bar Baz</em> to <code>/dev/udp/127.0.0.1/1337</code> and reached for <code>strace</code>:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">...
 <span style="color:#666">2423</span> socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) <span style="color:#666">=</span> <span style="color:#666">4</span>
-<span style="color:#666">12423</span> connect(<span style="color:#666">4</span>, {sa_family<span style="color:#666">=</span>AF_INET, sin_port<span style="color:#666">=</span>htons(<span style="color:#666">1337</span>), sin_addr<span style="color:#666">=</span>inet_addr(<span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">127.0.0.1</span><span style="color:#b44">&#34;</span>)}, <span style="color:#666">16</span>) <span style="color:#666">=</span> <span style="color:#666">0</span>
+<span style="color:#666">12423</span> connect(<span style="color:#666">4</span>, {sa_family<span style="color:#666">=</span>AF_INET, sin_port<span style="color:#666">=</span>htons(<span style="color:#666">1337</span>), sin_addr<span style="color:#666">=</span>inet_addr(<span style="color:#b44">&#34;127.0.0.1&#34;</span>)}, <span style="color:#666">16</span>) <span style="color:#666">=</span> <span style="color:#666">0</span>
 <span style="color:#666">12423</span> fcntl(<span style="color:#666">1</span>, F_GETFD)                 <span style="color:#666">=</span> <span style="color:#666">0</span>
 <span style="color:#666">12423</span> fcntl(<span style="color:#666">1</span>, F_DUPFD, <span style="color:#666">10</span>)             <span style="color:#666">=</span> <span style="color:#666">10</span>
 <span style="color:#666">12423</span> fcntl(<span style="color:#666">1</span>, F_GETFD)                 <span style="color:#666">=</span> <span style="color:#666">0</span>
@@ -56,26 +61,26 @@
 <span style="color:#666">12423</span> dup2(<span style="color:#666">4</span>, <span style="color:#666">1</span>)                        <span style="color:#666">=</span> <span style="color:#666">1</span>
 <span style="color:#666">12423</span> close(<span style="color:#666">4</span>)                          <span style="color:#666">=</span> <span style="color:#666">0</span>
 <span style="color:#666">12423</span> fstat(<span style="color:#666">1</span>, {st_mode<span style="color:#666">=</span>S_IFSOCK<span style="color:#666">|</span><span style="color:#666">0777</span>, st_size<span style="color:#666">=</span><span style="color:#666">0</span>, ...}) <span style="color:#666">=</span> <span style="color:#666">0</span>
-<span style="color:#666">12423</span> write(<span style="color:#666">1</span>, <span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">Foo Bar Baz</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>, <span style="color:#666">12</span>)     <span style="color:#666">=</span> <span style="color:#666">12</span>
+<span style="color:#666">12423</span> write(<span style="color:#666">1</span>, <span style="color:#b44">&#34;Foo Bar Baz</span><span style="color:#b62;font-weight:bold">\n</span><span style="color:#b44">&#34;</span>, <span style="color:#666">12</span>)     <span style="color:#666">=</span> <span style="color:#666">12</span>
 ...
 </code></pre></div><p>Seemingly, a normal UDP socket was being created and written to using the regular sycall interface. That refuted my initial suspicion that some kind of a special file backed by the kernel was involved. But who was actually creating the socket?</p>
-<p>A peek at Bash's code answered that question:</p>
+<p>A peek at Bash&rsquo;s code answered that question:</p>
 <p><strong>redir.c:</strong></p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#080;font-style:italic">/* A list of pattern/value pairs for filenames that the redirection
 </span><span style="color:#080;font-style:italic">   code handles specially. */</span>
 <span style="color:#a2f;font-weight:bold">static</span> STRING_INT_ALIST _redir_special_filenames[] <span style="color:#666">=</span> {
-<span style="color:#080">#</span><span style="color:#080">if !defined (HAVE_DEV_FD)</span><span style="color:#080">
-</span><span style="color:#080"></span>  { <span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">/dev/fd/[0-9]*</span><span style="color:#b44">&#34;</span>, RF_DEVFD },
-<span style="color:#080">#</span><span style="color:#080">endif</span><span style="color:#080">
-</span><span style="color:#080"></span><span style="color:#080">#</span><span style="color:#080">if !defined (HAVE_DEV_STDIN)</span><span style="color:#080">
-</span><span style="color:#080"></span>  { <span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">/dev/stderr</span><span style="color:#b44">&#34;</span>, RF_DEVSTDERR },
-  { <span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">/dev/stdin</span><span style="color:#b44">&#34;</span>, RF_DEVSTDIN },
-  { <span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">/dev/stdout</span><span style="color:#b44">&#34;</span>, RF_DEVSTDOUT },
-<span style="color:#080">#</span><span style="color:#080">endif</span><span style="color:#080">
-</span><span style="color:#080"></span><span style="color:#080">#</span><span style="color:#080">if defined (NETWORK_REDIRECTIONS)</span><span style="color:#080">
-</span><span style="color:#080"></span>  { <span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">/dev/tcp/*/*</span><span style="color:#b44">&#34;</span>, RF_DEVTCP },
-  { <span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">/dev/udp/*/*</span><span style="color:#b44">&#34;</span>, RF_DEVUDP },
-<span style="color:#080">#</span><span style="color:#080">endif</span><span style="color:#080">
+<span style="color:#080">#if !defined (HAVE_DEV_FD)
+</span><span style="color:#080"></span>  { <span style="color:#b44">&#34;/dev/fd/[0-9]*&#34;</span>, RF_DEVFD },
+<span style="color:#080">#endif
+</span><span style="color:#080">#if !defined (HAVE_DEV_STDIN)
+</span><span style="color:#080"></span>  { <span style="color:#b44">&#34;/dev/stderr&#34;</span>, RF_DEVSTDERR },
+  { <span style="color:#b44">&#34;/dev/stdin&#34;</span>, RF_DEVSTDIN },
+  { <span style="color:#b44">&#34;/dev/stdout&#34;</span>, RF_DEVSTDOUT },
+<span style="color:#080">#endif
+</span><span style="color:#080">#if defined (NETWORK_REDIRECTIONS)
+</span><span style="color:#080"></span>  { <span style="color:#b44">&#34;/dev/tcp/*/*&#34;</span>, RF_DEVTCP },
+  { <span style="color:#b44">&#34;/dev/udp/*/*&#34;</span>, RF_DEVUDP },
+<span style="color:#080">#endif
 </span><span style="color:#080"></span>  { (<span style="color:#0b0;font-weight:bold">char</span> <span style="color:#666">*</span>)<span style="color:#a2f">NULL</span>, <span style="color:#666">-</span><span style="color:#666">1</span> }
 };
 </code></pre></div><p>So, redirection involving <code>/dev/udp/</code> is handled specially by Bash<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> and it uses BSD Sockets API to create a socket:</p>
@@ -94,16 +99,16 @@
   <span style="color:#0b0;font-weight:bold">unsigned</span> <span style="color:#0b0;font-weight:bold">short</span> p;
   <span style="color:#0b0;font-weight:bold">int</span> s, e;
 
-  <span style="color:#a2f;font-weight:bold">if</span> (_getaddr(host, <span style="color:#666">&amp;</span>ina) <span style="color:#666">=</span><span style="color:#666">=</span> <span style="color:#666">0</span>)
+  <span style="color:#a2f;font-weight:bold">if</span> (_getaddr(host, <span style="color:#666">&amp;</span>ina) <span style="color:#666">==</span> <span style="color:#666">0</span>)
     {
-      internal_error (_(<span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">%s: host unknown</span><span style="color:#b44">&#34;</span>), host);
+      internal_error (_(<span style="color:#b44">&#34;%s: host unknown&#34;</span>), host);
       errno <span style="color:#666">=</span> EINVAL;
       <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#666">1</span>;
     }
 
-  <span style="color:#a2f;font-weight:bold">if</span> (_getserv(serv, typ, <span style="color:#666">&amp;</span>p) <span style="color:#666">=</span><span style="color:#666">=</span> <span style="color:#666">0</span>)
+  <span style="color:#a2f;font-weight:bold">if</span> (_getserv(serv, typ, <span style="color:#666">&amp;</span>p) <span style="color:#666">==</span> <span style="color:#666">0</span>)
     {
-      internal_error(_(<span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">%s: invalid service</span><span style="color:#b44">&#34;</span>), serv);
+      internal_error(_(<span style="color:#b44">&#34;%s: invalid service&#34;</span>), serv);
       errno <span style="color:#666">=</span> EINVAL;
       <span style="color:#a2f;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#666">1</span>;
     }
@@ -113,17 +118,17 @@
   sin.sin_port <span style="color:#666">=</span> p;
   sin.sin_addr <span style="color:#666">=</span> ina;
 
-  s <span style="color:#666">=</span> socket(AF_INET, (typ <span style="color:#666">=</span><span style="color:#666">=</span> <span style="color:#b44"></span><span style="color:#b44">&#39;</span><span style="color:#b44">t</span><span style="color:#b44">&#39;</span>) <span style="color:#666">?</span> <span style="color:#a0a000">SOCK_STREAM</span> : SOCK_DGRAM, <span style="color:#666">0</span>);
+  s <span style="color:#666">=</span> socket(AF_INET, (typ <span style="color:#666">==</span> <span style="color:#b44">&#39;t&#39;</span>) <span style="color:#666">?</span> <span style="color:#a0a000">SOCK_STREAM</span> : SOCK_DGRAM, <span style="color:#666">0</span>);
   <span style="color:#a2f;font-weight:bold">if</span> (s <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
     {
-      sys_error (<span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">socket</span><span style="color:#b44">&#34;</span>);
+      sys_error (<span style="color:#b44">&#34;socket&#34;</span>);
       <span style="color:#a2f;font-weight:bold">return</span> (<span style="color:#666">-</span><span style="color:#666">1</span>);
     }
 
   <span style="color:#a2f;font-weight:bold">if</span> (connect (s, (<span style="color:#a2f;font-weight:bold">struct</span> sockaddr <span style="color:#666">*</span>)<span style="color:#666">&amp;</span>sin, <span style="color:#a2f;font-weight:bold">sizeof</span> (sin)) <span style="color:#666">&lt;</span> <span style="color:#666">0</span>)
     {
       e <span style="color:#666">=</span> errno;
-      sys_error(<span style="color:#b44"></span><span style="color:#b44">&#34;</span><span style="color:#b44">connect</span><span style="color:#b44">&#34;</span>);
+      sys_error(<span style="color:#b44">&#34;connect&#34;</span>);
       close(s);
       errno <span style="color:#666">=</span> e;
       <span style="color:#a2f;font-weight:bold">return</span> (<span style="color:#666">-</span><span style="color:#666">1</span>);
@@ -137,7 +142,7 @@
 tail -n1 &lt;&amp;<span style="color:#666">3</span>
 </code></pre></div><p>No <code>curl</code> needed! /jk</p>
 <p>Apart from Bash, in the versions and configurations packaged in Ubuntu 18.04, only <code>ksh</code> supports network redirections &ndash; <code>ash</code>, <code>csh</code>, <code>dash</code>,  <code>fish</code>,  and <code>zsh</code> do not.</p>
-<p>I don't think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.</p>
+<p>I don&rsquo;t think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.</p>
 <p><strong>NOTE:</strong> Code snippets from Bash are licensed under GPLv3, the snippet from the man page is licensed <a href="http://man7.org/linux/man-pages/man2/recvmmsg.2.license.html">differently</a></p>
 <section class="footnotes" role="doc-endnotes">
 <hr>
@@ -148,9 +153,9 @@ tail -n1 &lt;&amp;<span style="color:#666">3</span>
 </ol>
 </section>
 
-		
-			<div>
-				<div id="disqus_thread"></div>
+        
+            <div>
+                <div id="disqus_thread"></div>
 <script type="text/javascript">
 
 function load_disqus() {
@@ -165,13 +170,13 @@ function load_disqus() {
 
 <noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
 
-			</div>
-		
+            </div>
+        
     </article>
 </main>
 <hr/>
 <footer>
-    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content on this webiste is licensed under a <!-- raw HTML omitted -->Creative Commons Attribution 4.0 International License<!-- raw HTML omitted -->.</p>
+    Except where noted otherwise, content on this webiste is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 </footer>
 
 

@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Lazy Performance Comparison of WordPress and Ghost</title>
-    
-    
-    <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+    <meta property="og:title" content="Lazy Performance Comparison of WordPress and Ghost" />
+<meta property="og:description" content="So, I switched to a new blogging platform. Again. After trying out a static approach, I moved back to a WordPress when I stumbled across OpenShift (And their fantastic free plan). That was well over two years ago. In the meantime, I hardly blogged and didn&rsquo;t really run into any issues but the blog did feel a tad sluggish.
+Fast-forward to yesterday when I had a sudden impulse to try something new." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.anmolsarma.in/post/lazy-performance-comparison-of-wordpress-and-ghost/" />
+<meta property="article:published_time" content="2015-04-04T18:40:03+00:00" />
+<meta property="article:modified_time" content="2015-04-04T18:40:03+00:00" />
+<link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
 </head>
 <body>
 <header>
@@ -30,30 +35,30 @@
 <hr/>
 
 <main>
-	<article>
-		<h1>Lazy Performance Comparison of WordPress and Ghost</h1>
-		
-			<span id="pubdate"> Apr 4, 2015</span>
-			
-			<a href="/tags/tech">tech</a>
-			
-		
-        <p>So, I switched to a new blogging platform. Again. After trying out a static approach, I moved back to a WordPress when I stumbled across <a href="https://www.openshift.com/">OpenShift</a> (<em>And their fantastic <a href="https://www.openshift.com/products/pricing/plan-comparison">free plan</a></em>). That was well over two years ago. In the meantime, I hardly blogged and didn't really run into any issues but the blog did feel a tad sluggish.</p>
-<p>Fast-forward to yesterday when I had a sudden impulse to try something new. Ghost looked interesting so, I spun up an install using OpenShift's <a href="https://github.com/openshift-quickstart/openshift-ghost-quickstart">Ghost Quick-Start</a> and proceeded to <a href="https://ghostforbeginners.com/how-to-transfer-blog-posts-from-wordpress-to-ghost/">import data from my WordPress</a> blog which turned out to be pretty painless.</p>
-<p>Given the same resources (<em>Small Gear</em>) and same amount tweaking (i.e. none, using OpenShift's quickstart installation defaults and using the default themes with no plugins), Ghost certainly <em>felt</em> a lot faster but how fast was it really? To answer that (<em>And because I apparently have nothing better to do on a Friday night</em>), I started a simultaneous stress test on WordPress and Ghost using <a href="http://blazemeter.com/">BlazeMeter</a> with a maximum of 50 users. The answer, as turns out is a <strong>helluva lot faster!</strong></p>
+    <article>
+        <h1>Lazy Performance Comparison of WordPress and Ghost</h1>
+        
+            <span class="pubdate"> Apr 4, 2015</span>
+            
+                <a href="/tags/tech">tech</a>
+            
+        
+        <p>So, I switched to a new blogging platform. Again. After trying out a static approach, I moved back to a WordPress when I stumbled across <a href="https://www.openshift.com/">OpenShift</a> (<em>And their fantastic <a href="https://www.openshift.com/products/pricing/plan-comparison">free plan</a></em>). That was well over two years ago. In the meantime, I hardly blogged and didn&rsquo;t really run into any issues but the blog did feel a tad sluggish.</p>
+<p>Fast-forward to yesterday when I had a sudden impulse to try something new. Ghost looked interesting so, I spun up an install using OpenShift&rsquo;s <a href="https://github.com/openshift-quickstart/openshift-ghost-quickstart">Ghost Quick-Start</a> and proceeded to <a href="https://ghostforbeginners.com/how-to-transfer-blog-posts-from-wordpress-to-ghost/">import data from my WordPress</a> blog which turned out to be pretty painless.</p>
+<p>Given the same resources (<em>Small Gear</em>) and same amount tweaking (i.e. none, using OpenShift&rsquo;s quickstart installation defaults and using the default themes with no plugins), Ghost certainly <em>felt</em> a lot faster but how fast was it really? To answer that (<em>And because I apparently have nothing better to do on a Friday night</em>), I started a simultaneous stress test on WordPress and Ghost using <a href="http://blazemeter.com/">BlazeMeter</a> with a maximum of 50 users. The answer, as turns out is a <strong>helluva lot faster!</strong></p>
 <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
-<p>On average, Ghost's response is <strong>28 times faster</strong> and its latency is <strong>47 times lower</strong>. Looking at how the two respond to load is interesting:</p>
+<p>On average, Ghost&rsquo;s response is <strong>28 times faster</strong> and its latency is <strong>47 times lower</strong>. Looking at how the two respond to load is interesting:</p>
 <p><img src="/images/2015/04/Ghost-wordpress-responsetime.png" alt=""></p>
 <p><img src="/images/2015/04/Ghost_Wordpress_latency.png" alt=""></p>
-<p>Ghost doesn't even seem to break a sweat while WordPress starts panting quite early into the run. The longest it took for Ghost to respond was <strong>7240 ms</strong> which is almost a whole order of a magnitude faster than Wondpress's <strong>67093 ms</strong>. The shortest time for Ghost is <strong>602 ms</strong>, a comfortable <strong>3.77 times</strong> better than <strong>2273 ms</strong> it took WordPress.</p>
-<p>Basically Ghost crushes WordPress in this admittedly lazy and unscientific test. It is pretty similar to what others have reported. If your personal WordPress setup is struggling to keep up with traffic, you should at least consider Ghost. It doesn't have anywhere near the number of plugins or themes as WordPress, it clearly is not as mature (<em>It's still in version 0.5.10</em>) but boy is it fast! As for the writing flow, I can only say its different. I'm not entirely sure if it is better than what we have been used to (<em>No spell check</em>).</p>
+<p>Ghost doesn&rsquo;t even seem to break a sweat while WordPress starts panting quite early into the run. The longest it took for Ghost to respond was <strong>7240 ms</strong> which is almost a whole order of a magnitude faster than Wondpress&rsquo;s <strong>67093 ms</strong>. The shortest time for Ghost is <strong>602 ms</strong>, a comfortable <strong>3.77 times</strong> better than <strong>2273 ms</strong> it took WordPress.</p>
+<p>Basically Ghost crushes WordPress in this admittedly lazy and unscientific test. It is pretty similar to what others have reported. If your personal WordPress setup is struggling to keep up with traffic, you should at least consider Ghost. It doesn&rsquo;t have anywhere near the number of plugins or themes as WordPress, it clearly is not as mature (<em>It&rsquo;s still in version 0.5.10</em>) but boy is it fast! As for the writing flow, I can only say its different. I&rsquo;m not entirely sure if it is better than what we have been used to (<em>No spell check</em>).</p>
 <p>I for one am quite happy I tried (<em>And switched to</em>) Ghost. And I got a blog post out it to boot!</p>
 
-		
-			<div>
-				<div id="disqus_thread"></div>
+        
+            <div>
+                <div id="disqus_thread"></div>
 <script type="text/javascript">
 
 function load_disqus() {
@@ -68,13 +73,13 @@ function load_disqus() {
 
 <noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
 
-			</div>
-		
+            </div>
+        
     </article>
 </main>
 <hr/>
 <footer>
-    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content on this webiste is licensed under a <!-- raw HTML omitted -->Creative Commons Attribution 4.0 International License<!-- raw HTML omitted -->.</p>
+    Except where noted otherwise, content on this webiste is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 </footer>
 
 

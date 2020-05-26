@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>File Creation Time in Linux</title>
-    
-    
-    <link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+    <meta property="og:title" content="File Creation Time in Linux" />
+<meta property="og:description" content="The stat utility can be used to retrieve the Unix file timestamps namely atime, ctime and mtime. Of these, the benefit of mtime which records the last time when the file was modified is immediately apparent. On the other hand, atime1 which records the last time the file was accessed has been called &ldquo;perhaps the most stupid Unix design idea of all times&rdquo;. Intuitively, one might expect ctime to record the creation time of a file." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.anmolsarma.in/post/linux-file-creation-time/" />
+<meta property="article:published_time" content="2019-06-23T19:24:22+05:30" />
+<meta property="article:modified_time" content="2019-06-23T19:24:22+05:30" />
+<link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
 </head>
 <body>
 <header>
@@ -30,18 +34,18 @@
 <hr/>
 
 <main>
-	<article>
-		<h1>File Creation Time in Linux</h1>
-		
-			<span id="pubdate"> Jun 23, 2019</span>
-			
-			<a href="/tags/tech">tech</a>
-			
-			<a href="/tags/linux">linux</a>
-			
-			<a href="/tags/filesystem">filesystem</a>
-			
-		
+    <article>
+        <h1>File Creation Time in Linux</h1>
+        
+            <span class="pubdate"> Jun 23, 2019</span>
+            
+                <a href="/tags/tech">tech</a>
+            
+                <a href="/tags/linux">linux</a>
+            
+                <a href="/tags/filesystem">filesystem</a>
+            
+        
         <p>The <a href="http://man7.org/linux/man-pages/man1/stat.1.html"><code>stat</code></a> utility can be used to retrieve the Unix file timestamps namely <code>atime</code>, <code>ctime</code> and <code>mtime</code>. Of these, the benefit of <code>mtime</code> which records the last time when the file was modified is immediately apparent. On the other hand, <code>atime</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> which records the last time the file was accessed has been called <a href="https://lore.kernel.org/lkml/20070804210351.GA9784@elte.hu/">&ldquo;perhaps the most stupid Unix design idea of all times&rdquo;</a>. Intuitively, one might expect <code>ctime</code> to record the creation time of a file. However, <code>ctime</code> records the last time when the metadata of a file was changed.</p>
 <p>Typically, Unices do not record file creation times. While some individual filesystems do record file creation times<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>, until recently Linux lacked a common interface to actually expose them to userspace applications. As a result, the output of <code>stat</code> (GNU coreutils v8.30) on an ext4 filesystem (Which does record creation times) looks something like this:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ stat .
@@ -78,9 +82,9 @@ Change: 2019-05-19 13:29:59.609167627 +0000
 </ol>
 </section>
 
-		
-			<div>
-				<div id="disqus_thread"></div>
+        
+            <div>
+                <div id="disqus_thread"></div>
 <script type="text/javascript">
 
 function load_disqus() {
@@ -95,13 +99,13 @@ function load_disqus() {
 
 <noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
 
-			</div>
-		
+            </div>
+        
     </article>
 </main>
 <hr/>
 <footer>
-    <p>&copy; 2019 <a href="https://www.anmolsarma.in/">Anmol Sarma</a>. Except where noted otherwise, content on this webiste is licensed under a <!-- raw HTML omitted -->Creative Commons Attribution 4.0 International License<!-- raw HTML omitted -->.</p>
+    Except where noted otherwise, content on this webiste is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 </footer>
 
 

@@ -63,12 +63,12 @@ Change: 2019-05-19 13:29:59.609167627 +0000
       <description>&lt;p&gt;A few months ago, while reading the man page for &lt;code&gt;recvmmsg()&lt;/code&gt;, I came across this snippet:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;while&lt;/span&gt; true; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color:#a2f&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#b8860b&#34;&gt;$RANDOM&lt;/span&gt; &amp;gt; /dev/udp/127.0.0.1/1234;
      sleep 0.25; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;done&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&#39;t recall ever seeing a &lt;code&gt;/dev/udp&lt;/code&gt; and so was a bit surprised that it worked. And as it happens, &lt;code&gt;ls&lt;/code&gt; was not able to access the file that I had just written to:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And as advertised, it sends a UDP datagram containing a random number to port 1234 every 250 ms. I didn&amp;rsquo;t recall ever seeing a &lt;code&gt;/dev/udp&lt;/code&gt; and so was a bit surprised that it worked. And as it happens, &lt;code&gt;ls&lt;/code&gt; was not able to access the file that I had just written to:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ls: cannot access &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;/dev/udp/127.0.0.1/1234&amp;#39;&lt;/span&gt;: No such file or directory
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Puzzled and intrigued, I &lt;code&gt;echoe&lt;/code&gt;d &lt;em&gt;Foo Bar Baz&lt;/em&gt; to &lt;code&gt;/dev/udp/127.0.0.1/1337&lt;/code&gt; and reached for &lt;code&gt;strace&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;...
 &lt;span style=&#34;color:#666&#34;&gt;2423&lt;/span&gt; socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; connect(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, {sa_family&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;AF_INET, sin_port&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;htons(&lt;span style=&#34;color:#666&#34;&gt;1337&lt;/span&gt;), sin_addr&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;inet_addr(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;127.0.0.1&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;)}, &lt;span style=&#34;color:#666&#34;&gt;16&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; connect(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, {sa_family&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;AF_INET, sin_port&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;htons(&lt;span style=&#34;color:#666&#34;&gt;1337&lt;/span&gt;), sin_addr&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;inet_addr(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;127.0.0.1&amp;#34;&lt;/span&gt;)}, &lt;span style=&#34;color:#666&#34;&gt;16&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_GETFD)                 &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_DUPFD, &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)             &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fcntl(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, F_GETFD)                 &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
@@ -76,26 +76,26 @@ Change: 2019-05-19 13:29:59.609167627 +0000
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; dup2(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;)                        &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; close(&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)                          &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; fstat(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, {st_mode&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;S_IFSOCK&lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0777&lt;/span&gt;, st_size&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, ...}) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;
-&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; write(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Foo Bar Baz&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;)     &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;
+&lt;span style=&#34;color:#666&#34;&gt;12423&lt;/span&gt; write(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Foo Bar Baz&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;)     &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;
 ...
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Seemingly, a normal UDP socket was being created and written to using the regular sycall interface. That refuted my initial suspicion that some kind of a special file backed by the kernel was involved. But who was actually creating the socket?&lt;/p&gt;
-&lt;p&gt;A peek at Bash&#39;s code answered that question:&lt;/p&gt;
+&lt;p&gt;A peek at Bash&amp;rsquo;s code answered that question:&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;redir.c:&lt;/strong&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* A list of pattern/value pairs for filenames that the redirection
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;   code handles specially. */&lt;/span&gt;
 &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;static&lt;/span&gt; STRING_INT_ALIST _redir_special_filenames[] &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;if !defined (HAVE_DEV_FD)&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/fd/[0-9]*&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVFD },
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;if !defined (HAVE_DEV_STDIN)&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/stderr&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVSTDERR },
-  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/stdin&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVSTDIN },
-  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/stdout&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVSTDOUT },
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;if defined (NETWORK_REDIRECTIONS)&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/tcp/*/*&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVTCP },
-  { &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;/dev/udp/*/*&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, RF_DEVUDP },
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#if !defined (HAVE_DEV_FD)
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/fd/[0-9]*&amp;#34;&lt;/span&gt;, RF_DEVFD },
+&lt;span style=&#34;color:#080&#34;&gt;#endif
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#if !defined (HAVE_DEV_STDIN)
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stderr&amp;#34;&lt;/span&gt;, RF_DEVSTDERR },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stdin&amp;#34;&lt;/span&gt;, RF_DEVSTDIN },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/stdout&amp;#34;&lt;/span&gt;, RF_DEVSTDOUT },
+&lt;span style=&#34;color:#080&#34;&gt;#endif
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#if defined (NETWORK_REDIRECTIONS)
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/tcp/*/*&amp;#34;&lt;/span&gt;, RF_DEVTCP },
+  { &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/dev/udp/*/*&amp;#34;&lt;/span&gt;, RF_DEVUDP },
+&lt;span style=&#34;color:#080&#34;&gt;#endif
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;  { (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#a2f&#34;&gt;NULL&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; }
 };
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, redirection involving &lt;code&gt;/dev/udp/&lt;/code&gt; is handled specially by Bash&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; and it uses BSD Sockets API to create a socket:&lt;/p&gt;
@@ -114,16 +114,16 @@ Change: 2019-05-19 13:29:59.609167627 +0000
   &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;unsigned&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;short&lt;/span&gt; p;
   &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; s, e;
 
-  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getaddr(host, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;ina) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getaddr(host, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;ina) &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
-      internal_error (_(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;%s: host unknown&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;), host);
+      internal_error (_(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%s: host unknown&amp;#34;&lt;/span&gt;), host);
       errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; EINVAL;
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
     }
 
-  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getserv(serv, typ, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;p) &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (_getserv(serv, typ, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;p) &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
-      internal_error(_(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;%s: invalid service&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;), serv);
+      internal_error(_(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%s: invalid service&amp;#34;&lt;/span&gt;), serv);
       errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; EINVAL;
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
     }
@@ -133,17 +133,17 @@ Change: 2019-05-19 13:29:59.609167627 +0000
   sin.sin_port &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; p;
   sin.sin_addr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; ina;
 
-  s &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, (typ &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#a0a000&#34;&gt;SOCK_STREAM&lt;/span&gt; : SOCK_DGRAM, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
+  s &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, (typ &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;t&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#a0a000&#34;&gt;SOCK_STREAM&lt;/span&gt; : SOCK_DGRAM, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
   &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (s &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
-      sys_error (&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+      sys_error (&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
     }
 
   &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (connect (s, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;sin, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt; (sin)) &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
     {
       e &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; errno;
-      sys_error(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;connect&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+      sys_error(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;connect&amp;#34;&lt;/span&gt;);
       close(s);
       errno &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; e;
       &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
@@ -157,7 +157,7 @@ Change: 2019-05-19 13:29:59.609167627 +0000
 tail -n1 &amp;lt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;No &lt;code&gt;curl&lt;/code&gt; needed! /jk&lt;/p&gt;
 &lt;p&gt;Apart from Bash, in the versions and configurations packaged in Ubuntu 18.04, only &lt;code&gt;ksh&lt;/code&gt; supports network redirections &amp;ndash; &lt;code&gt;ash&lt;/code&gt;, &lt;code&gt;csh&lt;/code&gt;, &lt;code&gt;dash&lt;/code&gt;,  &lt;code&gt;fish&lt;/code&gt;,  and &lt;code&gt;zsh&lt;/code&gt; do not.&lt;/p&gt;
-&lt;p&gt;I don&#39;t think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.&lt;/p&gt;
+&lt;p&gt;I don&amp;rsquo;t think I will actually have any use for network redirections but this was a fun little rabbit hole to dive into.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; Code snippets from Bash are licensed under GPLv3, the snippet from the man page is licensed &lt;a href=&#34;http://man7.org/linux/man-pages/man2/recvmmsg.2.license.html&#34;&gt;differently&lt;/a&gt;&lt;/p&gt;
 &lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
 &lt;hr&gt;
@@ -176,10 +176,10 @@ tail -n1 &amp;lt;&amp;amp;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;
       <pubDate>Sat, 27 Apr 2019 23:59:42 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/stop-struct-memset/</guid>
-      <description>&lt;p&gt;&lt;em&gt;TL;DR: Use C99&#39;s designated initializers instead. Because it&#39;s 2019!&lt;/em&gt;&lt;/p&gt;
+      <description>&lt;p&gt;&lt;em&gt;TL;DR: Use C99&amp;rsquo;s designated initializers instead. Because it&amp;rsquo;s 2019!&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Edit:&lt;/strong&gt; This post was discussed on &lt;a href=&#34;https://news.ycombinator.com/item?id=19766930&#34;&gt;Hacker News&lt;/a&gt;, &lt;a href=&#34;https://lobste.rs/s/7aqidd/stop_memsetting_structures&#34;&gt;Lobste.rs&lt;/a&gt; and &lt;a href=&#34;https://www.reddit.com/r/C_Programming/comments/bi23w6/stop_memsetting_structures/&#34;&gt;/r/c_programming&lt;/a&gt;. It has been updated to address some of the concerns raised by commenters.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;One of the little things that annoy me when reading code is the unnecessary use of &lt;code&gt;memset()&lt;/code&gt; to zero-out a &lt;code&gt;struct&lt;/code&gt;. Something I see frequently in networking code that uses the BSD sockets API.&lt;/p&gt;
-&lt;p&gt;Consider this snippet of code from the venerable &lt;a href=&#34;https://beej.us/guide/bgnet/html/single/bgnet.html#simpleserver&#34;&gt;Beej&#39;s Guide to Network Programming&lt;/a&gt;:&lt;/p&gt;
+&lt;p&gt;Consider this snippet of code from the venerable &lt;a href=&#34;https://beej.us/guide/bgnet/html/single/bgnet.html#simpleserver&#34;&gt;Beej&amp;rsquo;s Guide to Network Programming&lt;/a&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; addrinfo hints;
 ...
 
@@ -196,8 +196,8 @@ hints.ai_flags &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; AI_PASSIVE;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which in my humble and very subjective opinion looks much cleaner.&lt;/p&gt;
 &lt;p&gt;The second version uses a feature standardized in C99 called designated initializers. This allows initializing elements of an aggregate type in any order by specifying the array indices or structure field names. Elements that are not specified are initialized as if they are static objects: arithmetic types are initialized to &lt;code&gt;0&lt;/code&gt;; pointers are initialized to &lt;code&gt;NULL&lt;/code&gt;. This is also presumably less expensive than a &lt;code&gt;memset()&lt;/code&gt; as it avoids clearing memory that will be assigned to.&lt;/p&gt;
 &lt;p&gt;If the structure has padding, using designated initializers will not initialize it to zero.  This is not &lt;em&gt;usually&lt;/em&gt; a problem. However, this may inadvertently lead to information leaks when passing a structure from a more privileged context to a less privileged one: &lt;a href=&#34;https://lwn.net/Articles/417989/&#34;&gt;Like when passing memory from the kernel back to userspace&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Now to be fair to Beej, he first wrote &lt;em&gt;The Guide&lt;/em&gt; in 1995. But if you&#39;re writing new code in 2019, there is really no reason to not use designated initializers&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. Except to specifically avoid memory disclosures. &lt;em&gt;Cue the Rust Evangelism Strike Force chiming in to say that there is really no reason to be writing new C code in 2019.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;While we&#39;re on the topic of little annoyances, another pattern I often see is using a variable just to pass what is effectively a literal to &lt;code&gt;setsockopt()&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;Now to be fair to Beej, he first wrote &lt;em&gt;The Guide&lt;/em&gt; in 1995. But if you&amp;rsquo;re writing new code in 2019, there is really no reason to not use designated initializers&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. Except to specifically avoid memory disclosures. &lt;em&gt;Cue the Rust Evangelism Strike Force chiming in to say that there is really no reason to be writing new C code in 2019.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;While we&amp;rsquo;re on the topic of little annoyances, another pattern I often see is using a variable just to pass what is effectively a literal to &lt;code&gt;setsockopt()&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; yes&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
 setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;yes, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt; (yes)) ;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Which can instead be written as:&lt;/p&gt;
@@ -205,14 +205,14 @@ setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &lt;span style=&#34;color:#666&#3
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This uses yet another C99 feature called compound literals. If the magic 1 value bothers you, you can always:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {&lt;span style=&#34;color:#a2f&#34;&gt;true&lt;/span&gt;}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;));
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And finally, there is absolutely no reason to check if a pointer is &lt;code&gt;NULL&lt;/code&gt; just before calling &lt;code&gt;free()&lt;/code&gt; on it:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#a2f&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; ptr)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#a2f&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;!=&lt;/span&gt; ptr)
 	free(ptr);
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Quoting the &lt;a href=&#34;http://www.open-std.org/JTC1/SC22/wg14/www/docs/n1124.pdf&#34;&gt;standard Section 7.20.3.2 (p. 313)&lt;/a&gt;: &lt;em&gt;If ptr is a null pointer, no action occurs.&lt;/em&gt; If a system deviates from this expectation, it is clearly evil. It is advised to &lt;em&gt;Kill It With Fire&lt;/em&gt;.&lt;/p&gt;
 &lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;If you were relying on &lt;code&gt;memcmp()&lt;/code&gt; to compare structs, that will probably no longer work. But you knew what you were getting yourself into, didn&#39;t you? &lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;If you were relying on &lt;code&gt;memcmp()&lt;/code&gt; to compare structs, that will probably no longer work. But you knew what you were getting yourself into, didn&amp;rsquo;t you? &lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/section&gt;
@@ -225,8 +225,8 @@ setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &lt;span style=&#34;color:#666&#3
       <pubDate>Sun, 03 Feb 2019 18:57:45 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/single-step-kernel/</guid>
-      <description>&lt;p&gt;There may come a time in a system programmer&#39;s life when she needs to leave the civilized safety of the userland and confront the unspeakable horrors that dwell in the depths of the Kernel space. While &lt;a href=&#34;https://lkml.org/lkml/2000/9/6/65&#34;&gt;higher beings might pour scorn&lt;/a&gt; on the very idea of a Kernel debugger, us lesser mortals may have no other recourse but to single-step through Kernel code when the rivers begin to run dry. This guide will help you do just that. We hope you never actually have to.&lt;/p&gt;
-&lt;p&gt;Ominous sounding intro-bait notwithstanding, setting up a virtual machine for Kernel debugging isn&#39;t really that difficult.  It only needs a bit of preparation. If you just want a copypasta, &lt;a href=&#34;#copypasta&#34;&gt;skip to the end&lt;/a&gt;. If you&#39;re interested in the predicaments involved and how to deal with them, read on.&lt;/p&gt;
+      <description>&lt;p&gt;There may come a time in a system programmer&amp;rsquo;s life when she needs to leave the civilized safety of the userland and confront the unspeakable horrors that dwell in the depths of the Kernel space. While &lt;a href=&#34;https://lkml.org/lkml/2000/9/6/65&#34;&gt;higher beings might pour scorn&lt;/a&gt; on the very idea of a Kernel debugger, us lesser mortals may have no other recourse but to single-step through Kernel code when the rivers begin to run dry. This guide will help you do just that. We hope you never actually have to.&lt;/p&gt;
+&lt;p&gt;Ominous sounding intro-bait notwithstanding, setting up a virtual machine for Kernel debugging isn&amp;rsquo;t really that difficult.  It only needs a bit of preparation. If you just want a copypasta, &lt;a href=&#34;#copypasta&#34;&gt;skip to the end&lt;/a&gt;. If you&amp;rsquo;re interested in the predicaments involved and how to deal with them, read on.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;N.B.:&lt;/strong&gt; &amp;ldquo;But which kernel are you talking about?&amp;quot;, some heathens may invariably ask when it is obvious that Kernel with a capital K refers to the &lt;a href=&#34;https://www.kernel.org/&#34;&gt;One True Kernel&lt;/a&gt;.&lt;/p&gt;
 &lt;h3 id=&#34;building-the-kernel&#34;&gt;Building the Kernel&lt;/h3&gt;
 &lt;p&gt;Using a minimal Kernel configuration instead of the kitchen-sink one that distributions usually ship will make life a lot easier. You will first need to grab the source code for the Kernel you are interested in. We will use the latest Kernel release tarball from &lt;a href=&#34;https://www.kernel.org/&#34;&gt;kernel.org&lt;/a&gt;, which at the time of writing is &lt;a href=&#34;https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.6.tar.xz&#34;&gt;4.20.6&lt;/a&gt;. Inside the extracted source directory, invoke the following:&lt;/p&gt;
@@ -237,13 +237,13 @@ make -j4
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel linux-4.20.6/arch/x86/boot/bzImage
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This should bring up an ancient-looking window with a cryptic error message:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/kernel_panic.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;You could try pasting the error message into &lt;del&gt;Google&lt;/del&gt; a search engine: Except for the fact that you can&#39;t select the text in the window. And frankly, the window just looks annoying! So, ignoring the actual error for a moment, let&#39;s try to get QEMU to print to the console instead of a spawning a new graphical window:&lt;/p&gt;
+&lt;p&gt;You could try pasting the error message into &lt;del&gt;Google&lt;/del&gt; a search engine: Except for the fact that you can&amp;rsquo;t select the text in the window. And frankly, the window just looks annoying! So, ignoring the actual error for a moment, let&amp;rsquo;s try to get QEMU to print to the console instead of a spawning a new graphical window:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -kernel -nographic linux-4.20.6/arch/x86/boot/bzImage
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;QEMU spits out a single line:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64: warning: TCG doesn&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;t support requested feature: CPUID.01H:ECX.vmx &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;bit 5&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://hisham.hm/htop/&#34;&gt;Htop&lt;/a&gt; tells me QEMU is using 100% of a CPU and my laptop fan agrees. But there is no output whatsoever and &lt;code&gt;Ctrl-c&lt;/code&gt; doesn&#39;t work! What &lt;a href=&#34;https://superuser.com/a/1211516&#34;&gt;does work&lt;/a&gt;, however, is pressing &lt;code&gt;Ctrl-a&lt;/code&gt; and then hitting &lt;code&gt;x&lt;/code&gt;:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://hisham.hm/htop/&#34;&gt;Htop&lt;/a&gt; tells me QEMU is using 100% of a CPU and my laptop fan agrees. But there is no output whatsoever and &lt;code&gt;Ctrl-c&lt;/code&gt; doesn&amp;rsquo;t work! What &lt;a href=&#34;https://superuser.com/a/1211516&#34;&gt;does work&lt;/a&gt;, however, is pressing &lt;code&gt;Ctrl-a&lt;/code&gt; and then hitting &lt;code&gt;x&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;QEMU: Terminated
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Turns out that by passing &lt;code&gt;-nographic&lt;/code&gt;, we have plugged out QEMU&#39;s &lt;em&gt;virtual&lt;/em&gt; monitor. Now, to actually see any output, we need to tell the Kernel to write to a &lt;a href=&#34;https://www.kernel.org/doc/html/v4.20/admin-guide/serial-console.html&#34;&gt;serial port&lt;/a&gt;:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Turns out that by passing &lt;code&gt;-nographic&lt;/code&gt;, we have plugged out QEMU&amp;rsquo;s &lt;em&gt;virtual&lt;/em&gt; monitor. Now, to actually see any output, we need to tell the Kernel to write to a &lt;a href=&#34;https://www.kernel.org/doc/html/v4.20/admin-guide/serial-console.html&#34;&gt;serial port&lt;/a&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;console=ttyS0&amp;#34;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It worked! Now we can read error message in all its glory:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.333008&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; VFS: Cannot open root device &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;(null)&amp;#34;&lt;/span&gt; or unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;0,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;: error -6
@@ -266,7 +266,7 @@ make -j4
 &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.343888&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;  ret_from_fork+0x35/0x40
 &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.344526&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Kernel Offset: 0x1200000 from 0xffffffff81000000 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;relocation range: 0xffffffff80000000-0xffffffffbfffffff&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;    1.345956&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; ---&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt; end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;0,0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;---
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, the Kernel didn&#39;t find a root filesystem to kick off the user mode and panicked. Lets fix that by creating a root filesystem image.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, the Kernel didn&amp;rsquo;t find a root filesystem to kick off the user mode and panicked. Lets fix that by creating a root filesystem image.&lt;/p&gt;
 &lt;h3 id=&#34;creating-a-root-filesystem&#34;&gt;Creating a Root Filesystem&lt;/h3&gt;
 &lt;p&gt;Start by creating an empty image:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-img create rootfs.img 1G
@@ -277,11 +277,11 @@ sudo mount -o loop rootfs.img mnt/
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can populate it using &lt;a href=&#34;https://wiki.debian.org/Debootstrap&#34;&gt;&lt;code&gt;debootstrap&lt;/code&gt;&lt;/a&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo debootstrap bionic mnt/
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a root filesystem based on Ubuntu 18.04 Bionic Beaver. Of course, feel free to replace &lt;code&gt;bionic&lt;/code&gt; with any release that you prefer.&lt;/p&gt;
-&lt;p&gt;And unmount the filesystem once we&#39;re done. &lt;strong&gt;This is important if you want to avoid corrupted images!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;And unmount the filesystem once we&amp;rsquo;re done. &lt;strong&gt;This is important if you want to avoid corrupted images!&lt;/strong&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo umount mnt
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now boot the Kernel with our filesystem. We need to tell QEMU to use our image as a virtual hard drive and we also need to tell the Kernel to use the hard drive as the root filesystem:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda console=ttyS0&amp;#34;&lt;/span&gt; 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This time the Kernel shouldn&#39;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&#39;s annoying to have to login each time we boot up the VM. Let&#39;s enable auto login as root instead.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This time the Kernel shouldn&amp;rsquo;t panic and you should eventually see a login prompt. We could have setup a user while creating the filesystem but it&amp;rsquo;s annoying to have to login each time we boot up the VM. Let&amp;rsquo;s enable auto login as root instead.&lt;/p&gt;
 &lt;p&gt;Terminate QEMU (&lt;code&gt;Ctrl-a&lt;/code&gt;, &lt;code&gt;x&lt;/code&gt;), mount the filesystem image again and then create the configuration folder structure:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo mount -o loop rootfs.img mnt/
 sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d
@@ -294,7 +294,7 @@ sudo mkdir -p mnt/etc/systemd/system/serial-getty@ttyS0.service.d
 &lt;p&gt;Gracefully shutdown the VM:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;halt -p
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;attaching-a-debugger&#34;&gt;Attaching a debugger&lt;/h3&gt;
-&lt;p&gt;Let&#39;s rebuild the Kernel with debugging symbols enabled:&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s rebuild the Kernel with debugging symbols enabled:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./scripts/config -e CONFIG_DEBUG_INFO
 make -j4
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, boot the Kernel again, this time passing the &lt;code&gt;-s&lt;/code&gt; flag which will make QEMU listen on TCP port 1234:&lt;/p&gt;
@@ -305,14 +305,14 @@ make -j4
 Reading symbols from ./linux-4.20.6/vmlinux...done.
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; target remote :1234
 Remote debugging using :1234
-0xffffffff95a2f8f4 in ?? &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
+0xffffffff95a2f8f4 in ?? &lt;span style=&#34;color:#666&#34;&gt;()&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can set a breakpoint on Kernel function, for instance &lt;code&gt;do_sys_open()&lt;/code&gt;:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; b do_sys_open 
 Breakpoint &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; at 0xffffffff811b2720: file fs/open.c, line 1049.
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; c
 Continuing.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now try opening a file in VM which should result in &lt;code&gt;do_sys_open()&lt;/code&gt; getting invoked&amp;hellip; And nothing happens?! The breakpoint in gdb is not hit. This due to a Kernel security feature called &lt;a href=&#34;https://lwn.net/Articles/569635/&#34;&gt;KASLR&lt;/a&gt;. KASLR can be disabled at boot time by adding &lt;code&gt;nokaslr&lt;/code&gt; to the Kernel command line arguments. But, let&#39;s actually rebuild the Kernel without KASLR. While we are at it, let&#39;s also disable loadable module support as well which will save us the trouble of copying the modules to the filesystem.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now try opening a file in VM which should result in &lt;code&gt;do_sys_open()&lt;/code&gt; getting invoked&amp;hellip; And nothing happens?! The breakpoint in gdb is not hit. This due to a Kernel security feature called &lt;a href=&#34;https://lwn.net/Articles/569635/&#34;&gt;KASLR&lt;/a&gt;. KASLR can be disabled at boot time by adding &lt;code&gt;nokaslr&lt;/code&gt; to the Kernel command line arguments. But, let&amp;rsquo;s actually rebuild the Kernel without KASLR. While we are at it, let&amp;rsquo;s also disable loadable module support as well which will save us the trouble of copying the modules to the filesystem.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./scripts/config -e CONFIG_DEBUG_INFO -d CONFIG_RANDOMIZE_BASE -d CONFIG_MODULES
 make olddefconfig &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Resolve dependencies&lt;/span&gt;
 make -j4
@@ -330,7 +330,7 @@ Continuing.
 Breakpoint 1, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#b8860b&#34;&gt;dfd&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;-100, &lt;span style=&#34;color:#b8860b&#34;&gt;filename&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0x7ffe9e630e8e &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;/etc/issue&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b8860b&#34;&gt;flags&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;32768, &lt;span style=&#34;color:#b8860b&#34;&gt;mode&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt; at fs/open.c:1049
 &lt;span style=&#34;color:#666&#34;&gt;1049&lt;/span&gt;    &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
 &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;gdb&lt;span style=&#34;color:#666&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Congratulations! From this point, you can single-step away to your heart&#39;s content.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Congratulations! From this point, you can single-step away to your heart&amp;rsquo;s content.&lt;/p&gt;
 &lt;p&gt;By default, the root filesystem is mounted read only. If you want to be able to write to it, add &lt;code&gt;rw&lt;/code&gt; after &lt;code&gt;root=/dev/sda&lt;/code&gt; in the Kernel parameters:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;bonus-networking&#34;&gt;Bonus: Networking&lt;/h3&gt;
@@ -340,7 +340,7 @@ Breakpoint 1, do_sys_open &lt;span style=&#34;color:#666&#34;&gt;(&lt;/span&gt;&
 sudo sudo tunctl -u &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;$(&lt;/span&gt;id -u&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;)&lt;/span&gt;
 Set &lt;span style=&#34;color:#b44&#34;&gt;&amp;#39;tap0&amp;#39;&lt;/span&gt; persistent and owned by uid &lt;span style=&#34;color:#666&#34;&gt;1000&lt;/span&gt;
 sudo ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; tap0 up
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; interface connected the host&#39;s tap0 interface:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now launch QEMU with a virtual &lt;code&gt;e1000&lt;/code&gt; interface connected the host&amp;rsquo;s tap0 interface:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;qemu-system-x86_64 -nographic -device e1000,netdev&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0 -netdev tap,id&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;net0,ifname&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;tap0 -kernel linux-4.20.6/arch/x86/boot/bzImage -hda rootfs.img -append &lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;root=/dev/sda rw console=ttyS0&amp;#34;&lt;/span&gt; -s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Once the guest boots up, bring the network interface up:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ip link &lt;span style=&#34;color:#a2f&#34;&gt;set&lt;/span&gt; enp0s3 up
@@ -398,7 +398,7 @@ gdb ./linux-4.20.6/vmlinux
       <pubDate>Sat, 14 Oct 2017 11:56:27 +0530</pubDate>
       
       <guid>https://www.anmolsarma.in/post/coap-talk/</guid>
-      <description>&lt;p&gt;Gave an introductory talk on CoAP at the &lt;a href=&#34;https://www.iiesoc.in/single-post/2017/11/02/RFCs-We-Love-HMAC-CoAP-Edition&#34;&gt;5th RFC&#39;s We Love meetup&lt;/a&gt;. Turnout was low, probably owing to the rains and the festive season. It was still fun and had great discussions.&lt;/p&gt;
+      <description>&lt;p&gt;Gave an introductory talk on CoAP at the &lt;a href=&#34;https://www.iiesoc.in/single-post/2017/11/02/RFCs-We-Love-HMAC-CoAP-Edition&#34;&gt;5th RFC&amp;rsquo;s We Love meetup&lt;/a&gt;. Turnout was low, probably owing to the rains and the festive season. It was still fun and had great discussions.&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
 </description>
     </item>
@@ -411,9 +411,9 @@ gdb ./linux-4.20.6/vmlinux
       <guid>https://www.anmolsarma.in/post/dccp/</guid>
       <description>&lt;p&gt;&lt;em&gt;TL;DR: DCCP is a relatively newer transport layer protocol which draws from both TCP and UDP. Jump straight to the &lt;a href=&#34;#example-in-c&#34;&gt;example C code&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
-&lt;p&gt;Historically, the majority of the traffic on the Internet has been over &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; which provides a reliable connection-oriented stream between two hosts. &lt;a href=&#34;https://en.wikipedia.org/wiki/User_Datagram_Protocol&#34;&gt;UDP&lt;/a&gt; has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&#39;s connection establishment overhead or those for which timeliness is more important than reliability. However, the increasing use of UDP for applications such as internet telephony and streaming media which transfer a large amount of data can lead to significant &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_congestion&#34;&gt;network congestion&lt;/a&gt;. Since unlike TCP, UDP provides no inherent congestion control mechanism, an application can send UDP datagrams at a much higher rate than the available path capacity and cause congestion along the path. Increased congestion may lead to delays, packet loss and the degradation of the network&#39;s quality of service.&lt;/p&gt;
+&lt;p&gt;Historically, the majority of the traffic on the Internet has been over &lt;a href=&#34;https://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; which provides a reliable connection-oriented stream between two hosts. &lt;a href=&#34;https://en.wikipedia.org/wiki/User_Datagram_Protocol&#34;&gt;UDP&lt;/a&gt; has been mainly used by applications whose brief transfers would be unacceptably slowed by TCP&amp;rsquo;s connection establishment overhead or those for which timeliness is more important than reliability. However, the increasing use of UDP for applications such as internet telephony and streaming media which transfer a large amount of data can lead to significant &lt;a href=&#34;https://en.wikipedia.org/wiki/Network_congestion&#34;&gt;network congestion&lt;/a&gt;. Since unlike TCP, UDP provides no inherent congestion control mechanism, an application can send UDP datagrams at a much higher rate than the available path capacity and cause congestion along the path. Increased congestion may lead to delays, packet loss and the degradation of the network&amp;rsquo;s quality of service.&lt;/p&gt;
 &lt;p&gt;Applications and protocols that choose to use UDP as their transport must, therefore, employ mechanisms to prevent congestion and to establish some degree of fairness with concurrent traffic so that the network remains usable. A prominent example of such a congestion control scheme is &lt;a href=&#34;https://en.wikipedia.org/wiki/LEDBAT&#34;&gt;LEDBAT&lt;/a&gt; employed by &lt;a href=&#34;https://en.wikipedia.org/wiki/BitTorrent&#34;&gt;BitTorrent&lt;/a&gt;. However, implementing a congestion control scheme is difficult, time-consuming and error-prone. Multiple non-standard implementations also make it difficult to reason about how applications would respond to network congestion. &lt;a href=&#34;https://en.wikipedia.org/wiki/Datagram_Congestion_Control_Protocol&#34;&gt;DCCP&lt;/a&gt; - Datagram Congestion Control Protocol is intended to mitigate this problem as a transport for unreliable datagrams with built-in congestion control.&lt;/p&gt;
-&lt;p&gt;From an application programmer&#39;s perspective, DCCP differs from UDP by providing four additional features:&lt;/p&gt;
+&lt;p&gt;From an application programmer&amp;rsquo;s perspective, DCCP differs from UDP by providing four additional features:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Explicit connection establishment between hosts&lt;/li&gt;
 &lt;li&gt;Selectable congestion control schemes&lt;/li&gt;
@@ -437,28 +437,28 @@ gdb ./linux-4.20.6/vmlinux
 &lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc4828&#34;&gt;CCID 4&lt;/a&gt; - TCP-Friendly Rate Control for Small Packets (TFRC-SP):&lt;/strong&gt; An experimental scheme for applications that use a small datagram size and those that change their sending rate by varying the datagram size.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;In addition, the Linux kernel&#39;s &lt;a href=&#34;https://github.com/uoaerg/linux-dccp&#34;&gt;DCCP Test Tree&lt;/a&gt; contains an experimental implementation of a scheme modelled after &lt;a href=&#34;https://en.wikipedia.org/wiki/CUBIC_TCP&#34;&gt;TCP CUBIC&lt;/a&gt;. There is also a mode that disables congestion control altogether for &lt;em&gt;UDP-like&lt;/em&gt; behaviour.&lt;/p&gt;
+&lt;p&gt;In addition, the Linux kernel&amp;rsquo;s &lt;a href=&#34;https://github.com/uoaerg/linux-dccp&#34;&gt;DCCP Test Tree&lt;/a&gt; contains an experimental implementation of a scheme modelled after &lt;a href=&#34;https://en.wikipedia.org/wiki/CUBIC_TCP&#34;&gt;TCP CUBIC&lt;/a&gt;. There is also a mode that disables congestion control altogether for &lt;em&gt;UDP-like&lt;/em&gt; behaviour.&lt;/p&gt;
 &lt;h2 id=&#34;pmtu-discovery&#34;&gt;PMTU discovery&lt;/h2&gt;
 &lt;p&gt;Data between two internet hosts is transferred transmitted as a series of IP packets that pass through intermediate links. Each of these links has a maximum packet size or maximum transmission unit (MTU) that it can transmit without having to break it up into smaller fragments. The largest packet size that does not require fragmentation anywhere along a path is referred to as the path maximum transmission unit or PMTU. Applications can usually get better error tolerance by producing packets smaller than the PMTU. DCCP defines a maximum packet size (MPS) based on the PMTU and the congestion control scheme used for each connection. DCCP implementations will not send any packet bigger than the MPS and instead return an appropriate error to the application. The application can query the DCCP stack for the current MPS and restrict itself from sending datagrams larger than this value and thereby avoid &lt;a href=&#34;https://en.wikipedia.org/wiki/IP_fragmentation&#34;&gt;fragmentation&lt;/a&gt;.&lt;/p&gt;
 &lt;h2 id=&#34;service-codes&#34;&gt;Service Codes&lt;/h2&gt;
 &lt;p&gt;DCCP defines a 32 bit Service Code to disambiguate between multiple applications associated with a single a server port. The client specifies the Service Code it wants to connect to and this is used to identify the intended service or application to process a DCCP connection request. Essentially, Service Codes provide an additional level of indirection for connection multiplexing. A server listening on a port may be associated with multiple Service Codes but a client may have only one Service Code, indicating the application it wishes to connect to.&lt;/p&gt;
 &lt;h2 id=&#34;usage&#34;&gt;Usage&lt;/h2&gt;
-&lt;p&gt;The mainline Linux kernel has included DCCP support since &lt;a href=&#34;https://lwn.net/Articles/149756/&#34;&gt;2.6.14&lt;/a&gt; and mainstream distributions like Ubuntu enable it by default. However, to get the newer experimental features, you will have to build the kernel from the DCCP Test Tree. Or you can also grab the latest stable kernel release merged with the experimental DCCP changes from &lt;a href=&#34;https://github.com/unmole/linux-dccp/releases/latest&#34;&gt;here&lt;/a&gt;. Be sure to enable all the CCIDs in the kernel configuration in &lt;em&gt;Networking Support&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;Networking Options&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;The DCCP Protocol&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;DCCP CCIDs Configuration&lt;/em&gt;. Like the Debian Installation Guide Says, &amp;ldquo;&lt;em&gt;Don&#39;t be afraid to try compiling the kernel. It&#39;s fun and profitable.&lt;/em&gt;&amp;rdquo; For now, Linux is the only operating system supporting native DCCP, unless you count the patch for an ancient version of FreeBSD.&lt;/p&gt;
+&lt;p&gt;The mainline Linux kernel has included DCCP support since &lt;a href=&#34;https://lwn.net/Articles/149756/&#34;&gt;2.6.14&lt;/a&gt; and mainstream distributions like Ubuntu enable it by default. However, to get the newer experimental features, you will have to build the kernel from the DCCP Test Tree. Or you can also grab the latest stable kernel release merged with the experimental DCCP changes from &lt;a href=&#34;https://github.com/unmole/linux-dccp/releases/latest&#34;&gt;here&lt;/a&gt;. Be sure to enable all the CCIDs in the kernel configuration in &lt;em&gt;Networking Support&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;Networking Options&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;The DCCP Protocol&lt;/em&gt; &amp;ndash;&amp;gt; &lt;em&gt;DCCP CCIDs Configuration&lt;/em&gt;. Like the Debian Installation Guide Says, &amp;ldquo;&lt;em&gt;Don&amp;rsquo;t be afraid to try compiling the kernel. It&amp;rsquo;s fun and profitable.&lt;/em&gt;&amp;rdquo; For now, Linux is the only operating system supporting native DCCP, unless you count the patch for an ancient version of FreeBSD.&lt;/p&gt;
 &lt;h2 id=&#34;example-in-c&#34;&gt;Example in C&lt;/h2&gt;
-&lt;p&gt;The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses &lt;em&gt;getsockopt()&lt;/em&gt; to read the current maximum packet size. Reading the available CCIDs on the host is shown in &lt;strong&gt;probe.c&lt;/strong&gt;. As libc doesn&#39;t still have a &lt;strong&gt;netinet/dccp.h&lt;/strong&gt; header, you will have to get the required constants from the kernel sources or directly use the &lt;strong&gt;dccp.h&lt;/strong&gt; header below. &lt;a href=&#34;https://www.anmolsarma.in/dl/dccp_socket_example.tar.gz&#34;&gt;Download Code&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The server and client look almost exactly the same as their TCP counterparts with the exception fo the socket type and setting of the service code. The client uses &lt;em&gt;getsockopt()&lt;/em&gt; to read the current maximum packet size. Reading the available CCIDs on the host is shown in &lt;strong&gt;probe.c&lt;/strong&gt;. As libc doesn&amp;rsquo;t still have a &lt;strong&gt;netinet/dccp.h&lt;/strong&gt; header, you will have to get the required constants from the kernel sources or directly use the &lt;strong&gt;dccp.h&lt;/strong&gt; header below. &lt;a href=&#34;https://www.anmolsarma.in/dl/dccp_socket_example.tar.gz&#34;&gt;Download Code&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;server.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define PORT 1337&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define SERVICE_CODE 42&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#define PORT 1337
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define SERVICE_CODE 42
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;error_exit&lt;/span&gt;(&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;str)
 {
@@ -466,11 +466,11 @@ gdb ./linux-4.20.6/vmlinux
 	exit(errno);
 }
 
-&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;argv)
+&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;**&lt;/span&gt;argv)
 {
 	&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; listen_sock &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (listen_sock &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in servaddr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
 		.sin_family &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; AF_INET,
@@ -480,33 +480,33 @@ gdb ./linux-4.20.6/vmlinux
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
 		       &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(SO_REUSEADDR)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(SO_REUSEADDR)&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (bind(listen_sock, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;servaddr, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(servaddr)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;bind&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;bind&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// DCCP mandates the use of a &amp;#39;Service Code&amp;#39; in addition the port
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(listen_sock, SOL_DCCP, DCCP_SOCKOPT_SERVICE, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {
 		       htonl(SERVICE_CODE)}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(DCCP_SOCKOPT_SERVICE)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(DCCP_SOCKOPT_SERVICE)&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (listen(listen_sock, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;listen&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;listen&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (;;) {
 
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Waiting for connection...&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Waiting for connection...&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in client_addr;
 		socklen_t addr_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(client_addr);
 
 		&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; conn_sock &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; accept(listen_sock, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;client_addr, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;addr_len);
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (conn_sock &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;) {
-			perror(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;accept&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+			perror(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;accept&amp;#34;&lt;/span&gt;);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;continue&lt;/span&gt;;
 		}
 
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Connection received from %s:%d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;,
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Connection received from %s:%d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;,
 		       inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (;;) {
@@ -515,7 +515,7 @@ gdb ./linux-4.20.6/vmlinux
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Datagrams, not a stream!
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; ret &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; recv(conn_sock, buffer, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(buffer), &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (ret &lt;span style=&#34;color:#666&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-				printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Received: %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, buffer);
+				printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Received: %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, buffer);
 			&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;else&lt;/span&gt;
 				&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;break&lt;/span&gt;;
 
@@ -525,16 +525,16 @@ gdb ./linux-4.20.6/vmlinux
 	}
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;client.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;error_exit&lt;/span&gt;(&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;str)
 {
@@ -545,7 +545,7 @@ gdb ./linux-4.20.6/vmlinux
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;argv[])
 {
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (argc &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;) {
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Usage: ./client &amp;lt;server address&amp;gt; &amp;lt;port&amp;gt; &amp;lt;service code&amp;gt; &amp;lt;message 1&amp;gt; [message 2] ... &lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Usage: ./client &amp;lt;server address&amp;gt; &amp;lt;port&amp;gt; &amp;lt;service code&amp;gt; &amp;lt;message 1&amp;gt; [message 2] ... &lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
 		exit(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
 	}
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr_in server_addr &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; {
@@ -554,30 +554,30 @@ gdb ./linux-4.20.6/vmlinux
 	};
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;!&lt;/span&gt;inet_pton(AF_INET, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;], &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;server_addr.sin_addr.s_addr)) {
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Invalid address %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]);
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Invalid address %s&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, argv[&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;]);
 		exit(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
 	}
 
 	&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; socket_fd &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (socket_fd &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;socket&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;socket&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (setsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_SERVICE, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;) {htonl(atoi(argv[&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;]))}, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;setsockopt(DCCP_SOCKOPT_SERVICE)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;setsockopt(DCCP_SOCKOPT_SERVICE)&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (connect(socket_fd, (&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;struct&lt;/span&gt; sockaddr &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;server_addr, &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(server_addr)))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;connect&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;connect&amp;#34;&lt;/span&gt;);
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Get the maximum packet size
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	uint32_t mps;
 	socklen_t res_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;sizeof&lt;/span&gt;(mps);
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (getsockopt(socket_fd, SOL_DCCP, DCCP_SOCKOPT_GET_CUR_MPS, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;mps, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;res_len))
-		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
-	printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;Maximum Packet Size: %d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, mps);
+		error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;getsockopt(DCCP_SOCKOPT_GET_CUR_MPS)&amp;#34;&lt;/span&gt;);
+	printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;Maximum Packet Size: %d&lt;/span&gt;&lt;span style=&#34;color:#b62;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, mps);
 
-	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; argc; i&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;) {
+	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; argc; i&lt;span style=&#34;color:#666&#34;&gt;++&lt;/span&gt;) {
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (send(socket_fd, argv[i], strlen(argv[i]) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;)
-			error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;send&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+			error_exit(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;send&amp;#34;&lt;/span&gt;);
 	}
 
 	&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Wait for a while to allow all the messages to be transmitted
@@ -588,11 +588,11 @@ gdb ./linux-4.20.6/vmlinux
 }
 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;probe.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#080&#34;&gt;&amp;#34;dccp.h&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt;()
 {
@@ -602,13 +602,13 @@ gdb ./linux-4.20.6/vmlinux
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;	socklen_t res_len &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;;
 	uint8_t ccids[&lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;];
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;if&lt;/span&gt; (getsockopt(sock_fd, SOL_DCCP, DCCP_SOCKOPT_AVAILABLE_CCIDS, ccids, &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;res_len)) {
-		perror(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;);
+		perror(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;getsockopt(DCCP_SOCKOPT_AVAILABLE_CCIDS)&amp;#34;&lt;/span&gt;);
 		&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
 	}
 
-	printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;%d CCIDs available:&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, res_len);
-	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; res_len; i&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;)
-		printf(&lt;span style=&#34;color:#b44&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt; %d&lt;/span&gt;&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;&lt;/span&gt;, ccids[i]);
+	printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34;%d CCIDs available:&amp;#34;&lt;/span&gt;, res_len);
+	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;&lt;/span&gt; res_len; i&lt;span style=&#34;color:#666&#34;&gt;++&lt;/span&gt;)
+		printf(&lt;span style=&#34;color:#b44&#34;&gt;&amp;#34; %d&amp;#34;&lt;/span&gt;, ccids[i]);
 
 	&lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;return&lt;/span&gt; res_len;
 }
@@ -616,30 +616,30 @@ gdb ./linux-4.20.6/vmlinux
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* This file only contains constants necessary for user space to call
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt; * into the kernel and thus, contains no copyrightable information. */&lt;/span&gt;
 
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;ifndef DCCP_DCCP_H&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_DCCP_H&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;span style=&#34;color:#080&#34;&gt;#ifndef DCCP_DCCP_H
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_DCCP_H
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// From the kernel&amp;#39;s include/linux/socket.h
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define SOL_DCCP                        269&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define SOL_DCCP                        269
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
 &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// From kernel&amp;#39;s include/uapi/linux/dccp.h
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SERVICE            2&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CHANGE_L           3&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CHANGE_R           4&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_GET_CUR_MPS        5&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SERVER_TIMEWAIT    6&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_SEND_CSCOV         10&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_RECV_CSCOV         11&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_AVAILABLE_CCIDS    12&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID               13&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_TX_CCID            14&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_RX_CCID            15&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_QPOLICY_ID         16&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_QPOLICY_TXQLEN     17&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID_RX_INFO       128&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;define DCCP_SOCKOPT_CCID_TX_INFO       192&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SERVICE            2
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CHANGE_L           3
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CHANGE_R           4
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_GET_CUR_MPS        5
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SERVER_TIMEWAIT    6
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_SEND_CSCOV         10
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_RECV_CSCOV         11
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_AVAILABLE_CCIDS    12
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID               13
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_TX_CCID            14
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_RX_CCID            15
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_QPOLICY_ID         16
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_QPOLICY_TXQLEN     17
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID_RX_INFO       128
+&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;#define DCCP_SOCKOPT_CCID_TX_INFO       192
 &lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#080&#34;&gt;#&lt;/span&gt;&lt;span style=&#34;color:#080&#34;&gt;endif &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;//DCCP_DCCP_H
+&lt;span style=&#34;color:#080&#34;&gt;#endif &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;//DCCP_DCCP_H
 &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;caveats-and-conclusion&#34;&gt;Caveats and Conclusion&lt;/h2&gt;
 &lt;p&gt;DCCP is not mainstream. It is not widely deployed or even supported. Documentation is sparse. Although Linux DCCP NAT is functional, many intermediate boxes will probably just drop DCCP traffic. DCCP is the Fixed-gear bicycle of Layer 4, it is the ultimate hipster transport.&lt;/p&gt;
@@ -652,17 +652,17 @@ gdb ./linux-4.20.6/vmlinux
       <pubDate>Sat, 04 Apr 2015 18:40:03 +0000</pubDate>
       
       <guid>https://www.anmolsarma.in/post/lazy-performance-comparison-of-wordpress-and-ghost/</guid>
-      <description>&lt;p&gt;So, I switched to a new blogging platform. Again. After trying out a static approach, I moved back to a WordPress when I stumbled across &lt;a href=&#34;https://www.openshift.com/&#34;&gt;OpenShift&lt;/a&gt; (&lt;em&gt;And their fantastic &lt;a href=&#34;https://www.openshift.com/products/pricing/plan-comparison&#34;&gt;free plan&lt;/a&gt;&lt;/em&gt;). That was well over two years ago. In the meantime, I hardly blogged and didn&#39;t really run into any issues but the blog did feel a tad sluggish.&lt;/p&gt;
-&lt;p&gt;Fast-forward to yesterday when I had a sudden impulse to try something new. Ghost looked interesting so, I spun up an install using OpenShift&#39;s &lt;a href=&#34;https://github.com/openshift-quickstart/openshift-ghost-quickstart&#34;&gt;Ghost Quick-Start&lt;/a&gt; and proceeded to &lt;a href=&#34;https://ghostforbeginners.com/how-to-transfer-blog-posts-from-wordpress-to-ghost/&#34;&gt;import data from my WordPress&lt;/a&gt; blog which turned out to be pretty painless.&lt;/p&gt;
-&lt;p&gt;Given the same resources (&lt;em&gt;Small Gear&lt;/em&gt;) and same amount tweaking (i.e. none, using OpenShift&#39;s quickstart installation defaults and using the default themes with no plugins), Ghost certainly &lt;em&gt;felt&lt;/em&gt; a lot faster but how fast was it really? To answer that (&lt;em&gt;And because I apparently have nothing better to do on a Friday night&lt;/em&gt;), I started a simultaneous stress test on WordPress and Ghost using &lt;a href=&#34;http://blazemeter.com/&#34;&gt;BlazeMeter&lt;/a&gt; with a maximum of 50 users. The answer, as turns out is a &lt;strong&gt;helluva lot faster!&lt;/strong&gt;&lt;/p&gt;
+      <description>&lt;p&gt;So, I switched to a new blogging platform. Again. After trying out a static approach, I moved back to a WordPress when I stumbled across &lt;a href=&#34;https://www.openshift.com/&#34;&gt;OpenShift&lt;/a&gt; (&lt;em&gt;And their fantastic &lt;a href=&#34;https://www.openshift.com/products/pricing/plan-comparison&#34;&gt;free plan&lt;/a&gt;&lt;/em&gt;). That was well over two years ago. In the meantime, I hardly blogged and didn&amp;rsquo;t really run into any issues but the blog did feel a tad sluggish.&lt;/p&gt;
+&lt;p&gt;Fast-forward to yesterday when I had a sudden impulse to try something new. Ghost looked interesting so, I spun up an install using OpenShift&amp;rsquo;s &lt;a href=&#34;https://github.com/openshift-quickstart/openshift-ghost-quickstart&#34;&gt;Ghost Quick-Start&lt;/a&gt; and proceeded to &lt;a href=&#34;https://ghostforbeginners.com/how-to-transfer-blog-posts-from-wordpress-to-ghost/&#34;&gt;import data from my WordPress&lt;/a&gt; blog which turned out to be pretty painless.&lt;/p&gt;
+&lt;p&gt;Given the same resources (&lt;em&gt;Small Gear&lt;/em&gt;) and same amount tweaking (i.e. none, using OpenShift&amp;rsquo;s quickstart installation defaults and using the default themes with no plugins), Ghost certainly &lt;em&gt;felt&lt;/em&gt; a lot faster but how fast was it really? To answer that (&lt;em&gt;And because I apparently have nothing better to do on a Friday night&lt;/em&gt;), I started a simultaneous stress test on WordPress and Ghost using &lt;a href=&#34;http://blazemeter.com/&#34;&gt;BlazeMeter&lt;/a&gt; with a maximum of 50 users. The answer, as turns out is a &lt;strong&gt;helluva lot faster!&lt;/strong&gt;&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
 &lt;!-- raw HTML omitted --&gt;
 &lt;!-- raw HTML omitted --&gt;
-&lt;p&gt;On average, Ghost&#39;s response is &lt;strong&gt;28 times faster&lt;/strong&gt; and its latency is &lt;strong&gt;47 times lower&lt;/strong&gt;. Looking at how the two respond to load is interesting:&lt;/p&gt;
+&lt;p&gt;On average, Ghost&amp;rsquo;s response is &lt;strong&gt;28 times faster&lt;/strong&gt; and its latency is &lt;strong&gt;47 times lower&lt;/strong&gt;. Looking at how the two respond to load is interesting:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/Ghost-wordpress-responsetime.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/Ghost_Wordpress_latency.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Ghost doesn&#39;t even seem to break a sweat while WordPress starts panting quite early into the run. The longest it took for Ghost to respond was &lt;strong&gt;7240 ms&lt;/strong&gt; which is almost a whole order of a magnitude faster than Wondpress&#39;s &lt;strong&gt;67093 ms&lt;/strong&gt;. The shortest time for Ghost is &lt;strong&gt;602 ms&lt;/strong&gt;, a comfortable &lt;strong&gt;3.77 times&lt;/strong&gt; better than &lt;strong&gt;2273 ms&lt;/strong&gt; it took WordPress.&lt;/p&gt;
-&lt;p&gt;Basically Ghost crushes WordPress in this admittedly lazy and unscientific test. It is pretty similar to what others have reported. If your personal WordPress setup is struggling to keep up with traffic, you should at least consider Ghost. It doesn&#39;t have anywhere near the number of plugins or themes as WordPress, it clearly is not as mature (&lt;em&gt;It&#39;s still in version 0.5.10&lt;/em&gt;) but boy is it fast! As for the writing flow, I can only say its different. I&#39;m not entirely sure if it is better than what we have been used to (&lt;em&gt;No spell check&lt;/em&gt;).&lt;/p&gt;
+&lt;p&gt;Ghost doesn&amp;rsquo;t even seem to break a sweat while WordPress starts panting quite early into the run. The longest it took for Ghost to respond was &lt;strong&gt;7240 ms&lt;/strong&gt; which is almost a whole order of a magnitude faster than Wondpress&amp;rsquo;s &lt;strong&gt;67093 ms&lt;/strong&gt;. The shortest time for Ghost is &lt;strong&gt;602 ms&lt;/strong&gt;, a comfortable &lt;strong&gt;3.77 times&lt;/strong&gt; better than &lt;strong&gt;2273 ms&lt;/strong&gt; it took WordPress.&lt;/p&gt;
+&lt;p&gt;Basically Ghost crushes WordPress in this admittedly lazy and unscientific test. It is pretty similar to what others have reported. If your personal WordPress setup is struggling to keep up with traffic, you should at least consider Ghost. It doesn&amp;rsquo;t have anywhere near the number of plugins or themes as WordPress, it clearly is not as mature (&lt;em&gt;It&amp;rsquo;s still in version 0.5.10&lt;/em&gt;) but boy is it fast! As for the writing flow, I can only say its different. I&amp;rsquo;m not entirely sure if it is better than what we have been used to (&lt;em&gt;No spell check&lt;/em&gt;).&lt;/p&gt;
 &lt;p&gt;I for one am quite happy I tried (&lt;em&gt;And switched to&lt;/em&gt;) Ghost. And I got a blog post out it to boot!&lt;/p&gt;
 </description>
     </item>
@@ -684,8 +684,8 @@ gdb ./linux-4.20.6/vmlinux
       <pubDate>Fri, 17 May 2013 06:30:00 +0000</pubDate>
       
       <guid>https://www.anmolsarma.in/post/talk-emware-getting-started-with-git/</guid>
-      <description>&lt;p&gt;Gave an introductory interactive tutorial on using Git. I couldn&#39;t finish the slides on time but managed cover everything on the agenda.&lt;/p&gt;
-&lt;p&gt;Now that the talk is done, I&#39;m don&#39;t feel especially inclined to complete the slides.&lt;/p&gt;
+      <description>&lt;p&gt;Gave an introductory interactive tutorial on using Git. I couldn&amp;rsquo;t finish the slides on time but managed cover everything on the agenda.&lt;/p&gt;
+&lt;p&gt;Now that the talk is done, I&amp;rsquo;m don&amp;rsquo;t feel especially inclined to complete the slides.&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
 </description>
     </item>
