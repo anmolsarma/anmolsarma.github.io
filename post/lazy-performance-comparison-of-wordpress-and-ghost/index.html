@@ -46,9 +46,45 @@ Fast-forward to yesterday when I had a sudden impulse to try something new." />
         <p>So, I switched to a new blogging platform. Again. After trying out a static approach, I moved back to a WordPress when I stumbled across <a href="https://www.openshift.com/">OpenShift</a> (<em>And their fantastic <a href="https://www.openshift.com/products/pricing/plan-comparison">free plan</a></em>). That was well over two years ago. In the meantime, I hardly blogged and didn&rsquo;t really run into any issues but the blog did feel a tad sluggish.</p>
 <p>Fast-forward to yesterday when I had a sudden impulse to try something new. Ghost looked interesting so, I spun up an install using OpenShift&rsquo;s <a href="https://github.com/openshift-quickstart/openshift-ghost-quickstart">Ghost Quick-Start</a> and proceeded to <a href="https://ghostforbeginners.com/how-to-transfer-blog-posts-from-wordpress-to-ghost/">import data from my WordPress</a> blog which turned out to be pretty painless.</p>
 <p>Given the same resources (<em>Small Gear</em>) and same amount tweaking (i.e. none, using OpenShift&rsquo;s quickstart installation defaults and using the default themes with no plugins), Ghost certainly <em>felt</em> a lot faster but how fast was it really? To answer that (<em>And because I apparently have nothing better to do on a Friday night</em>), I started a simultaneous stress test on WordPress and Ghost using <a href="http://blazemeter.com/">BlazeMeter</a> with a maximum of 50 users. The answer, as turns out is a <strong>helluva lot faster!</strong></p>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+<style type="text/css">
+table{
+border-collapse: collapse;
+border: 1px solid black;
+width: 100%;
+}
+table td{
+border: 1px solid black;
+padding: 5px;
+}
+</style>
+<table>
+<tr><td> </td>
+<td align="right">Avg. Latency</td>
+<td align="right">Avg. Response Time</td>
+<td align="right">90%</td>
+<td align="right">95%</td>
+<td align="right">99%</td>
+<td align="right">Min</td>
+<td align="right">Max</td>
+</tr>
+<tr><td>Ghost</td>
+<td align="right">255.05</td>
+<td align="right">752.28</td>
+<td align="right">739</td>
+<td align="right">793</td>
+<td align="right">4647</td>
+<td align="right">602</td>
+<td align="right">7240</td>
+</tr>
+<tr><td>Wordpress</td>
+<td align="right">12129.55</td>
+<td align="right">21238.06</td>
+<td align="right">33641</td>
+<td align="right">37725</td>
+<td align="right">52178</td>
+<td align="right">2273</td>
+<td align="right">67093</td>
+</tr></table>
 <p>On average, Ghost&rsquo;s response is <strong>28 times faster</strong> and its latency is <strong>47 times lower</strong>. Looking at how the two respond to load is interesting:</p>
 <p><img src="/images/2015/04/Ghost-wordpress-responsetime.png" alt=""></p>
 <p><img src="/images/2015/04/Ghost_Wordpress_latency.png" alt=""></p>

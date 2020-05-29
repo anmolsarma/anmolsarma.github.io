@@ -55,6 +55,21 @@ Change: 2019-05-19 13:29:59.609167627 +0000
     </item>
     
     <item>
+      <title>Talk @ Netdev 0x13: Improved System Call Batching for Network I/O</title>
+      <link>https://www.anmolsarma.in/post/netdev-talk/</link>
+      <pubDate>Sun, 26 May 2019 21:07:27 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/netdev-talk/</guid>
+      <description>&lt;p&gt;My colleagues &lt;a href=&#34;http://blog.rjed.org/&#34;&gt;Rahul Jadhav&lt;/a&gt;, Zhen Cao and me had our talk for &lt;a href=&#34;https://netdevconf.info/0x13/&#34;&gt;Netdev 0x13&lt;/a&gt; accepted. Our basic idea is reducing the CPU cycles consumed by amortizing the system call overhead of network I/O operations.&lt;/p&gt;
+&lt;p&gt;At the time we started our work, &lt;a href=&#34;https://lwn.net/Articles/776703/&#34;&gt;&lt;code&gt;io_uring&lt;/code&gt;&lt;/a&gt; was not yet a thing. With the benefit of hindsight however, it is clear that &lt;code&gt;io_uring&lt;/code&gt; is the way forward.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s the video of Rahul delivering the talk:&lt;/p&gt;
+&lt;center&gt;&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/hJrXbqttJC4&#34; frameborder=&#34;0&#34; allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;p&gt;And the slides:&lt;/p&gt;
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;99baab134b764ae18553842caef1876a&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Network Redirections in Bash</title>
       <link>https://www.anmolsarma.in/post/bash-net-redirections/</link>
       <pubDate>Sat, 04 May 2019 20:59:15 +0530</pubDate>
@@ -593,7 +608,7 @@ gdb ./linux-4.20.6/vmlinux
       
       <guid>https://www.anmolsarma.in/post/talk-emware/</guid>
       <description>&lt;p&gt;Gave an introductory talk on Linux, basically a rehash of the &lt;a href=&#34;http://www.anmolsarma.in/talk-klu/&#34;&gt;talk I gave at KLU&lt;/a&gt; a couple of years ago.&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;cfa24e0065b4491d8c06a71a514df295&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
 </description>
     </item>
     

@@ -55,6 +55,21 @@ Change: 2019-05-19 13:29:59.609167627 +0000
     </item>
     
     <item>
+      <title>Talk @ Netdev 0x13: Improved System Call Batching for Network I/O</title>
+      <link>https://www.anmolsarma.in/post/netdev-talk/</link>
+      <pubDate>Sun, 26 May 2019 21:07:27 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/netdev-talk/</guid>
+      <description>&lt;p&gt;My colleagues &lt;a href=&#34;http://blog.rjed.org/&#34;&gt;Rahul Jadhav&lt;/a&gt;, Zhen Cao and me had our talk for &lt;a href=&#34;https://netdevconf.info/0x13/&#34;&gt;Netdev 0x13&lt;/a&gt; accepted. Our basic idea is reducing the CPU cycles consumed by amortizing the system call overhead of network I/O operations.&lt;/p&gt;
+&lt;p&gt;At the time we started our work, &lt;a href=&#34;https://lwn.net/Articles/776703/&#34;&gt;&lt;code&gt;io_uring&lt;/code&gt;&lt;/a&gt; was not yet a thing. With the benefit of hindsight however, it is clear that &lt;code&gt;io_uring&lt;/code&gt; is the way forward.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s the video of Rahul delivering the talk:&lt;/p&gt;
+&lt;center&gt;&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/hJrXbqttJC4&#34; frameborder=&#34;0&#34; allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;p&gt;And the slides:&lt;/p&gt;
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;99baab134b764ae18553842caef1876a&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Books I Read in 2018</title>
       <link>https://www.anmolsarma.in/post/books-2018/</link>
       <pubDate>Sun, 12 May 2019 23:41:22 +0530</pubDate>
@@ -511,7 +526,7 @@ gdb ./linux-4.20.6/vmlinux
       
       <guid>https://www.anmolsarma.in/post/coap-talk/</guid>
       <description>&lt;p&gt;Gave an introductory talk on CoAP at the &lt;a href=&#34;https://www.iiesoc.in/single-post/2017/11/02/RFCs-We-Love-HMAC-CoAP-Edition&#34;&gt;5th RFC&amp;rsquo;s We Love meetup&lt;/a&gt;. Turnout was low, probably owing to the rains and the festive season. It was still fun and had great discussions.&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;652da89359ea40bab194a5607f4bed2b&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
 </description>
     </item>
     
@@ -807,9 +822,45 @@ gdb ./linux-4.20.6/vmlinux
       <description>&lt;p&gt;So, I switched to a new blogging platform. Again. After trying out a static approach, I moved back to a WordPress when I stumbled across &lt;a href=&#34;https://www.openshift.com/&#34;&gt;OpenShift&lt;/a&gt; (&lt;em&gt;And their fantastic &lt;a href=&#34;https://www.openshift.com/products/pricing/plan-comparison&#34;&gt;free plan&lt;/a&gt;&lt;/em&gt;). That was well over two years ago. In the meantime, I hardly blogged and didn&amp;rsquo;t really run into any issues but the blog did feel a tad sluggish.&lt;/p&gt;
 &lt;p&gt;Fast-forward to yesterday when I had a sudden impulse to try something new. Ghost looked interesting so, I spun up an install using OpenShift&amp;rsquo;s &lt;a href=&#34;https://github.com/openshift-quickstart/openshift-ghost-quickstart&#34;&gt;Ghost Quick-Start&lt;/a&gt; and proceeded to &lt;a href=&#34;https://ghostforbeginners.com/how-to-transfer-blog-posts-from-wordpress-to-ghost/&#34;&gt;import data from my WordPress&lt;/a&gt; blog which turned out to be pretty painless.&lt;/p&gt;
 &lt;p&gt;Given the same resources (&lt;em&gt;Small Gear&lt;/em&gt;) and same amount tweaking (i.e. none, using OpenShift&amp;rsquo;s quickstart installation defaults and using the default themes with no plugins), Ghost certainly &lt;em&gt;felt&lt;/em&gt; a lot faster but how fast was it really? To answer that (&lt;em&gt;And because I apparently have nothing better to do on a Friday night&lt;/em&gt;), I started a simultaneous stress test on WordPress and Ghost using &lt;a href=&#34;http://blazemeter.com/&#34;&gt;BlazeMeter&lt;/a&gt; with a maximum of 50 users. The answer, as turns out is a &lt;strong&gt;helluva lot faster!&lt;/strong&gt;&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;style type=&#34;text/css&#34;&gt;
+table{
+border-collapse: collapse;
+border: 1px solid black;
+width: 100%;
+}
+table td{
+border: 1px solid black;
+padding: 5px;
+}
+&lt;/style&gt;
+&lt;table&gt;
+&lt;tr&gt;&lt;td&gt; &lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;Avg. Latency&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;Avg. Response Time&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;90%&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;95%&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;99%&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;Min&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;Max&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Ghost&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;255.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;752.28&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;739&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;793&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4647&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;602&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7240&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wordpress&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12129.55&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;21238.06&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;33641&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;37725&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;52178&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2273&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67093&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
 &lt;p&gt;On average, Ghost&amp;rsquo;s response is &lt;strong&gt;28 times faster&lt;/strong&gt; and its latency is &lt;strong&gt;47 times lower&lt;/strong&gt;. Looking at how the two respond to load is interesting:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/Ghost-wordpress-responsetime.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/2015/04/Ghost_Wordpress_latency.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
@@ -827,7 +878,7 @@ gdb ./linux-4.20.6/vmlinux
       <guid>https://www.anmolsarma.in/post/kurshed-batliwala-debunked/</guid>
       <description>&lt;p&gt;A critical look at Khurshed Batliwala’s talk, “Technology of Spirituality” delivered at Ruia College, Mumbai.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;center&gt;&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/RSHFzZmQPj0&#34; frameborder=&#34;0&#34; allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;
 &lt;p&gt;Mr. Batliwala makes a number of extraordinary claims about the state of ancient Indian science and technology. Most of them however, turn out to be exaggerations, misinterpretations or outright fabrications. He then attributes all scientific progress to ‘spirituality’.&lt;/p&gt;
 &lt;p&gt;The talk is nothing more than a sales pitch for Mr. Mr. Ravi Shankar’s ‘Art of Living Foundation’.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
@@ -841,7 +892,7 @@ gdb ./linux-4.20.6/vmlinux
       
       <guid>https://www.anmolsarma.in/post/talk-emware/</guid>
       <description>&lt;p&gt;Gave an introductory talk on Linux, basically a rehash of the &lt;a href=&#34;http://www.anmolsarma.in/talk-klu/&#34;&gt;talk I gave at KLU&lt;/a&gt; a couple of years ago.&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;cfa24e0065b4491d8c06a71a514df295&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
 </description>
     </item>
     
@@ -853,7 +904,7 @@ gdb ./linux-4.20.6/vmlinux
       <guid>https://www.anmolsarma.in/post/talk-emware-getting-started-with-git/</guid>
       <description>&lt;p&gt;Gave an introductory interactive tutorial on using Git. I couldn&amp;rsquo;t finish the slides on time but managed cover everything on the agenda.&lt;/p&gt;
 &lt;p&gt;Now that the talk is done, I&amp;rsquo;m don&amp;rsquo;t feel especially inclined to complete the slides.&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;0ed1c9358c2e4f42b4380758771770fc&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
 </description>
     </item>
     
@@ -865,7 +916,7 @@ gdb ./linux-4.20.6/vmlinux
       <guid>https://www.anmolsarma.in/post/defeating-the-central-monitoring-system/</guid>
       <description>&lt;p&gt;The Government of India has rolled out the &lt;a href=&#34;http://en.wikipedia.org/wiki/Central_Monitoring_System&#34;&gt;Central Monitoring System&lt;/a&gt; which will allow it to access any piece of data passing through an Indian service provider. This means the government can now read all your text messages, emails and call records.&lt;/p&gt;
 &lt;p&gt;Because &lt;em&gt;privacy&lt;/em&gt; does not bring in votes, it is highly unlikely that any political party will oppose this system. Circumventing this system however, is rather simple using &lt;a href=&#34;http://en.wikipedia.org/wiki/Pretty_Good_Privacy&#34;&gt;PGP&lt;/a&gt; or any other &lt;em&gt;munition grade&lt;/em&gt; cryptographic scheme. So, if anyone wishes to communicate with me securely, please encrypt your message using this &lt;a href=&#34;https://www.anmolsarma.in/pgp/anmol_pgp.asc&#34;&gt;key&lt;/a&gt;, whose fingerprint should be:&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;center&gt;```AA3C 18D8 88D6 EC67 6887  2B21 5D64 D65C 162D 0A3C```&lt;/center&gt;
 &lt;p&gt;You may now put your tin-foil hat back on again.&lt;/p&gt;
 &lt;p&gt;Edit: Replaced my old key with a 4096-bit RSA key.&lt;/p&gt;
 </description>

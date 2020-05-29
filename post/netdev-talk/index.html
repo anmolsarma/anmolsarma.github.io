@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Talk @ Netdev 0x13: Improved System Call Batching for Network I/O</title>
+    <meta property="og:title" content="Talk @ Netdev 0x13: Improved System Call Batching for Network I/O" />
+<meta property="og:description" content="My colleagues Rahul Jadhav, Zhen Cao and me had our talk for Netdev 0x13 accepted. Our basic idea is reducing the CPU cycles consumed by amortizing the system call overhead of network I/O operations.
+At the time we started our work, io_uring was not yet a thing. With the benefit of hindsight however, it is clear that io_uring is the way forward.
+Here&rsquo;s the video of Rahul delivering the talk:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.anmolsarma.in/post/netdev-talk/" />
+<meta property="article:published_time" content="2019-05-26T21:07:27+05:30" />
+<meta property="article:modified_time" content="2019-05-26T21:07:27+05:30" />
+<link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+</head>
+<body>
+<header>
+    <b>
+        <a href="https://www.anmolsarma.in/">Anmol Sarma</a>
+    </b>
+<nav>
+    
+    <a href="/about">About</a> |
+    
+    <a href="/">Blog</a> |
+    
+    <a href="/renders">Renders</a> |
+    
+    <a href="/tags/talks/">Talks</a> |
+    
+    <a href="/index.xml">RSS</a>
+    </nav>
+</header>
+<hr/>
+
+<main>
+    <article>
+        <h1>Talk @ Netdev 0x13: Improved System Call Batching for Network I/O</h1>
+        
+            <span class="pubdate"> May 26, 2019</span>
+            
+                <a href="/tags/talks">talks</a>
+            
+                <a href="/tags/tech">tech</a>
+            
+                <a href="/tags/linux">linux</a>
+            
+        
+        <p>My colleagues <a href="http://blog.rjed.org/">Rahul Jadhav</a>, Zhen Cao and me had our talk for <a href="https://netdevconf.info/0x13/">Netdev 0x13</a> accepted. Our basic idea is reducing the CPU cycles consumed by amortizing the system call overhead of network I/O operations.</p>
+<p>At the time we started our work, <a href="https://lwn.net/Articles/776703/"><code>io_uring</code></a> was not yet a thing. With the benefit of hindsight however, it is clear that <code>io_uring</code> is the way forward.</p>
+<p>Here&rsquo;s the video of Rahul delivering the talk:</p>
+<center><iframe width="560" height="315" src="https://www.youtube.com/embed/hJrXbqttJC4" frameborder="0" allowfullscreen></iframe></center>
+<p>And the slides:</p>
+<script async class="speakerdeck-embed" data-id="99baab134b764ae18553842caef1876a" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
+
+        
+            <div>
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+function load_disqus() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'anmolsarma';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}
+</script>
+
+<a href="#" onclick="load_disqus();return false;">Show Comments</a>
+
+<noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
+
+            </div>
+        
+    </article>
+</main>
+<hr/>
+<footer>
+    Except where noted otherwise, content on this webiste is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+</footer>
+
+
