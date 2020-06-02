@@ -48,7 +48,7 @@
         
         <p>There may come a time in a system programmer&rsquo;s life when she needs to leave the civilized safety of the userland and confront the unspeakable horrors that dwell in the depths of the Kernel space. While <a href="https://lkml.org/lkml/2000/9/6/65">higher beings might pour scorn</a> on the very idea of a Kernel debugger, us lesser mortals may have no other recourse but to single-step through Kernel code when the rivers begin to run dry. This guide will help you do just that. We hope you never actually have to.</p>
 <p>Ominous sounding intro-bait notwithstanding, setting up a virtual machine for Kernel debugging isn&rsquo;t really that difficult.  It only needs a bit of preparation. If you just want a copypasta, <a href="#copypasta">skip to the end</a>. If you&rsquo;re interested in the predicaments involved and how to deal with them, read on.</p>
-<p><strong>N.B.:</strong> &ldquo;But which kernel are you talking about?&quot;, some heathens may invariably ask when it is obvious that Kernel with a capital K refers to the <a href="https://www.kernel.org/">One True Kernel</a>.</p>
+<p><strong>N.B.:</strong> &ldquo;But which kernel are you talking about?&rdquo;, some heathens may invariably ask when it is obvious that Kernel with a capital K refers to the <a href="https://www.kernel.org/">One True Kernel</a>.</p>
 <h3 id="building-the-kernel">Building the Kernel</h3>
 <p>Using a minimal Kernel configuration instead of the kitchen-sink one that distributions usually ship will make life a lot easier. You will first need to grab the source code for the Kernel you are interested in. We will use the latest Kernel release tarball from <a href="https://www.kernel.org/">kernel.org</a>, which at the time of writing is <a href="https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.6.tar.xz">4.20.6</a>. Inside the extracted source directory, invoke the following:</p>
 <div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make defconfig
@@ -234,7 +234,7 @@ function load_disqus() {
 </main>
 <hr/>
 <footer>
-    Except where noted otherwise, content on this webiste is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+    Except where noted otherwise, content on this website is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 </footer>
 
 
