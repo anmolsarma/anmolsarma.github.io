@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-in">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>A DIY USB Mouse Jiggler</title>
+    <meta property="og:title" content="A DIY USB Mouse Jiggler" />
+<meta property="og:description" content="The Great Pandemic Lockdown of 2020 forced companies to adopt remote work. With no existing provisions for WFH, bizarre ad-hoc setups emerged. A case in point, my roommate was issued two laptops: One for development and a second locked down machine to connect to production servers. The second laptop was configured with a very aggressive lock screen timeout with no way to change or disable it. This made keeping an eye on prod rather annoying." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.anmolsarma.in/post/mouse-jiggler/" />
+<meta property="article:published_time" content="2020-06-21T21:24:50+05:30" />
+<meta property="article:modified_time" content="2020-06-21T21:24:50+05:30" />
+<link rel="stylesheet" href="https://www.anmolsarma.in/css/style.css">
+</head>
+<body>
+<header>
+    <b>
+        <a href="https://www.anmolsarma.in/">Anmol Sarma</a>
+    </b>
+<nav>
+    
+    <a href="/about">About</a> |
+    
+    <a href="/">Blog</a> |
+    
+    <a href="/renders">Renders</a> |
+    
+    <a href="/tags/talks/">Talks</a> |
+    
+    <a href="/index.xml">RSS</a>
+    </nav>
+</header>
+<hr/>
+
+<main>
+    <article>
+        <h1>A DIY USB Mouse Jiggler</h1>
+        
+            <span class="pubdate"> Jun 21, 2020</span>
+            
+                <a href="/tags/tech">tech</a>
+            
+                <a href="/tags/embedded">embedded</a>
+            
+        
+        <p>The Great Pandemic Lockdown of 2020 forced companies to adopt remote work. With no existing provisions for WFH, bizarre ad-hoc setups emerged. A case in point, my roommate was issued two laptops: One for development and a second locked down machine to connect to production servers. The second laptop was configured with a very aggressive lock screen timeout with no way to change or disable it. This made keeping an eye on prod rather annoying.</p>
+<p>One way to prevent Windows from locking the screen is by simulating user activity: say moving the mouse. This would have been trivial to accomplish in software if it wasn&rsquo;t for the administrative policy restricting which applications could be run.</p>
+<p>This seems to be a common enough occurrence in corporate environments that there are companies that <a href="https://www.cru-inc.com/products/wiebetech/mouse_jiggler_mj-3/">sell</a> purpose-built <a href="http://www.keelog.com/mouse-jiggler/">hardware</a> to mitigate the situation. Basically, these devices pretend to be a USB mouse or keyboard and periodically send random mouse events or keystrokes to the connected host computer. Getting hold of one of these seems unlikely in the current situation. Building one was the only option. Fortunately, I had a <a href="https://www.ti.com/tool/EK-LM4F120XL">Stellaris Launchpad</a> lying around, (literally) gathering dust that was perfect for this.</p>
+<p><img src="/images/launchpad.jpg" alt="Stellaris LM4F120 LaunchPad Evaluation Kit"></p>
+<p>The board has a USB capable ARM Cortex microcontroller onboard and can be used with a <a href="https://www.ti.com/licreg/docs/swlicexportcontrol.tsp?form_type=2&amp;prod_no=SW-TM4C-USBL-2.2.0.295.exe">USB stack that TI provides</a> royalty-free. All I had to do was to figure out how to configure the USB stack to emulate a USB HID mouse. The <a href="https://www.ti.com/lit/pdf/spmu297">documentation</a> refers to a <code>usb_dev_mouse</code> example application but I for one was unable to find it in the TivaWare package. The TivaWare USB Library is fairly straightforward to use. Apart from the minimal boiler-plate, it is almost as simple as <a href="https://www.arduino.cc/reference/en/language/functions/usb/mouse/">Arduino&rsquo;s Mouse library</a>. Coupled with the <a href="https://www.ti.com/licreg/docs/swlicexportcontrol.tsp?form_type=2&amp;prod_no=SW-TM4C-DRL-2.2.0.295.exe">Driverlib</a> HAL to configure the timer, I was able to get a mouse jiggler working in short order. The USB string descriptors took up more lines of code than the actual application:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#0b0;font-weight:bold">void</span>
+<span style="color:#00a000">timerISR</span> (<span style="color:#0b0;font-weight:bold">void</span>)
+{
+  <span style="color:#080;font-style:italic">// Clear the timer interrupt source to avoid being triggered again 
+</span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">// immediately on exit
+</span><span style="color:#080;font-style:italic"></span>  TimerIntClear (TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+  <span style="color:#080;font-style:italic">// Disable interrupts so we can get some work done
+</span><span style="color:#080;font-style:italic"></span>  IntMasterDisable ();
+
+  <span style="color:#080;font-style:italic">// Move the cursor by a pixel along each axis in a random direction
+</span><span style="color:#080;font-style:italic"></span>  int8_t x <span style="color:#666">=</span> (rand () <span style="color:#666">&amp;</span> <span style="color:#666">1</span>) <span style="color:#666">?</span> <span style="color:#666">1</span> <span style="color:#666">:</span> <span style="color:#666">-</span><span style="color:#666">1</span>;
+  int8_t y <span style="color:#666">=</span> (rand () <span style="color:#666">&amp;</span> <span style="color:#666">1</span>) <span style="color:#666">?</span> <span style="color:#666">1</span> <span style="color:#666">:</span> <span style="color:#666">-</span><span style="color:#666">1</span>;
+  USBDHIDMouseStateChange ((<span style="color:#0b0;font-weight:bold">void</span> <span style="color:#666">*</span>) <span style="color:#666">&amp;</span>g_jiggler, x, y, <span style="color:#666">0</span>);
+
+  IntMasterEnable ();
+
+}
+
+<span style="color:#0b0;font-weight:bold">int</span>
+<span style="color:#00a000">main</span> (<span style="color:#0b0;font-weight:bold">void</span>)
+{
+
+  <span style="color:#080;font-style:italic">// Configure the clock to directly run from the crysal oscillator
+</span><span style="color:#080;font-style:italic"></span>  SysCtlClockSet (SYSCTL_SYSDIV_1 <span style="color:#666">|</span> SYSCTL_USE_OSC <span style="color:#666">|</span> SYSCTL_OSC_MAIN <span style="color:#666">|</span>
+                  SYSCTL_XTAL_16MHZ);
+
+  SysCtlPeripheralEnable (SYSCTL_PERIPH_TIMER0);
+
+  <span style="color:#080;font-style:italic">// Enable the USB peripheral 
+</span><span style="color:#080;font-style:italic"></span>  SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOD);
+  GPIOPinTypeUSBAnalog (GPIO_PORTD_BASE, GPIO_PIN_4 <span style="color:#666">|</span> GPIO_PIN_5);
+
+  <span style="color:#080;font-style:italic">// Configure the Timer to fire every 30 seconds
+</span><span style="color:#080;font-style:italic"></span>  TimerConfigure (TIMER0_BASE, TIMER_CFG_PERIODIC);
+  TimerLoadSet (TIMER0_BASE, TIMER_A, SysCtlClockGet () <span style="color:#666">*</span> <span style="color:#666">30</span>);
+
+  IntEnable (INT_TIMER0A);
+  TimerIntEnable (TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+  TimerEnable (TIMER0_BASE, TIMER_A);
+
+  USBStackModeSet (<span style="color:#666">0</span>, USB_MODE_DEVICE, <span style="color:#666">0</span>);
+  <span style="color:#080;font-style:italic">// Initialize the USB controller and attach the mouse jiggler
+</span><span style="color:#080;font-style:italic"></span>  <span style="color:#080;font-style:italic">// device to the USB bus
+</span><span style="color:#080;font-style:italic"></span>  USBDHIDMouseInit (<span style="color:#666">0</span>, (tUSBDHIDMouseDevice <span style="color:#666">*</span>) <span style="color:#666">&amp;</span>g_jiggler );
+
+  <span style="color:#080;font-style:italic">// Enable processor interrupts
+</span><span style="color:#080;font-style:italic"></span>  IntMasterEnable ();
+
+  <span style="color:#a2f;font-weight:bold">while</span> (<span style="color:#666">1</span>);
+
+}
+</code></pre></div><p>So, with the jiggler attached and the laptop hooked up to a TV screen, my roommate can monitor prod and continue to lose sleep in peace.</p>
+
+        
+            <div>
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+function load_disqus() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'anmolsarma';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}
+</script>
+
+<a href="#" onclick="load_disqus();return false;">Show Comments</a>
+
+<noscript>Enable JavaScript to view <a href="http://disqus.com/?ref_noscript">Disqus</a> comments. </noscript>
+
+            </div>
+        
+    </article>
+</main>
+<hr/>
+<footer>
+    Except where noted otherwise, content on this website is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+</footer>
+
+

@@ -11,6 +11,72 @@
     
     
     <item>
+      <title>A DIY USB Mouse Jiggler</title>
+      <link>https://www.anmolsarma.in/post/mouse-jiggler/</link>
+      <pubDate>Sun, 21 Jun 2020 21:24:50 +0530</pubDate>
+      
+      <guid>https://www.anmolsarma.in/post/mouse-jiggler/</guid>
+      <description>&lt;p&gt;The Great Pandemic Lockdown of 2020 forced companies to adopt remote work. With no existing provisions for WFH, bizarre ad-hoc setups emerged. A case in point, my roommate was issued two laptops: One for development and a second locked down machine to connect to production servers. The second laptop was configured with a very aggressive lock screen timeout with no way to change or disable it. This made keeping an eye on prod rather annoying.&lt;/p&gt;
+&lt;p&gt;One way to prevent Windows from locking the screen is by simulating user activity: say moving the mouse. This would have been trivial to accomplish in software if it wasn&amp;rsquo;t for the administrative policy restricting which applications could be run.&lt;/p&gt;
+&lt;p&gt;This seems to be a common enough occurrence in corporate environments that there are companies that &lt;a href=&#34;https://www.cru-inc.com/products/wiebetech/mouse_jiggler_mj-3/&#34;&gt;sell&lt;/a&gt; purpose-built &lt;a href=&#34;http://www.keelog.com/mouse-jiggler/&#34;&gt;hardware&lt;/a&gt; to mitigate the situation. Basically, these devices pretend to be a USB mouse or keyboard and periodically send random mouse events or keystrokes to the connected host computer. Getting hold of one of these seems unlikely in the current situation. Building one was the only option. Fortunately, I had a &lt;a href=&#34;https://www.ti.com/tool/EK-LM4F120XL&#34;&gt;Stellaris Launchpad&lt;/a&gt; lying around, (literally) gathering dust that was perfect for this.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.anmolsarma.in/images/launchpad.jpg&#34; alt=&#34;Stellaris LM4F120 LaunchPad Evaluation Kit&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The board has a USB capable ARM Cortex microcontroller onboard and can be used with a &lt;a href=&#34;https://www.ti.com/licreg/docs/swlicexportcontrol.tsp?form_type=2&amp;amp;prod_no=SW-TM4C-USBL-2.2.0.295.exe&#34;&gt;USB stack that TI provides&lt;/a&gt; royalty-free. All I had to do was to figure out how to configure the USB stack to emulate a USB HID mouse. The &lt;a href=&#34;https://www.ti.com/lit/pdf/spmu297&#34;&gt;documentation&lt;/a&gt; refers to a &lt;code&gt;usb_dev_mouse&lt;/code&gt; example application but I for one was unable to find it in the TivaWare package. The TivaWare USB Library is fairly straightforward to use. Apart from the minimal boiler-plate, it is almost as simple as &lt;a href=&#34;https://www.arduino.cc/reference/en/language/functions/usb/mouse/&#34;&gt;Arduino&amp;rsquo;s Mouse library&lt;/a&gt;. Coupled with the &lt;a href=&#34;https://www.ti.com/licreg/docs/swlicexportcontrol.tsp?form_type=2&amp;amp;prod_no=SW-TM4C-DRL-2.2.0.295.exe&#34;&gt;Driverlib&lt;/a&gt; HAL to configure the timer, I was able to get a mouse jiggler working in short order. The USB string descriptors took up more lines of code than the actual application:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;void&lt;/span&gt;
+&lt;span style=&#34;color:#00a000&#34;&gt;timerISR&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;void&lt;/span&gt;)
+{
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Clear the timer interrupt source to avoid being triggered again 
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// immediately on exit
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  TimerIntClear (TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Disable interrupts so we can get some work done
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  IntMasterDisable ();
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Move the cursor by a pixel along each axis in a random direction
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  int8_t x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; (rand () &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
+  int8_t y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; (rand () &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;?&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;;
+  USBDHIDMouseStateChange ((&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;g_jiggler, x, y, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
+
+  IntMasterEnable ();
+
+}
+
+&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;span style=&#34;color:#00a000&#34;&gt;main&lt;/span&gt; (&lt;span style=&#34;color:#0b0;font-weight:bold&#34;&gt;void&lt;/span&gt;)
+{
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Configure the clock to directly run from the crysal oscillator
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  SysCtlClockSet (SYSCTL_SYSDIV_1 &lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt; SYSCTL_USE_OSC &lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt; SYSCTL_OSC_MAIN &lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt;
+                  SYSCTL_XTAL_16MHZ);
+
+  SysCtlPeripheralEnable (SYSCTL_PERIPH_TIMER0);
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Enable the USB peripheral 
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOD);
+  GPIOPinTypeUSBAnalog (GPIO_PORTD_BASE, GPIO_PIN_4 &lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt; GPIO_PIN_5);
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Configure the Timer to fire every 30 seconds
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  TimerConfigure (TIMER0_BASE, TIMER_CFG_PERIODIC);
+  TimerLoadSet (TIMER0_BASE, TIMER_A, SysCtlClockGet () &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;30&lt;/span&gt;);
+
+  IntEnable (INT_TIMER0A);
+  TimerIntEnable (TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+  TimerEnable (TIMER0_BASE, TIMER_A);
+
+  USBStackModeSet (&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, USB_MODE_DEVICE, &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;);
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Initialize the USB controller and attach the mouse jiggler
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// device to the USB bus
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  USBDHIDMouseInit (&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, (tUSBDHIDMouseDevice &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&lt;/span&gt;g_jiggler );
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Enable processor interrupts
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;  IntMasterEnable ();
+
+  &lt;span style=&#34;color:#a2f;font-weight:bold&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;);
+
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, with the jiggler attached and the laptop hooked up to a TV screen, my roommate can monitor prod and continue to lose sleep in peace.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>File Creation Time in Linux</title>
       <link>https://www.anmolsarma.in/post/linux-file-creation-time/</link>
       <pubDate>Sun, 23 Jun 2019 19:24:22 +0530</pubDate>
